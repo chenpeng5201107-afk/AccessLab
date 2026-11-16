@@ -206,3 +206,98 @@ Qoder 内置浏览器视口不可用（`viewport=0x0`、`visibilityState=hidden`
 | `1abb0737…` | 修复卡片序号朗读 + StrictMode 首屏抢焦点 | 源码在发布后才修改，需重发 |
 | `38f9fe06…` | 修复 skip link 踢回首页 | 线上验证发现真实缺陷 |
 
+---
+
+## 2026-11-16 · Day 1 审查修复轮（同日，来自外部代码审查）
+
+范围严格控制：只改审查指出的 4 项，未新增功能、未调整页面视觉设计、未重构无关模块。
+
+### 1. 任务一 · P1 跳转导航（`src/App.tsx`、`src/hooks/useHashRoute.ts`）
+
+**根因重新定位**：`href="#main"` 覆盖 `location.hash` 只是触发点，真正的脆弱点在
+`useHashRoute` —— `readRoute()` 把所有未知 hash 一律回退成 `home`，
+所以任何页内锚点都能把用户踢回首页。
+
+上一轮 `de27a29` 已给 skip link 加了 `preventDefault()` + 手动聚焦，
+但那只是**挡住了这一个入口**，路由层仍然一碰未知 hash 就复位。本轮做结构性修复：
+
+- 新增纯函数 `routeFromHash(hash): Route | null`——只有注册过的 hash 才是业务路由；
+- 新增 `nextRoute(current, hash)`——非路由 hash **保持当前页面**；
+- `useHashRoute` 的 `hashchange` 回调改用函数式更新 `setRoute(cur => nextRoute(cur, hash))`；
+- 冷启动仍按 `routeFromHash(...) ?? 'home'` 解析。
+
+`preventDefault` 守卫保留（避免 URL 被无意义地改写、不产生多余历史记录），
+两者叠加后：即使将来有人再写一个裸的 `href="#anchor"`，也不会丢页面。
+
+**副作用一并消除**：首页「查看实验方向」的 `href="#experiments"` 属于同一类隐患，
+修复后它只滚动、不再影响路由（已浏览器实测）。
+
+标题更新与路由焦点管理逻辑未改动，回归确认仍正常。
+
+**回归测试**：新增 `src/hooks/useHashRoute.test.ts`（8 条），核心断言
+`nextRoute('contrast-lab', '#main') === 'contrast-lab'`，
+并覆盖首页场景、`#experiments`、未知 hash、以及正常路由切换仍生效。
+说明：该测试针对纯路由函数，运行于 node 环境，未引入 jsdom / testing-library；
+真实 DOM 交互另由浏览器验证（见第 5 节）。
+
+### 2. 任务二 · WCAG 线性化常量（`src/lib/contrast.ts`）
+
+`0.03928` → **`0.04045`**（WCAG 2.2 现行定义，与 sRGB 标准一致；`0.03928` 是 2.0/2.1 正文写法），
+同步改写函数注释，并修正 `PRD.md` 中原先「与 axe-core / WebAIM 实现一致」的不当表述。
+对比度公式其余部分一字未动。
+
+**数值影响已核实为 0**：两个阈值映射到 8 位通道分别是
+`0.03928×255≈10.02` 与 `0.04045×255≈10.31`，其间不含任何整数——
+通道 10（0.03922）两侧都走 `/12.92`，通道 11（0.04314）两侧都走幂函数分支。
+因此所有可选颜色的亮度与对比度结果完全不变，既有测试基线无需重算。
+
+为免常量再次退化，新增一条分支测试：`relativeLuminance({10,10,10})` 必须等于 `10/255/12.92`，
+且通道 11 的亮度严格大于通道 10。
+
+### 3. 任务三 · 规范说明准确性（`src/pages/ContrastLabPage.tsx`）
+
+原句「大文本的 3:1 门槛（1.4.6 / 1.4.3 大文本情形）」把 AA 与 AAA 混为一谈，已改为逐条准确表述：
+
+- **1.4.3 Contrast (Minimum)，AA**：普通文本 4.5:1（**本产品唯一实际检测项**）、大文本 3:1（不检测）；
+- **1.4.6 Contrast (Enhanced)，AAA**：普通文本 7:1、大文本 4.5:1（不检测）；
+- **1.4.11 Non-text Contrast，AA**：图形与界面组件 3:1（不检测）。
+
+未新增 AAA 或大文本检测功能，检测逻辑与阈值不变，只改文案；
+「本项通过不代表组件或整站符合 WCAG 2.2」的边界声明保留。
+
+### 4. 任务四 · Qoder Sites 状态（实测，非推断）
+
+- `get_site_access(siteId)` → `policy.mode = "public"`、`auth_integration_status = "not_required"`；
+- 匿名抓取线上地址 → 无登录墙，`h1 = AccessLab` 正常渲染，**双重确认公开访问有效**。
+- **线上当前产物为 `index-BBSMVCdQ.js`**，本轮修复后的产物是 `index-DZkMykvn.js`，
+  两者不一致 → **本轮修复尚未上线，需要重新部署**（等待验收后再执行）。
+
+### 5. 测试实际执行结果
+
+```
+npm test        → Test Files 2 passed (2) | Tests 23 passed (23)
+                   src/lib/contrast.test.ts        15 passed
+                   src/hooks/useHashRoute.test.ts   8 passed
+npm run build   → ✓ 2092 modules transformed, built in 1.83s
+                   dist/index.html 0.61 kB / CSS 21.46 kB / JS 240.73 kB (gzip 76.16)
+```
+
+浏览器交互测试（production build 经 `vite preview :4180`，加载 `index-DZkMykvn.js`）：
+
+| 场景 | 结果 |
+| --- | --- |
+| 实验页激活 skip link | ✅ hash 保持 `#/contrast`、`h1` 仍为「色彩对比度实验」、焦点落到 `main`、标题不变 |
+| **强制** `location.hash = '#main'`（绕过点击守卫，直击路由层） | ✅ 业务路由仍停在实验页，标题未复位 |
+| 首页 `#experiments` 区块锚点 | ✅ 仅滚动，路由与标题不受影响 |
+| 首页 skip link | ✅ 焦点到 `main`，页面未变 |
+| 首页 → 实验页 → 首页 正常切换 | ✅ `h1`/`title`/焦点均正确 |
+| 核心对比度回归 | ✅ 初始 `4.48:1 未达` → 前景 `#000000` `21.00:1 达到` → 同色 `1.00:1` → 重置回 `4.48:1`，预览 `getComputedStyle` 全程同步 |
+| 「即将开放」卡片 | ✅ 可交互元素数 `[1,0,0]`，仍无假按钮 |
+| 控制台 | ✅ 零消息 |
+
+### 6. 本轮遗留
+
+- **需要重新部署 Qoder Sites**（当前线上为修复前产物），等待验收结论后执行。
+- `index.html` 缓存策略仍需确认（见第 8.3 节排障记录）。
+- 页面视觉外观依旧缺少截图 / 肉眼确认（内置浏览器视口不可用）。
+

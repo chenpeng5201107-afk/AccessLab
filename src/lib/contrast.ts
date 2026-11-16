@@ -55,11 +55,14 @@ function channelToHex(value: number): string {
 
 /**
  * sRGB 分量线性化。
- * 阈值沿用 WCAG 2.2 正文中的 0.03928，与 axe-core / WebAIM 的实现保持一致。
+ * 阈值 0.04045 取自 WCAG 2.2 相对亮度定义（与 sRGB 标准一致）；
+ * WCAG 2.0 / 2.1 正文曾写作 0.03928。
+ * 两者只对 8 位整数通道无差异（0.03928×255≈10.02，0.04045×255≈10.31，
+ * 其间不含整数），因此本次修正不改变任何实际取色结果。
  */
 function linearize(channel: number): number {
   const srgb = channel / 255
-  return srgb <= 0.03928 ? srgb / 12.92 : ((srgb + 0.055) / 1.055) ** 2.4
+  return srgb <= 0.04045 ? srgb / 12.92 : ((srgb + 0.055) / 1.055) ** 2.4
 }
 
 /** 相对亮度 L，取值范围 0（黑）–1（白） */

@@ -157,11 +157,19 @@ export function ContrastLabPage() {
               </h3>
               <ul className="mt-2 space-y-1.5 text-sm leading-relaxed text-slate-700">
                 <li>
-                  检查：前景色与背景色这一对颜色的对比度，是否满足成功标准 1.4.3 普通文本 AA 的{' '}
+                  检查：前景色与背景色这一对颜色的对比度，是否满足成功标准
+                  1.4.3（Contrast (Minimum)，AA 级）对<strong>普通文本</strong>要求的{' '}
                   {AA_NORMAL_TEXT_RATIO}:1。
                 </li>
                 <li>
-                  不检查：大文本的 3:1 门槛（1.4.6 / 1.4.3 大文本情形）、图形与控件的非文本对比（1.4.11）。
+                  不检查：1.4.3 对<strong>大文本</strong>要求的 3:1（AA 级）。
+                </li>
+                <li>
+                  不检查：成功标准 1.4.6（Contrast (Enhanced)，AAA 级）要求的普通文本 7:1、
+                  大文本 4.5:1。
+                </li>
+                <li>
+                  不检查：成功标准 1.4.11（Non-text Contrast，AA 级）要求的图形与界面组件 3:1。
                 </li>
                 <li>不检查：语义结构、键盘可达性、屏幕阅读器朗读顺序等其他成功标准。</li>
                 <li className="font-semibold text-slate-900">

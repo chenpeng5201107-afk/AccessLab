@@ -42,6 +42,15 @@ describe('relativeLuminance', () => {
     expect(relativeLuminance(parseHexColor('#000000')!)).toBeCloseTo(0, 6)
     expect(relativeLuminance(parseHexColor('#ffffff')!)).toBeCloseTo(1, 6)
   })
+
+  it('阈值以下使用 /12.92 线性分支（0.04045 常量生效处）', () => {
+    // 通道 10 → 10/255 = 0.03922 ≤ 0.04045，走线性分支
+    expect(relativeLuminance({ r: 10, g: 10, b: 10 })).toBeCloseTo(10 / 255 / 12.92, 8)
+    // 通道 11 → 0.04314 > 0.04045，走幂函数分支，值明显更高
+    expect(relativeLuminance({ r: 11, g: 11, b: 11 })).toBeGreaterThan(
+      relativeLuminance({ r: 10, g: 10, b: 10 }),
+    )
+  })
 })
 
 describe('contrastRatio', () => {

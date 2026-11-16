@@ -14,8 +14,21 @@ const HASH_TO_ROUTE: Record<string, Route> = {
   '#/contrast': 'contrast-lab',
 }
 
+/**
+ * 只有上表中的 hash 才是业务路由。
+ * 页内锚点（#main、#experiments 等）返回 null，交由调用方保持当前页面。
+ */
+export function routeFromHash(hash: string): Route | null {
+  return HASH_TO_ROUTE[hash] ?? null
+}
+
+/** hash 变化时的路由迁移规则：非路由 hash 不改变当前业务路由 */
+export function nextRoute(current: Route, hash: string): Route {
+  return routeFromHash(hash) ?? current
+}
+
 function readRoute(): Route {
-  return HASH_TO_ROUTE[window.location.hash] ?? 'home'
+  return routeFromHash(window.location.hash) ?? 'home'
 }
 
 /**
@@ -26,7 +39,8 @@ export function useHashRoute(): Route {
   const [route, setRoute] = useState(readRoute)
 
   useEffect(() => {
-    const handleHashChange = () => setRoute(readRoute())
+    const handleHashChange = () =>
+      setRoute((current) => nextRoute(current, window.location.hash))
     window.addEventListener('hashchange', handleHashChange)
     return () => window.removeEventListener('hashchange', handleHashChange)
   }, [])
