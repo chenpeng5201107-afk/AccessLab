@@ -7,13 +7,23 @@ interface ColorControlProps {
   /** 受控的 #rrggbb 颜色 */
   value: string
   onChange: (hex: string) => void
+  /** 文本框合法性变化；非法时颜色不会提交，父组件需要说明结果仍基于上一次有效配色 */
+  onValidityChange?: (isValid: boolean) => void
+  /** 每次递增都强制把草稿同步回 value：重置时即使颜色本身没变，也要清掉已有的非法草稿 */
+  resetSignal?: number
 }
 
 /**
  * 同时提供取色器与十六进制输入框：
  * 取色器方便试色，文本框方便键盘输入与精确复现别人给的颜色值。
  */
-export function ColorControl({ label, value, onChange }: ColorControlProps) {
+export function ColorControl({
+  label,
+  value,
+  onChange,
+  onValidityChange,
+  resetSignal,
+}: ColorControlProps) {
   const reactId = useId()
   const textId = `${reactId}-hex`
   const swatchId = `${reactId}-picker`
@@ -21,12 +31,16 @@ export function ColorControl({ label, value, onChange }: ColorControlProps) {
   const errorId = `${reactId}-error`
 
   const [draft, setDraft] = useState(value)
-  useEffect(() => setDraft(value), [value])
+  useEffect(() => setDraft(value), [value, resetSignal])
 
   const canonical = normalizeHex(draft)
   const invalid = canonical === null
 
   const swatchValue = normalizeHex(value) ?? '#000000'
+
+  useEffect(() => {
+    onValidityChange?.(!invalid)
+  }, [invalid, onValidityChange])
 
   return (
     <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4">
@@ -63,7 +77,7 @@ export function ColorControl({ label, value, onChange }: ColorControlProps) {
             onBlur={() => {
               if (canonical) setDraft(canonical)
             }}
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 font-mono text-sm text-slate-900 uppercase"
+            className="min-h-11 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 font-mono text-sm text-slate-900 uppercase"
           />
           <p id={hintId} className="mt-1.5 text-xs text-slate-600">
             支持 #RGB 与 #RRGGBB

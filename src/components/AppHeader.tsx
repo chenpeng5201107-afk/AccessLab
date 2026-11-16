@@ -40,7 +40,7 @@ export function AppHeader({ currentRoute }: AppHeaderProps) {
                   <a
                     href={ROUTE_HASH[item.route]}
                     aria-current={active ? 'page' : undefined}
-                    className={`block rounded-lg px-3 py-2 text-sm font-medium no-underline transition-colors ${
+                    className={`flex min-h-11 items-center rounded-lg px-3 py-2 text-sm font-medium no-underline transition-colors sm:min-h-9 ${
                       active
                         ? 'bg-indigo-50 text-indigo-900 underline decoration-2 underline-offset-4'
                         : 'text-slate-700 hover:bg-slate-100 hover:text-indigo-900'
