@@ -26,8 +26,13 @@ export default function App() {
 
   return (
     <div className="flex min-h-dvh flex-col">
+      {/* 拦截默认 hash 跳转：本应用用 hash 路由，跳到 #main 会被当成未知路由而把用户踢回首页 */}
       <a
         href="#main"
+        onClick={(event) => {
+          event.preventDefault()
+          document.getElementById('main')?.focus()
+        }}
         className="sr-only rounded-lg bg-indigo-700 px-4 py-2 font-semibold text-white focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-30"
       >
         跳转到主要内容

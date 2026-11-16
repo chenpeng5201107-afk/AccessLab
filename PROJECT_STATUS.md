@@ -17,16 +17,17 @@
 | 首页（页面 A） | ✅ 完成 | 导航 / 主视觉 / 开始体验 / 三张实验卡片 |
 | 色彩对比度实验（页面 B） | ✅ 完成 | PRD 4.2 的 6 项能力全部实现 |
 | 生产构建 | ✅ 通过 | JS 240.22 kB（gzip 76.04 kB） |
-| Qoder Sites 发布 | ✅ 已发布 | `published: true`，但访问级别为 **private** |
+| Qoder Sites 发布 | ✅ 已发布（3 次，当前 action `38f9fe06…`） | `published: true`，访问级别 **public** |
 | 表单标签实验 | ⛔ 未开发 | 首页仅展示「即将开放」 |
 | 键盘焦点实验 | ⛔ 未开发 | 首页仅展示「即将开放」 |
 | 实验结果报告 | ⛔ 未开发 | 计划于 Day 2+ |
 
-PRD 第 7 节的 8 条 Day 1 验收标准全部实测通过，证据见 `DEVLOG.md` 第 4 节。
+PRD 第 7 节的 8 条 Day 1 验收标准全部实测通过（本地 dev / prod preview / **线上公开地址** 三处），
+证据见 `DEVLOG.md` 第 4 节与第 8 节。
 
 ## 3. 链接与命令
 
-- 站点地址：https://accessibility-lab-3g6uvbn5duq.qoder.zone （当前需 Qoder 登录）
+- 站点地址：https://accessibility-lab-3g6uvbn5duq.qoder.zone （**公开可访问**，已线上复验）
 - 本地开发：`npm run dev` → http://localhost:5173
 - 单元测试：`npm test`
 - 生产构建：`npm run build` → 产物在 `dist/`
@@ -36,17 +37,21 @@ PRD 第 7 节的 8 条 Day 1 验收标准全部实测通过，证据见 `DEVLOG.
 
 | # | 问题 | 影响 | 建议处理 |
 | --- | --- | --- | --- |
-| 1 | 站点 `access_mode = private` | 评委/他人无法直接打开链接 | 需用户授权后执行 `update_access_policy(mode: public, confirmPublic: true)`；或改用 `selected` 邀请制 |
-| 2 | 线上渲染未验证 | 不知部署后是否有运行时问题 | 开放访问（或以授权账号登录后）复验一次首屏与实验页 |
-| 3 | Qoder 内置浏览器视口不可用 | 无法截图 / 无法肉眼确认视觉还原 | 在真实浏览器中目视检查一次配色与移动端断点 |
-| 4 | `node` 不在系统 PATH（实际位于 `D:/Soft_Ware`） | 新会话直接跑 npm 会 `node: not found` | 会话内 `export PATH="/d/Soft_Ware:$PATH"`，或把该目录加入系统 PATH |
-| 5 | 无 CI | 构建/测试靠本地手动 | 可选：加 GitHub Actions 跑 `npm test && npm run build` |
+| 1 | `index.html` 被浏览器缓存后仍引用旧 JS | 重新发布后用户拿不到新版本 | 确认平台对 `index.html` 的缓存策略；`dist/assets/*` 有内容哈希可长缓存，入口需短 TTL；必要时加版本查询参数 |
+| 2 | 页面视觉外观未截图 / 肉眼确认 | 配色与移动端断点还原度未知 | 在真实浏览器目视检查一次桌面与移动布局 |
+| 3 | `node` 不在系统 PATH（实际位于 `D:/Soft_Ware`） | 新会话直接跑 npm 会 `node: not found` | 会话内 `export PATH="/d/Soft_Ware:$PATH"`，或把该目录加入系统 PATH |
+| 4 | 无 CI | 构建/测试靠本地手动 | 可选：加 GitHub Actions 跑 `npm test && npm run build` |
+| 5 | 本地提交 `cb7f047` 之后的修复尚未提交 | 版本库未反映最新源码 | 提交 skip link 修复与文档更新；**push 需另行确认** |
+
+已解决（原遗留 #1、#2）：站点已切为 `public` 并完成线上匿名复验；复验中发现的
+「skip link 把用户踢回首页」缺陷已修复、重建并第三次发布，详见 `DEVLOG.md` 第 8 节。
 
 ## 5. 下一阶段（Day 2）任务建议
 
-1. 先解决遗留 #1、#2：确认公开访问并完成线上复验。
+1. 先处理遗留 #1：确认 `index.html` 缓存策略，避免发布后用户拿到旧入口。
 2. 「实验结果报告」最小版：把当前配色、对比度、AA 结论整理成可复制的结果摘要。
 3. 为对比度实验补充**大文本 AA（3:1）**判定，同时保留「仅覆盖单条成功标准」的措辞约束。
-4. 补齐键盘可操作性的自动化检查（如引入 axe-core 只做开发期检测，不进运行时）。
+4. 补一条**路由与站内锚点不冲突**的回归检查（本次 skip link 缺陷的教训：
+   任何写 `location.hash` 的元素都可能与 hash 路由打架），并考虑为组件行为引入 jsdom 测试。
 
 > 注意：不要在同一天同时推进多个实验模块；保留已通过验收的模块，避免无关重构。

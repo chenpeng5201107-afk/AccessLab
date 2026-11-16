@@ -124,7 +124,7 @@ Qoder 内置浏览器视口不可用（`viewport=0x0`、`visibilityState=hidden`
 | prepare 关键入参 | `webDirectory: "dist"`、`spa: false`、`slug: "accessibility-lab"`、`displayName: "AccessLab 无障碍实验室"` |
 | Site 地址 | https://accessibility-lab-3g6uvbn5duq.qoder.zone |
 | 发布结果 | ✅ `published: true`，Operation `succeeded` 且 `committed: true` |
-| 当前访问级别 | ⚠️ `private`——「此站点仅向受邀用户开放」，需 Qoder 登录后访问 |
+| 当前访问级别 | `public`（初始为 private，后经用户授权切换，见第 8 节） |
 
 发布共执行两次，同一 Project / Site，未创建重复站点：
 
@@ -135,9 +135,9 @@ Qoder 内置浏览器视口不可用（`viewport=0x0`、`visibilityState=hidden`
 
 上传前已检查产物：`dist/` 仅 3 个文件，无 source map、无 `.env`、无凭据。
 
-公开访问设置方法（**尚未执行**，需用户明确授权）：
-`update_access_policy`，参数 `mode: "public"` + `confirmPublic: true`（`selected` 模式可指定至多 50 位用户）。
-新建站点默认 private，切换受众属于独立授权动作，不由「部署」这一请求自动推导。
+公开访问设置方法：`update_access_policy`，参数 `mode: "public"` + `confirmPublic: true`
+（`selected` 模式可指定至多 50 位用户）。新建站点默认 private，切换受众属于独立授权动作，
+不由「部署」这一请求自动推导——本次已在获得用户明确授权后执行，见第 8 节。
 
 ### 6. 本次会话中发现并修复的问题
 
@@ -150,7 +150,59 @@ Qoder 内置浏览器视口不可用（`viewport=0x0`、`visibilityState=hidden`
 
 ### 7. 未解决的问题
 
-- 站点为 private，公开可访问性尚未开启，也未验证线上真实渲染。
-- 内置浏览器视口不可用，缺少视觉截图与肉眼回归。
+- 内置浏览器视口不可用，缺少视觉截图与肉眼回归（行为与样式计算层已验证）。
 - `node` 不在系统 PATH（实际安装在 `D:/Soft_Ware`），新会话需手动前置该目录，否则 npm 报 `node: not found`。
 - 尚未配置 CI，构建与测试依赖本地手动执行。
+
+> 原列表中的「站点为 private、线上渲染未验证」两项已在第 8 节解决。
+
+### 8. Day 1 收尾后补充（同日）
+
+#### 8.1 开放公开访问
+
+经用户明确授权后执行 `update_access_policy`（`mode: public` + `confirmPublic: true`，
+使用一次新鲜读取的 `accessRef` 与固定 `requestId`），返回
+`{"mode":"public","auth_integration_status":"not_required"}`。
+`get_publish_status` 中站点的 `access_mode` 同步变为 `public`。
+
+#### 8.2 线上匿名复验（真实执行）
+
+匿名访问 https://accessibility-lab-3g6uvbn5duq.qoder.zone 已不再出现登录页，实测：
+
+- 首页渲染正常：`h1=AccessLab`、3 张卡片、`开始体验 → #/contrast`；
+- 实验页全链路：初始 `4.48:1 未达` → 前景 `#000000` 得 `21.00:1 达到` →
+  背景同为 `#000000` 得 `1.00:1` → 重置恢复 `4.48:1`，预览 `getComputedStyle` 全程同步；
+- 控制台零消息（无 error / warning）；
+- 无障碍自检：landmark 各 1 个、标题层级 H1→H2→H3、`lang=zh-CN`、
+  导航 `aria-current="page"` 正确、卡片可交互元素数 `[1,0,0]`（无假按钮）。
+
+#### 8.3 线上验证发现并修复的真实缺陷：skip link 与 hash 路由冲突
+
+**现象**：在实验页激活「跳转到主要内容」，URL 由 `#/contrast` 变为 `#main`，
+路由把未知 hash 回退成 `home`，**用户被踢回首页**。
+对一个无障碍产品而言，这正是 AccessLab 要教的典型缺陷。
+
+**根因**：skip link 用 `href="#main"`，与自建 hash 路由抢占同一个 `location.hash`。
+
+**修复**：保留 `href` 以维持链接语义与无 JS 回退，在 `onClick` 中
+`preventDefault()` 并以 `getElementById('main').focus()` 手动移动焦点（`src/App.tsx`）。
+
+**验证**：重新构建（`index-BBSMVCdQ.js`）→ 单元测试 14/14 →
+以第三个 action `38f9fe06…` 复用同一 `projectId` 重新发布（`published: true`、`committed: true`）→
+线上实测激活 skip link 后 hash 仍为 `#/contrast`、`h1` 仍为「色彩对比度实验」、焦点落到 `main`。
+
+**排障记录**：首次复验时页面加载到缓存的旧 `index.html`（仍引用 `index-CRbJDy1g.js`），
+误判为「未修复」；加缓存绕过参数重新导航后才读到新产物。
+结论：`dist/assets/*` 有内容哈希、可长期缓存，但 **`index.html` 需要较短缓存 TTL**，
+否则每次重新发布后用户仍会拿到旧入口。这是 Day 2 需要留意的部署细节。
+
+#### 8.4 发布次数汇总
+
+同一 Project `01a1e498…` / Site `01a1e498…f0f6`，未创建重复站点，共 3 次发布：
+
+| action | 内容 | 原因 |
+| --- | --- | --- |
+| `b14f486c…` | 首版 | 首次创建并发布 |
+| `1abb0737…` | 修复卡片序号朗读 + StrictMode 首屏抢焦点 | 源码在发布后才修改，需重发 |
+| `38f9fe06…` | 修复 skip link 踢回首页 | 线上验证发现真实缺陷 |
+
