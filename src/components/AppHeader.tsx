@@ -5,6 +5,7 @@ import { ROUTE_HASH, type Route } from '../hooks/useHashRoute'
 const NAV_ITEMS: Array<{ route: Route; label: string }> = [
   { route: 'home', label: '首页' },
   { route: 'contrast-lab', label: '色彩对比度实验' },
+  { route: 'form-label-lab', label: '表单标签实验' },
 ]
 
 interface AppHeaderProps {

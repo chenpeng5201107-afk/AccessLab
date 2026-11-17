@@ -16,9 +16,10 @@ const EXPERIMENTS = [
   {
     index: 2,
     title: '表单标签无障碍实验',
-    summary: '看看少了标签的输入框，会让屏幕阅读器用户难以确认该填什么，容易填错或漏填。',
+    summary: '看看少了标签关联的输入框，会让屏幕阅读器用户难以确认该填什么，容易填错或漏填。',
     icon: TextCursorInput,
-    status: 'upcoming' as const,
+    status: 'available' as const,
+    href: ROUTE_HASH['form-label-lab'],
   },
   {
     index: 3,
@@ -166,7 +167,7 @@ export function HomePage() {
         <div className="max-w-2xl">
           <h2 className="text-2xl font-bold tracking-tight text-slate-900">三个实验方向</h2>
           <p className="mt-2 text-base leading-relaxed text-slate-700">
-            第一个已经可以玩。后两个还在开发，所以我们只放卡片，不放点了没反应的按钮。
+            前两个已经可以玩。最后一个还在开发，所以我们只放卡片，不放点了没反应的按钮。
           </p>
         </div>
 

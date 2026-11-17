@@ -8,10 +8,11 @@ describe('routeFromHash', () => {
     expect(routeFromHash('#')).toBe('home')
     expect(routeFromHash('#/')).toBe('home')
     expect(routeFromHash('#/contrast')).toBe('contrast-lab')
+    expect(routeFromHash('#/form-label')).toBe('form-label-lab')
   })
 
   it('每个路由自己的 hash 都能解析回该路由', () => {
-    const routes: Route[] = ['home', 'contrast-lab']
+    const routes: Route[] = ['home', 'contrast-lab', 'form-label-lab']
     for (const route of routes) {
       expect(routeFromHash(ROUTE_HASH[route])).toBe(route)
     }
@@ -42,10 +43,19 @@ describe('nextRoute（P1 回归：跳转主内容不得改变业务路由）', (
   it('路由之间的正常跳转仍然生效', () => {
     expect(nextRoute('home', ROUTE_HASH['contrast-lab'])).toBe('contrast-lab')
     expect(nextRoute('contrast-lab', ROUTE_HASH.home)).toBe('home')
+    expect(nextRoute('home', ROUTE_HASH['form-label-lab'])).toBe('form-label-lab')
+    expect(nextRoute('contrast-lab', ROUTE_HASH['form-label-lab'])).toBe('form-label-lab')
+    expect(nextRoute('form-label-lab', ROUTE_HASH['contrast-lab'])).toBe('contrast-lab')
+  })
+
+  it('表单实验页激活「跳转到主要内容」或区块锚点后仍停留在本页', () => {
+    expect(nextRoute('form-label-lab', '#main')).toBe('form-label-lab')
+    expect(nextRoute('form-label-lab', '#experiments')).toBe('form-label-lab')
   })
 
   it('未知 hash 不会把实验页重置为首页', () => {
     expect(nextRoute('contrast-lab', '#/typo')).toBe('contrast-lab')
+    expect(nextRoute('form-label-lab', '#/typo')).toBe('form-label-lab')
     expect(nextRoute('contrast-lab', '#')).toBe('home')
   })
 })

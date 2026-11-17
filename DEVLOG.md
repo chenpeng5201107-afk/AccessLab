@@ -871,3 +871,87 @@ operation `01a1e728-d9c4-7461-835b-dbac4f94d1ca` `state: succeeded`、`committed
 2. 320/390 真实像素溢出仍需人工目视（本会话无可见视口）。
 3. 复制成功分支、截图观感同前轮，仍受无手势 / 隐藏视口限制。
 4. **Day 1 + Day 2 + 本轮改动全部仍未提交 Git**（HEAD 仍 `34b77ec`），提交与推送需人工决定。
+
+---
+
+## 2026-11-17 · Day 3｜Day 2 正式结项 + 表单标签无障碍实验
+
+### 1. 阶段 A：Day 2 正式结项
+
+先读 `PRD.md` / `DEVLOG.md` / `PROJECT_STATUS.md` / `package.json` 与既有测试，确认 Day 2 功能已完整（对比度检测、自动配色、一键应用、撤销、前后对比、CSS 生成与复制、非法输入清除过期建议、键盘导航与 hash 路由），**未重新开发已完成功能**。
+
+- `npm test`（node v25.2.1，`export PATH="/d/Soft_Ware:$PATH"`）：**60/60 通过**，4 个算法/工作流文件 + 路由 + 组件接线层，无失败无跳过。
+- `npm run build`：`tsc -b` 严格模式通过，产物 `index.html 0.61 kB` + `index-Biknu-lx.js 258.27 kB`(gzip 80.60) + `index-CQTV__qT.css 24.54 kB`(gzip 5.63) —— 与 DEVLOG 上轮记录逐字节同名，说明源码与已验收构建一致。
+- `git status`：待提交 = Day 1/2 全部源码、测试、三份治理文档、`package-lock.json`。`.gitignore` 复核：`node_modules`、`dist`、`*.local`、`.env*`（仅放行 `.env.example`）、`coverage`、`.vite`、`*.tsbuildinfo`、调试日志、`.DS_Store` 均已忽略；仓库从初始提交起就未跟踪构建产物（`git ls-files dist` 为空），**无需为「是否跟踪 dist」改变既有约定**。
+- 提交前按用户要求暂停并展示清单 → 获确认后创建 **`943a3ac` `feat: complete accessibility contrast lab day2`**（21 files，+2029/−87）。**未推送远程，未改写任何既有历史**。
+
+Qoder Sites 发布（官方 `prepare_site` → `get_publish_status` → `publish_site` 链路）：
+
+- 复用既有 Project/Site（`01a1e498-…`），新 `actionId 0bf1a61d-…`，`webDirectory: dist`，`spa: true`。
+- 首次准备返回 `descriptorStatus: pending`，按恢复规则以**同一 action、完全相同输入**重试 `prepare_site`，从冻结 ZIP 恢复描述符 → `written`，未重复上传、未新建站点。
+- 发布成功：`readiness: publication_completed` / `published: true` / `artifactReady` / `dependenciesReady`。
+- **线上 = 本地**：把线上 `index.html` 与本地 `dist/index.html` 逐字节比较为 `identical`，入口确认为最新 `index-Biknu-lx.js`（未强行指定旧文件名）。
+- 公网权限实测：无痕上下文访问 `https://accessibility-lab-3g6uvbn5duq.qoder.zone/` → HTTP 200、`finalUrl` 未跳转、正文含「让每个人都能更轻松地使用互联网。」、`hasLoginGate: false`（无登录/口令元素）。线上色彩流程实测 `4.48 → 生成建议 → 应用 4.54 → 撤销回到 4.48`，与本地构建行为一致。
+
+### 2. 阶段 B：Day 3 表单标签实验（新增文件）
+
+| 文件 | 作用 |
+| --- | --- |
+| `src/lib/formLabelDemoFields.ts` | **新建**：字段 `id`（`student-name` / `student-email`）的单一来源 + 修复前后代码对比的数据源，保证「上方 DOM 的真实 id」与「第 5 块展示的代码」不会各说各话 |
+| `src/lib/formLabelAudit.ts` | **新建**：只读真实 DOM 的标签关联检测器（不读 React 状态） |
+| `src/pages/FormLabelLabPage.tsx` | **新建**：五段结构实验页（问题引入 / 真实表单 / 检测结果 / 修复与重验 / 代码对比） |
+| `src/lib/formLabelAudit.test.ts` | **新建**：13 条检测器测试 |
+| `src/pages/FormLabelLabPage.test.tsx` | **新建**：16 条组件 + 真实 DOM 测试 |
+
+路由与入口按「最小侵入」扩展，**未重构路由系统**：`useHashRoute.ts` 的 `Route` 联合类型加 `'form-label-lab'`、`ROUTE_HASH` 加 `'#/form-label'`、`HASH_TO_ROUTE` 加一条映射（`routeFromHash` / `nextRoute` 逻辑一字未动）；`App.tsx` 加页面标题 + 三元渲染分支；`AppHeader.tsx` 的 `NAV_ITEMS` 加一项；`HomePage.tsx` 第二张卡片由 `comingSoon` 改为 `available`（真实入口），第三张「键盘焦点实验」保持仅卡片、无假按钮。
+
+### 3. 检测器的两个关键区分
+
+1. **「缺少关联的可见标签」≠「完全没有可访问名称」**：前者看 `input.labels` 是否含可见文本（含包裹式祖先 label），后者按可访问名称计算顺序 label → aria-labelledby → aria-label → title → placeholder 逐级判断。结果页把两个结论拆成两枚独立徽标分别显示——姓名输入框在缺陷态是「缺少关联」但仍能从 placeholder 拿到名字，因此两条不会互相冒充。
+2. **只检查、不冒充全量合规**：只作用于示例表单内的文本录入控件（`button` / `checkbox` / `radio` 排除在第 1 块已声明）。第 3 块内「本实验检查什么、不检查什么」明确写出：全部通过只代表这几个控件有正确关联的可见标签，**不代表整个表单或整站符合 WCAG 2.2**，并展开列出未检查项（3.3.1 / 3.3.3 / 1.3.5 / 2.5.3 / 4.1.2 完整名称计算 / 键盘可达 / 真机朗读）。可见性判定只认 `hidden`、`aria-hidden`、行内 `display:none`、`sr-only` 约定，**不读盒模型尺寸**（jsdom `getBoundingClientRect` 恒为 0，若据此判可见会让检测器在测试环境全红而真实浏览器全绿），该边界已写进页面说明。
+
+修复按钮真正改变渲染状态（`<span>姓名</span>` → `<label htmlFor="student-name">姓名</label>`），检测在 `useEffect` 里对新生 DOM 重跑；`input` 始终是同一位置的同一元素，**已输入内容不被清掉**；「重置实验」可回到缺陷态。第 5 块代码由 `demoFormMarkup()` 用同一份字段配置生成（含真实 `id` / `for`），逐行比较 `before !== after` 得到高亮行，纯文本 `<span>` 渲染、无 `dangerouslySetInnerHTML`、不执行任何用户提供的 HTML/JS。
+
+### 4. 测试（真实执行，未删除也未放宽任何旧断言）
+
+`npm test` → **90/90 通过**（7 文件）：`colorRepair` 16 + `contrast` 15 + `repairWorkflow` 8 + `useHashRoute` 9 + **`formLabelAudit` 13** + `ContrastLabPage` 13 + **`FormLabelLabPage` 16**。Day 2 的 60 条在新增 Day 3 代码后**零回归**。
+
+- 检测器 13 条：用 `innerHTML` 现搭真实 DOM 验证真值表（显式 label / 包裹式 label / 空 label / 悬空 `for` / placeholder-only / `aria-label` 兜底 / `sr-only` / `display:none` / 无 id / null 作用域），并含「把同一个节点从 `label` 换成 `span`，结论立刻翻转」的节点级回归——证明结论来自 DOM，不是标志位。
+- 页面 16 条覆盖用户第 7 节的 12 项：初始缺陷态、检测结果与 DOM 一致、点修复后真实关联建立、`label.control === input`（点击标签的激活目标）、重跑后问题数由 2 归 0、已输入内容保留、重置回缺陷态、代码对比含真实 `id`/`for`、复制三态提示、无 `dangerouslySetInnerHTML`、演示表单不提交、仅一个 `aria-live` 播报区。
+- `useHashRoute` 由 8 → 9 条：新增 `#/form-label` 解析、表单页锚点不重置本页、未知 hash 不跳首页（**只加断言，旧断言原样保留**）。
+
+**jsdom 能力边界的实测取证**：先用一段 node 探针确认 jsdom 实现了 `input.labels` 与 `label.control`，但**不实现「点击 label 让控件获得焦点」**。因此页面测试只断言到 `label.control === input` 这一层，真实焦点转交给浏览器验证——不用 jsdom 的有限模拟冒充完整的辅助技术测试。同理，本页**不模拟、不伪造屏幕阅读器的语音输出**：页面文字只描述「读屏会拿到哪个名称来源」，实际朗读仍要求真机验证。
+
+开发中的真实失败与修正（不是掩盖）：① `tsc -b` 报 7 处 `TS2531/TS18047 Object is possibly 'null'`（TS 的 lib 里 `input.labels` 可空）→ 抽 `labelsOf()` helper 统一兜底；② 1 条组件测试 `expected +0 to be 1` —— 初始无提示时播报区尚未渲染，属**测试期望写错**，按「改测试断言、不改页面行为」修正为「初始 0 个 / 点重新检测后 `aria-live` 与 `role=status` 各 1 个」；③ 检测器首版 `controlId` 兜底表达式无意义、`referencedText` 双重非空断言 → 重写该文件。
+
+### 5. 真实浏览器取证（`npm run preview` → http://localhost:4176，即新 `dist/` 产物）
+
+`npm run build`：`tsc -b` 通过，2097 modules，`index.html 0.61 kB` + **`index-AFw0dV32.js` 282.01 kB**(gzip 86.55) + **`index-KGhPc1c7.css` 25.70 kB**(gzip 5.78)。产物名随 Day 3 代码变化，**未沿用它无法对应的旧文件名**。
+
+在真实 Chromium（CDP 驱动 DOM）上实测，全部为读取到的真实值：
+
+1. 缺陷态：姓名行第一个子节点 `tagName === "SPAN"`、`input.labels.length === 0`；检测结果条显示「检查 2 个文本录入控件，发现 **2** 项标签关联问题」。
+2. 点「修复标签关联」后：同一位置 `tagName === "LABEL"`、`htmlFor === "student-name"`、`input.labels.length === 1`、`label.control === input`；检测条变为「发现 **0** 项」。
+3. **点击标签真的聚焦输入框**：`label.click()` 之后 `document.activeElement === INPUT#student-name`。
+4. 无障碍树名称差异（浏览器计算出的 accessible name，不是我们的猜测）：缺陷态该控件为 `textbox "请输入姓名"`（来自 placeholder），修复后为 `textbox "姓名"`（来自关联 label）——这就是「看起来有名字」与「辅助技术知道名字」的差别。
+5. 「重置实验」回到 `SPAN` + 2 项问题；输入框在修复/重置过程中保持可编辑（快照 `editable="plaintext" settable focusable`）。
+6. 导航：首页三张卡片渲染正常、第二张为真实入口 `#/form-label`、第三张仍只展示；`#/form-label` 直接刷新、后退回首页、前进入表单页均正确；skip link 指向 `#main` 且不踢回首页。
+7. Day 2 回归：色彩实验 `4.48 → 生成建议 → 应用 4.54 → 撤销回 4.48` 全流程无异常。
+8. 控制台：整轮操作后 **无 error / 无 warning**。
+9. 复制按钮在真实浏览器无用户手势的环境下如实返回「复制失败，请手动选中右侧「修复后」代码复制。」——没有假装成功。
+
+### 6. 本环境无法验证、需人工确认的项
+
+内嵌浏览器**没有附加可见视口**（`window.innerWidth === 0`、`visibilityState === "hidden"`、所有 `clientWidth === 0`，`user.click` 报 `NATIVE_BROWSER_VIEWPORT_UNAVAILABLE`），因此：
+
+1. **320 / 390 横向溢出与 44px 触控目标**：溢出扫描产出 106 条假阳性（连 `html`/`body` 都被判溢出），数据不可用。结构上本页沿用 Day 2 已实测通过的同套栅格（`grid lg:grid-cols-[…]`、`min-w-0` + `overflow-x-auto`、全部控件 `min-h-11`、无 fixed/sticky 浮层），但**仍需人工窄屏目视**。
+2. **真实物理 Tab 焦点序列**：安装 `focusin` 录制器后连按 Tab，录制结果 `tabsRecorded: 0`、`activeElement` 停留在 `main` —— 页面未 attached，按键不驱动焦点遍历。同一问题两次尝试均失败，按约定停止重试并上报。可给的替代证据只有结构性的：本页可聚焦元素全部来自自然 DOM 顺序、无正值 `tabindex`、全局 `:focus-visible` 为 3px indigo 描边。
+3. **真机读屏**（NVDA / VoiceOver / TalkBack）实际朗读差异、焦点是否落在输入框、错误提示能否被听到。
+4. **真实指针点击 label** 与**复制成功分支**（需真实用户手势）。
+5. 视觉截图观感：本会话无法截图。
+
+### 7. Day 3 结项状态
+
+- Day 3 改动**尚未提交**（HEAD 仍 `943a3ac`，即 Day 2 稳定提交，天然构成回退点）；提交清单已展示给用户等确认，**未推送远程**。
+- **线上仍是 Day 2 构建** `index-Biknu-lx.js`，不含表单标签实验；Day 3 发布等用户授权后再执行（发布前保留 `943a3ac` 重建回退 + 旧 action 历史记录两条退路）。
+

@@ -3,11 +3,13 @@ import { useEffect, useRef } from 'react'
 import { AppHeader } from './components/AppHeader'
 import { useHashRoute, type Route } from './hooks/useHashRoute'
 import { ContrastLabPage } from './pages/ContrastLabPage'
+import { FormLabelLabPage } from './pages/FormLabelLabPage'
 import { HomePage } from './pages/HomePage'
 
 const PAGE_TITLES: Record<Route, string> = {
   home: 'AccessLab｜无障碍实验室',
   'contrast-lab': '色彩对比度实验｜AccessLab 无障碍实验室',
+  'form-label-lab': '表单标签实验｜AccessLab 无障碍实验室',
 }
 
 export default function App() {
@@ -41,7 +43,13 @@ export default function App() {
       <AppHeader currentRoute={route} />
 
       <main id="main" ref={mainRef} tabIndex={-1} className="grow outline-none">
-        {route === 'contrast-lab' ? <ContrastLabPage /> : <HomePage />}
+        {route === 'contrast-lab' ? (
+          <ContrastLabPage />
+        ) : route === 'form-label-lab' ? (
+          <FormLabelLabPage />
+        ) : (
+          <HomePage />
+        )}
       </main>
 
       <footer className="border-t border-slate-200 bg-white">
