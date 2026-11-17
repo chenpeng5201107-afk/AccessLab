@@ -958,3 +958,68 @@ Qoder Sites 发布（官方 `prepare_site` → `get_publish_status` → `publish
 - 有意未纳入提交：`.AccessLab 无障碍实验室.qoder.site` 的 `publication` 块（Sites 工具写入的云端 Project/Site/Deployment/Release ID + base64 冻结 `index.html`）。
   本仓库自初始提交起不跟踪构建产物（`dist/` 已忽略、`git ls-files dist` 为空），该字段属于构建快照与工具私有状态，经用户确认保持未提交。
 
+## 2026-11-17 · Day 3 复核轮：窄屏 / 键盘真实取证与发布前核对
+
+本轮**没有新增功能、没有改动任何源码**，只做两件事：把上一轮记为「本环境不可测」的窄屏与键盘取证补成真实数据，以及在发布 Day 3 之前重新确认线上 / 本地产物的差异。全部结论来自真实执行，未采信文档旧值。
+
+### 1. 开工前状态核对（重跑，不采信 PROJECT_STATUS 的旧记录）
+
+- `git log`：`943a3ac`（Day 2 结项）→ `737ceb7`（Day 3 表单实验）→ `7067ec4`（Day 3 治理文档回填）均已在库，HEAD = `7067ec4`，未推送远程。
+- `git status`：工作区唯一改动仍是 `.AccessLab 无障碍实验室.qoder.site` 的 `publication` 块（+32/−1），按既有约定保持不入库；`src/` 无任何未提交改动，因此**本轮构建对应 HEAD 源码**。
+- `npm test`（node v25.2.1，`export PATH="/d/Soft_Ware:$PATH"`）：**90/90 通过**，7 个文件，18.24s
+  （`contrast` 15 / `colorRepair` 16 / `repairWorkflow` 8 / `useHashRoute` 9 / `formLabelAudit` 13 / `ContrastLabPage` 13 / `FormLabelLabPage` 16）。
+- `npm run build`：`tsc -b` + 2097 modules → `index.html 0.61 kB` + `index-AFw0dV32.js 282.01 kB` + `index-KGhPc1c7.css 25.70 kB`，产物名与上轮记录同名（282019 / 25707 字节），**源码与已验收构建一致**。
+
+### 2. 线上与本地差异核对（curl，无 Cookie、无登录）
+
+| 检查 | 结果 |
+| --- | --- |
+| `GET /` | HTTP 200，57655 B |
+| 线上 `index.html` 资源引用 | `index-Biknu-lx.js` + `index-CQTV__qT.css`（Day 2 产物） |
+| 线上 JS 体积 | 258270 B（= Day 2 的 258.27 kB），内含「对比度」，**不含** `student-name`，**不含** `#/form-label` |
+| 本地 `dist/index.html` 引用 | `index-AFw0dV32.js` + `index-KGhPc1c7.css`，其中 `student-name` 与 `#/form-label` 均命中 |
+| `GET /assets/index-AFw0dV32.js`（线上） | **404** —— Day 3 确实尚未发布 |
+
+订正一条旧记录：上一轮 DEVLOG 写「线上 `index.html` 与本地逐字节 `identical`」并不准确。
+实测是「本地 613 B 产物 + 平台注入的 `data-qoder-watermark` 脚本 ≈ 57.6 kB」，
+逐字节一致的部分是 `<head>`（含两个资源引用）与 `<body>` 里的 `<div id="root">`；水印脚本是平台行为，不是本项目的构建差异。
+
+### 3. 真实浏览器复核（`npm run preview --port 4173 --strictPort`，Chromium）
+
+只读取真实值，不写结论：
+
+| 步骤 | 浏览器里读到的 |
+| --- | --- |
+| 缺陷态 | 姓名行子节点 `["SPAN","INPUT"]`、`input.labels.length === 0`、结果条「检查 2 个文本录入控件，发现 **2** 项」 |
+| 点「修复标签关联」 | 同一位置 `LABEL`、`htmlFor === "student-name"`、`labels.length === 1`、`label.control === input`、结果条「发现 **0** 项」，修复按钮被「标签关联已修复」状态取代 |
+| 点 label | `label.click()` 后 `document.activeElement === INPUT#student-name`（`reachedInput: true`） |
+| 无障碍树名称 | 缺陷态 `textbox "请输入姓名"`（placeholder）→ 修复态 `textbox "姓名"`（关联 label）；两次都由 `take_snapshot` 读自浏览器 a11y 树，不是页面文案 |
+| 输入保持 | 已输入的「张三（测试用，非真实信息）」在修复与重置两次 DOM 变更后都仍在，`editable="plaintext" settable focusable` |
+| 重置 | `LABEL → SPAN`、`labels 1 → 0`、结果条回到「发现 2 项」 |
+| 复制 | `navigator.clipboard` 存在但无用户手势 → 如实显示「复制失败，请手动选中右侧「修复后」代码复制。」，未谎报成功 |
+| 播报区 | 全页 `[aria-live]` 计数 = **1** |
+| Day 2 回归 | 色彩实验 `4.48 → 生成修复建议（出现 4.54）→ 应用该修复 → 撤销本次修复 → 4.48`，按钮文案随状态机切换正确 |
+| 首页与导航 | 卡片 01 / 02 分别指向 `#/contrast` / `#/form-label`（均「可体验 · 进入实验」），卡片 03「键盘焦点实验」`href === null` 且显示「即将开放」；导航三条链接齐全 |
+| 深链刷新 | `#/form-label` 重新加载后 `title` / `h1` 均为表单标签实验 |
+| 控制台 | 整轮操作后 `list_console_messages` **无任何条目**（无 error / warn） |
+
+### 4. 本轮新关闭的遗留项
+
+上一轮 §6 里被环境阻断的两项，本轮视口已 attached（`innerWidth === 633`，`visibilityState === "hidden"`），实测拿到数据：
+
+1. **320 / 390 横向溢出**（遗留 #3）：用同源 iframe 强制窄视口，对 `#/form-label`、`#/contrast`、`#/` 做真实布局测量。
+   `documentElement.clientWidth` 分别为 305（320 扣滚动条）与 375，`scrollWidth` **恒等于** `clientWidth`，
+   即**无横向溢出**；`code` 块的 `overflow-x-auto` 生效。全页唯一被标记「超出视口」的是 sr-only skip link（`left: -1`，来自 `-1px` 负 margin，不构成滚动）。
+2. **44px 触控目标**（同上）：三页里唯一低于 44px 的可交互元素是 sr-only「跳转到主要内容」（未聚焦时 32×16 且被裁剪，本就不是指点目标；聚焦后恢复为正常按钮）。其余 10–13 个 `a / button / input` 全部 ≥ 44px。
+3. **真实物理 Tab 序列**（遗留 #4）：本轮 `press_key Tab` **能够驱动焦点遍历**（上轮 `tabsRecorded: 0` 的阻断已解除）。
+   实测前 5 站：skip link → 站点 logo → 首页 → 色彩对比度实验 → 表单标签实验；每个焦点元素计算样式为 `outline: solid 3px indigo / offset 2px`，焦点可见性成立。
+   结构性补强：全页 `positiveTabindex` 为空 → 焦点顺序即 DOM 顺序；`domOrderTabbables` 依次为 skip link、logo、三条导航、返回首页、`#student-name`、`#student-email`、提交、重新检测、`<summary>`、修复、重置、复制。
+   诚实说明两点局限：只逐步走到第 5 站（未逐个按完 14 站）；本轮 `back / forward` 证据被我自己创建的窄屏 iframe 污染了联合会话历史，故后/退一致性仍以 9 条路由单测 + 上面的深链刷新实测为准。
+
+仍未解决：**视觉截图**依旧失败（`NATIVE_BROWSER_VIEWPORT_UNAVAILABLE`，`visible=false`），真机读屏、真实指针点击 label、复制成功分支依旧需要人工。
+
+### 5. 本轮结论与状态
+
+- 源码零改动，`npm test` 90/90、`npm run build` 通过、Day 1 / Day 2 零回归，`dist/` = HEAD 源码的构建产物，具备发布条件。
+- 按用户要求：**发布前需授权**。回退手段保留：`943a3ac` 可重建 Day 2 同哈希产物（线上 `index-Biknu-lx.js` 即该版本），旧 action `0bf1a61d…` 的历史发布仍在平台。
+
