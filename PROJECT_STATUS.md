@@ -1,7 +1,7 @@
 # AccessLab 项目状态
 
-> 最后更新：2026-11-17（**Day 3 复核轮**：Day 2 / Day 3 源码均已提交（`943a3ac` / `737ceb7`，HEAD = `7067ec4`），本轮零源码改动，重跑 `npm test` **90/90**、`npm run build` 通过，
-> 并把上一轮记为「本环境不可测」的 **320/390 横向溢出**与**真实物理 Tab**补成实测数据；线上经 curl 核对仍是 Day 2 产物（Day 3 资源 404），**Day 3 发布待用户授权**）
+> 最后更新：2026-11-17（**Day 3 已发布到公网**：复核轮重跑 `npm test` **90/90**、`npm run build` 通过，320/390 溢出与物理 Tab 两项遗留补成实测；
+> 治理文档提交 `11a43bd` 后，经用户授权以新 action `15adaa32-…` 发布 `dist/`（入口 `index-AFw0dV32.js`），`published: true` / `access_mode: public`，线上 JS 与本地 `cmp` 逐字节一致，公网表单实验与色彩实验均实测通过）
 
 ## 1. 当前阶段
 
@@ -68,11 +68,25 @@ Day 1 / Day 2 的页面与算法未被改动，`npm test` 中原有 60 条**零�
 
 > 记录订正：上一轮 DEVLOG 的「线上 `index.html` 与本地逐字节 identical」不够准确 —— 实为「本地 613 B 产物 + 平台注入的 `data-qoder-watermark` 脚本 ≈ 57.6 kB」，逐字节一致的是 `<head>`（含两个资源引用）与 `<div id="root">`。
 
+### 2.4 Day 3 公网发布（本轮，经用户授权）
+
+| 项 | 状态 | 证据 |
+| --- | --- | --- |
+| 发布前提交 | ✅ `11a43bd` | `docs: record day3 re-verification evidence before publication`（2 files，+92/−8），仅治理文档；`.qoder.site` 仍不入库；未推送远程 |
+| `prepare_site` | ✅ `descriptorStatus: written` | 新 action `15adaa32-567d-4110-aa49-4f921fd56773`、`webDirectory: dist`、`spa: true`、同 `projectId`；首返 `pending` → 就绪后同 action 同输入重试恢复描述符，未重复上传 |
+| `publish_site` | ✅ **`published: true`** | `publishOperationId 01a1e8ad-a1b2-…`、`operation.state: succeeded`、`committed: true`、`readiness: publication_completed` |
+| 访问权限 | ✅ `access_mode: public` | `auth_integration_status: not_required`；匿名 curl 200 且响应头无 `Set-Cookie` / `Location` / `WWW-Authenticate` |
+| 线上 = 本地 | ✅ 逐字节 | 线上 `index-AFw0dV32.js` 282019 B 与本地 `dist/` 同名文件 `cmp` 一致；`index.html` 已无 Day 2 的 `Biknu` 引用 |
+| 公网功能实测 | ✅ 通过 | 真实浏览器：表单实验 `SPAN`/`labels 0`/2 项 → `LABEL`/`htmlFor`/`labels 1`/0 项，`label.click()` 聚焦输入框；色彩实验 `4.48 → 4.54 → 撤销 4.48`；控制台无消息 |
+| 产物卫生 | ✅ 通过 | `dist/` 无 `.map`、无 `VITE_*`、无 `.env`、无数据文件 |
+| 回退手段 | ⚠️ 已订正认知 | 历史 Day 2 action **不能**重新变当前版本；回退须 `git checkout 943a3ac` → `npm run build` → 新 action 发布 |
+| 无痕浏览器人工确认 | ⛔ 待人工 | 本轮是无 Cookie 的 curl + 真实 Chromium，不等于评委设备上的无痕浏览器目视 |
+
 ## 3. 链接与命令
 
-- 站点地址：https://accessibility-lab-3g6uvbn5duq.qoder.zone （公开可访问，实测无登录门；**当前线上为 Day 2 构建 `index-Biknu-lx.js`，不含 Day 3 表单实验**；Day 3 待发产物 = `dist/`，入口 `index-AFw0dV32.js`）
+- 站点地址：https://accessibility-lab-3g6uvbn5duq.qoder.zone （**公开可访问，线上已是 Day 3 构建 `index-AFw0dV32.js`，含表单标签实验**；旧 Day 2 资源 `index-Biknu-lx.js` 已 404）
 - 本地开发：`npm run dev` ｜ 预览产物：`npm run preview` ｜ 测试：`npm test` ｜ 构建：`npm run build` → `dist/`
-- 仓库状态：HEAD = **`7067ec4` `docs: record day3 commit hash and deferred publication`**；Day 3 功能提交 = `737ceb7`，其父 `943a3ac`（Day 2 稳定版）即**回退点**。均未推送远程。
+- 仓库状态：HEAD = **`11a43bd` `docs: record day3 re-verification evidence before publication`**；`737ceb7`（Day 3 功能）与 `943a3ac`（Day 2 稳定版）在历史中，均未推送远程、未改写历史。
   唯一有意保留的未提交改动是 `.AccessLab 无障碍实验室.qoder.site` 的 `publication` 块（Sites 工具写入的云端 ID + base64 冻结 `index.html`，与「不跟踪构建产物」的既有约定冲突，经用户确认不入库）。
 - 环境提醒：`node` 不在系统 PATH，会话内需 `export PATH="/d/Soft_Ware:$PATH"`（node v25.2.1 / npm 11.6.2，测试与构建实测正常）。
 
@@ -81,7 +95,7 @@ Day 1 / Day 2 的页面与算法未被改动，`npm test` 中原有 60 条**零�
 | # | 问题 | 影响 | 建议处理 |
 | --- | --- | --- | --- |
 | 1 | ~~Day 3 改动未提交~~ ✅ 已提交 `737ceb7`（经用户确认，不含 `.qoder.site` 描述符） | — | 如需推送远程由人工决定 |
-| 2 | **Day 3 未发布**（复核已通过，按约定等用户授权后才上线），线上仍是 Day 2 版本 | 评委暂时访问不到表单实验 | 授权后按官方工作流发布当前 `dist/`（入口 `index-AFw0dV32.js`）；回退手段：`943a3ac` 可重建 Day 2 同哈希产物 + 旧 action `0bf1a61d…` 的历史发布仍在平台 |
+| 2 | ~~Day 3 未发布~~ ✅ **已发布**（新 action `15adaa32-…`，`published: true`，线上 JS 与本地 `cmp` 逐字节一致） | — | 无痕浏览器 / 评委设备目视仍由人工确认；回退请用「`git checkout 943a3ac` → `npm run build` → 新 action 发布」，不要指望重复 `publish_site` 旧 action 能让 Day 2 重新上线 |
 | 3 | ~~320 / 390 横向溢出与 44px 触控目标在本环境不可测~~ ✅ **本轮已实测通过** | — | 同源 iframe 窄视口：`scrollWidth === clientWidth`（305 / 375），三页无横向溢出；仅 sr-only skip link 高度 < 44px（非指点目标）。真机观感仍可由人工目视复核 |
 | 4 | ~~真实物理 Tab 焦点序列未取到证据~~ ✅ **本轮已可用并取证**（部分） | 只逐步走到第 5 站，未逐个按完 14 站 | `press_key Tab` 已能驱动遍历：前 5 站顺序正确、焦点样式 `3px indigo outline / offset 2px`、全页无正值 `tabindex`（顺序 = DOM 顺序）。剩余站点建议人工按完一遍 |
 | 5 | 真机读屏（NVDA / VoiceOver / TalkBack）未验证；复制成功分支需真实手势 | 「实际朗读」与「复制成功」文案未被真眼真耳确认 | 人工用读屏对比缺陷态/修复态朗读，并各点一次复制按钮 |
@@ -93,7 +107,7 @@ Day 1 / Day 2 的页面与算法未被改动，`npm test` 中原有 60 条**零�
 
 ## 5. 下一阶段（Day 4）任务建议
 
-1. 发布 Day 3（只剩遗留 #2：授权后走官方工作流上线 `index-AFw0dV32.js`），让人人有公网链接可玩到表单实验；提交部分已完成（`737ceb7` / `7067ec4`）。
+1. 公网链接已含 Day 3，先把评委反馈（窄屏观感、读屏朗读、复制成功分支）收一轮并写回本文档；如需展示报告，仍走「前端汇总 + 可复制摘要」，不引入后端。
 2. 人工补齐遗留 #5（真机读屏的实际朗读、真实指针点击 label、复制成功分支）与 #4 剩余站点的目视复核，把结论写回本文档（哪些已过、哪些仍需改）。#3 已由本轮实测关闭。
 3. 键盘焦点实验（`#/keyboard`）：复用 `formLabelAudit` 的「只读真实 DOM」模式做焦点顺序 / 焦点可见 / trap 检测。
 4. 视需要补大文本 AA 3:1（仍属 1.4.3，勿与 1.4.6 AAA 混称）。

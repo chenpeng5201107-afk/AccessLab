@@ -1023,3 +1023,35 @@ Qoder Sites 发布（官方 `prepare_site` → `get_publish_status` → `publish
 - 源码零改动，`npm test` 90/90、`npm run build` 通过、Day 1 / Day 2 零回归，`dist/` = HEAD 源码的构建产物，具备发布条件。
 - 按用户要求：**发布前需授权**。回退手段保留：`943a3ac` 可重建 Day 2 同哈希产物（线上 `index-Biknu-lx.js` 即该版本），旧 action `0bf1a61d…` 的历史发布仍在平台。
 
+### 6. Day 3 正式发布（用户授权后，官方工作流实测）
+
+治理文档更新先落地为 **`11a43bd` `docs: record day3 re-verification evidence before publication`**（2 files，+92/−8；`.qoder.site` 仍未入库；**未推送远程**）。
+
+发布链路（Desktop，`filePreview: true`）：
+
+1. `get_context` → 确认目录绑定 `projectId 01a1e498-acb7-…` / `siteId 01a1e498-acba-…`，旧 action 仍是 Day 2 的 `0bf1a61d…`；内容已变 → **新 action**。
+2. `prepare_site`（新 `actionId 15adaa32-567d-4110-aa49-4f921fd56773`、`webDirectory: dist`、`spa: true`、同 `projectId`）→ 首次返回 `descriptorStatus: pending`；
+   按恢复规则读 `get_publish_status` 确认 `preparation.state: ready` / `canPublish: true` / `blockers: []`，再以**同一 action、完全相同输入**重试 → `descriptorStatus: written`（未重复上传、未新建站点）。
+3. `publish_site` 一次 → `publishOperationId 01a1e8ad-a1b2-…`；`get_publish_status` → **`published: true`**、`operation.state: succeeded`、`committed: true`、`readiness: publication_completed`、`access_mode: public`、`auth_integration_status: not_required`。
+
+发布前产物卫生检查：`dist/` 只有 `index.html` + 2 个 asset，**无 `.map`、无 `VITE_*` 残留**、无 `.env`、无数据文件。
+
+公网实测（curl 无 Cookie + 真实浏览器）：
+
+| 检查 | 结果 |
+| --- | --- |
+| `GET /` | 200，`index.html` 现引用 `index-AFw0dV32.js` + `index-KGhPc1c7.css`，已无 `Biknu` 字样 |
+| Day 3 JS | 200 / 282019 B，含 `student-name` 与 `#/form-label`，且 `cmp` 与本地 `dist/assets/index-AFw0dV32.js` **逐字节一致** |
+| Day 2 JS `index-Biknu-lx.js` | **404** —— 线上内容已整体替换，旧资源不再可直连 |
+| 免登录 | 响应头无 `Set-Cookie` / `Location` / `WWW-Authenticate`，匿名 200 |
+| 线上表单实验 | 缺陷态 `SPAN` / `labels 0` / 「发现 2 项」→ 点修复 `LABEL` / `htmlFor="student-name"` / `labels 1` / `label.control === input` / 「发现 **0** 项」；`label.click()` 后 `activeElement === INPUT#student-name` |
+| 线上色彩实验 | `4.48 → 生成修复建议 → 应用该修复（4.54）→ 撤销本次修复 → 4.48` |
+| 线上导航 | 卡片链接 `#/` `#/contrast` `#/form-label` 齐备 |
+| 控制台 | 公网整轮操作后 `list_console_messages` 无条目 |
+
+**回退手段订正（重要）**：历史 action（`0bf1a61d…`，Day 2）在平台上是 `publication_completed` + `published: false`，按平台规则**重复 `publish_site` 只会返回它的既有结果，不能重新变为当前版本**。
+所以回退的正确路径是「用旧源码重建 + 发布新 action」：`git checkout 943a3ac` → `npm run build`（应重新产出 `index-Biknu-lx.js`）→ 以新 `actionId` 走 `prepare_site` → `publish_site`。
+Git 历史未改写、未推送远程，`11a43bd` 与 `737ceb7` 均可回退。
+
+**仍未由工具证明的**：无痕浏览器人工目视（本轮是无 Cookie 的 curl + 真实 Chromium，非评委设备）、真机读屏实际朗读、真实指针点击 label 与复制成功分支、320/390 真机观感。
+
