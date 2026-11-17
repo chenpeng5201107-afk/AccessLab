@@ -1,5 +1,10 @@
 @import 'tailwindcss';
 
+/* 自动内容扫描会把文档与测试里的单词当成 class 候选（例如测试里的变量名 container
+   会凭空生成 .container 工具类），导致产物 CSS 随无关文字变化、发布哈希漂移。 */
+@source not "../**/*.md";
+@source not "../**/*.{test,spec}.{ts,tsx}";
+
 @theme {
   --font-sans:
     'Segoe UI', system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC',

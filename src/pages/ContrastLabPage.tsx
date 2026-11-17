@@ -1,5 +1,14 @@
-import { useState } from 'react'
-import { CircleAlert, CircleCheckBig, Info, RotateCcw } from 'lucide-react'
+import { useCallback, useReducer, useState } from 'react'
+import {
+  Check,
+  CircleAlert,
+  CircleCheckBig,
+  Copy,
+  Info,
+  RotateCcw,
+  Undo2,
+  WandSparkles,
+} from 'lucide-react'
 
 import { ColorControl } from '../components/ColorControl'
 import { ROUTE_HASH } from '../hooks/useHashRoute'
@@ -9,6 +18,8 @@ import {
   formatContrastRatio,
   meetsAaNormalText,
 } from '../lib/contrast'
+import { buildAfterCss, buildRepairCss } from '../lib/colorRepair'
+import { initialRepairState, repairReducer } from '../lib/repairWorkflow'
 
 const DEFAULT_TEXT_COLOR = '#777777'
 const DEFAULT_BACKGROUND_COLOR = '#ffffff'
@@ -16,12 +27,79 @@ const DEFAULT_BACKGROUND_COLOR = '#ffffff'
 /** 输入框里的值非法时，预览与检测用的仍是上一次有效配色，必须说清楚，不能让绿灯看起来像新配色的结论 */
 const STALE_RESULT_NOTICE = '当前颜色输入无效，检测结果仍基于上一次有效配色。'
 
+/** 修复前后对比区使用的同一句示例文字：两侧只有文字颜色不同 */
+const SAMPLE_TEXT = '图书馆提醒：你有一本《WCAG 实战》已逾期，请尽快归还。'
+
+function AaBadge({ textColor, backgroundColor }: { textColor: string; backgroundColor: string }) {
+  const ratio = contrastRatioFromHex(textColor, backgroundColor)
+  const passes = ratio !== null && meetsAaNormalText(ratio)
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-sm font-semibold ring-1 ring-inset ${
+        passes ? 'bg-emerald-50 text-emerald-900 ring-emerald-700/30' : 'bg-red-50 text-red-900 ring-red-700/30'
+      }`}
+    >
+      {passes ? (
+        <CircleCheckBig className="size-4 shrink-0" aria-hidden="true" />
+      ) : (
+        <CircleAlert className="size-4 shrink-0" aria-hidden="true" />
+      )}
+      <span className="font-mono tabular-nums">{ratio === null ? '—' : formatContrastRatio(ratio)}</span>
+      <span>{passes ? '达到 AA' : '未达 AA'}</span>
+    </span>
+  )
+}
+
+/** 对比区里的一栏：同一句示例文字、同一背景，只有文字颜色随方案改变 */
+function CompareColumn({
+  heading,
+  headingId,
+  textColor,
+  backgroundColor,
+  sample,
+}: {
+  heading: string
+  headingId: string
+  textColor: string
+  backgroundColor: string
+  sample: string
+}) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
+      <h4 id={headingId} className="text-sm font-semibold text-slate-900">
+        {heading}
+      </h4>
+      <div
+        className="mt-3 rounded-lg border border-slate-300 p-4 text-sm leading-relaxed"
+        style={{ backgroundColor, color: textColor }}
+      >
+        {sample}
+      </div>
+      <dl className="mt-3 space-y-1 text-xs text-slate-700">
+        <div className="flex justify-between gap-2">
+          <dt className="text-slate-600">文字颜色</dt>
+          <dd className="font-mono uppercase">{textColor}</dd>
+        </div>
+        <div className="flex justify-between gap-2">
+          <dt className="text-slate-600">背景颜色</dt>
+          <dd className="font-mono uppercase">{backgroundColor}</dd>
+        </div>
+      </dl>
+      <div className="mt-2">
+        <AaBadge textColor={textColor} backgroundColor={backgroundColor} />
+      </div>
+    </div>
+  )
+}
+
 export function ContrastLabPage() {
   const [textColor, setTextColor] = useState(DEFAULT_TEXT_COLOR)
   const [backgroundColor, setBackgroundColor] = useState(DEFAULT_BACKGROUND_COLOR)
   const [textValid, setTextValid] = useState(true)
   const [backgroundValid, setBackgroundValid] = useState(true)
   const [resetSignal, setResetSignal] = useState(0)
+  const [repair, dispatchRepair] = useReducer(repairReducer, initialRepairState)
+  const [notice, setNotice] = useState<string | null>(null)
 
   const ratio = contrastRatioFromHex(textColor, backgroundColor)
   const passes = ratio !== null && meetsAaNormalText(ratio)
@@ -29,11 +107,108 @@ export function ContrastLabPage() {
   const isDefault =
     textColor === DEFAULT_TEXT_COLOR && backgroundColor === DEFAULT_BACKGROUND_COLOR
 
+  // 手动改色 / 重置都会让旧修复结论过期：清建议、清快照，并清掉上一次的操作反馈
+  const handleTextColorChange = (hex: string) => {
+    setTextColor(hex)
+    dispatchRepair({ type: 'color-changed' })
+    setNotice(null)
+  }
+  const handleBackgroundColorChange = (hex: string) => {
+    setBackgroundColor(hex)
+    dispatchRepair({ type: 'color-changed' })
+    setNotice(null)
+  }
+
   const handleReset = () => {
     setTextColor(DEFAULT_TEXT_COLOR)
     setBackgroundColor(DEFAULT_BACKGROUND_COLOR)
     setResetSignal((signal) => signal + 1)
+    dispatchRepair({ type: 'color-changed' })
+    setNotice(null)
   }
+
+  // 非法草稿不会走 onChange 提交，父组件收不到改色事件；所以有效性一旦翻成非法，
+  // 这里要主动通知修复工作流清掉旧建议 / 快照，杜绝「修复已暂停」却仍展示过期结论。
+  // 恢复合法时不重新生成：dispatch 只在非法时发生，旧建议不会自动复活，需用户手动再点。
+  // 两个回调都用 useCallback 保持引用稳定，避免 ColorControl 里的 [invalid, onValidityChange] effect 每次渲染都重跑。
+  const handleTextValidity = useCallback((isValid: boolean) => {
+    setTextValid(isValid)
+    if (!isValid) dispatchRepair({ type: 'color-changed' })
+  }, [])
+  const handleBackgroundValidity = useCallback((isValid: boolean) => {
+    setBackgroundValid(isValid)
+    if (!isValid) dispatchRepair({ type: 'color-changed' })
+  }, [])
+
+  const handleGenerate = () => {
+    if (hasInvalidInput) return
+    dispatchRepair({ type: 'generate', textColor, backgroundColor })
+    setNotice(null)
+  }
+
+  const suggestion = repair.suggestion
+  const canApply =
+    repair.phase === 'suggested' && !hasInvalidInput && !!suggestion?.suggestedTextColor
+
+  const handleApply = () => {
+    if (!canApply || !suggestion?.suggestedTextColor) return
+    setTextColor(suggestion.suggestedTextColor)
+    dispatchRepair({ type: 'apply' })
+    setNotice(
+      `已应用修复：文字颜色改为 ${suggestion.suggestedTextColor}，对比度提升至 ${formatContrastRatio(
+        suggestion.afterRatio ?? 0,
+      )}。背景颜色未改变。`,
+    )
+  }
+
+  const handleUndo = () => {
+    if (repair.phase !== 'applied' || !repair.snapshot) return
+    setTextColor(repair.snapshot.beforeTextColor)
+    dispatchRepair({ type: 'undo' })
+    setNotice(`已撤销本次修复，文字颜色恢复为 ${repair.snapshot.beforeTextColor}。`)
+  }
+
+  // 对比区与 CSS 区的数据：已应用取快照，未应用取建议；背景两侧始终相同
+  const snapshot = repair.snapshot
+  const afterColor =
+    repair.phase === 'applied'
+      ? snapshot?.afterTextColor ?? null
+      : suggestion?.suggestedTextColor ?? null
+  const beforeColor =
+    repair.phase === 'applied'
+      ? snapshot?.beforeTextColor ?? null
+      : suggestion?.originalTextColor ?? null
+  const applied = repair.phase === 'applied'
+  // 非法输入期间一律不出前后对比 / CSS / 复制：既靠上面的状态失效兜底，也在渲染处再挡一层，
+  // 保证「修复已暂停」时绝不残留可操作的过期产物
+  const showRepairOutput = !hasInvalidInput && afterColor !== null && beforeColor !== null
+
+  const handleCopy = async () => {
+    if (hasInvalidInput || !afterColor) return
+    const css = buildAfterCss(afterColor, backgroundColor)
+    if (!navigator.clipboard?.writeText) {
+      setNotice('当前浏览器不支持自动复制，请手动选中下方 CSS 代码复制。')
+      return
+    }
+    try {
+      await navigator.clipboard.writeText(css)
+      setNotice('已复制修复后的 CSS 代码。')
+    } catch {
+      setNotice('复制失败，请手动选中下方 CSS 代码复制。')
+    }
+  }
+
+  const cssPreview =
+    showRepairOutput && afterColor && beforeColor
+      ? buildRepairCss({
+          beforeTextColor: beforeColor,
+          beforeBackgroundColor: backgroundColor,
+          afterTextColor: afterColor,
+          afterBackgroundColor: backgroundColor,
+          applied,
+        })
+      : null
+
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-12">
@@ -67,15 +242,15 @@ export function ContrastLabPage() {
             <ColorControl
               label="文字颜色"
               value={textColor}
-              onChange={setTextColor}
-              onValidityChange={setTextValid}
+              onChange={handleTextColorChange}
+              onValidityChange={handleTextValidity}
               resetSignal={resetSignal}
             />
             <ColorControl
               label="背景颜色"
               value={backgroundColor}
-              onChange={setBackgroundColor}
-              onValidityChange={setBackgroundValid}
+              onChange={handleBackgroundColorChange}
+              onValidityChange={handleBackgroundValidity}
               resetSignal={resetSignal}
             />
           </div>
@@ -237,6 +412,171 @@ export function ContrastLabPage() {
           </section>
         </div>
       </div>
+
+      <section
+        aria-labelledby="repair-heading"
+        className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+      >
+        <h2 id="repair-heading" className="text-lg font-semibold tracking-tight text-slate-900">
+          4. 智能修复建议
+        </h2>
+        <p className="mt-1 text-sm leading-relaxed text-slate-600">
+          当配色未达普通文本 AA 时，可生成一个把文字色朝纯黑或纯白微调、尽量减小改动、
+          并用真实 WCAG 计算复核达标后的建议色。<strong>只调整文字颜色，背景保持你选的颜色。</strong>
+          这是确定性算法，不是全局最优、也不保证人眼感知差异最小。
+        </p>
+
+        {hasInvalidInput ? (
+          <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900 ring-1 ring-inset ring-amber-700/30">
+            存在无效颜色，修复功能已暂停。请先修正上方的颜色输入，再使用修复。
+          </p>
+        ) : null}
+
+        {!hasInvalidInput && passes ? (
+          <p className="mt-4 inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-900 ring-1 ring-inset ring-emerald-700/30">
+            <CircleCheckBig className="size-5 shrink-0" aria-hidden="true" />
+            当前配色已达到普通文本 AA，无需修复。
+          </p>
+        ) : null}
+
+        {!hasInvalidInput && !passes && repair.phase === 'idle' ? (
+          <button
+            type="button"
+            onClick={handleGenerate}
+            className="mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-indigo-700 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-800"
+          >
+            <WandSparkles className="size-4" aria-hidden="true" />
+            生成修复建议
+          </button>
+        ) : null}
+
+        {repair.phase === 'suggested' && suggestion?.suggestedTextColor && !hasInvalidInput ? (
+          <div className="mt-4 rounded-xl border border-indigo-200 bg-indigo-50/60 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm font-semibold text-slate-900">
+                建议文字颜色
+                <span className="ml-2 rounded bg-indigo-100 px-1.5 py-0.5 text-xs font-semibold text-indigo-900">
+                  建议 · 尚未应用
+                </span>
+              </p>
+              <AaBadge
+                textColor={suggestion.suggestedTextColor}
+                backgroundColor={backgroundColor}
+              />
+            </div>
+            <p className="mt-2 text-sm leading-relaxed text-slate-700">
+              把文字色从 <span className="font-mono uppercase">{suggestion.originalTextColor}</span>{' '}
+              调整为 <span className="font-mono uppercase">{suggestion.suggestedTextColor}</span>
+              ，对比度由 {formatContrastRatio(suggestion.beforeRatio ?? 0)} 提升到{' '}
+              {formatContrastRatio(suggestion.afterRatio ?? 0)}。本次仅调整文字颜色，未改变背景。
+            </p>
+            <button
+              type="button"
+              onClick={handleApply}
+              disabled={!canApply}
+              className="mt-3 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-indigo-700 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-600"
+            >
+              <Check className="size-4" aria-hidden="true" />
+              应用该修复
+            </button>
+          </div>
+        ) : null}
+
+        {repair.phase === 'applied' && snapshot && !hasInvalidInput ? (
+          <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50/60 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm font-semibold text-slate-900">
+                修复已应用
+                <span className="ml-2 rounded bg-emerald-100 px-1.5 py-0.5 text-xs font-semibold text-emerald-900">
+                  已应用
+                </span>
+              </p>
+              <AaBadge textColor={snapshot.afterTextColor} backgroundColor={backgroundColor} />
+            </div>
+            <p className="mt-2 text-sm leading-relaxed text-slate-700">
+              文字色已从 <span className="font-mono uppercase">{snapshot.beforeTextColor}</span> 改为{' '}
+              <span className="font-mono uppercase">{snapshot.afterTextColor}</span>，
+              对比度 {formatContrastRatio(snapshot.beforeRatio)} → {formatContrastRatio(snapshot.afterRatio)}。
+            </p>
+            <button
+              type="button"
+              onClick={handleUndo}
+              className="mt-3 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 transition-colors hover:border-indigo-700 hover:text-indigo-900"
+            >
+              <Undo2 className="size-4" aria-hidden="true" />
+              撤销本次修复
+            </button>
+          </div>
+        ) : null}
+
+        {notice ? (
+          <p
+            role="status"
+            aria-live="polite"
+            className="mt-3 rounded-lg bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-800"
+          >
+            {notice}
+          </p>
+        ) : null}
+      </section>
+
+      {showRepairOutput && beforeColor && afterColor ? (
+        <section
+          aria-labelledby="compare-heading"
+          className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+        >
+          <h2 id="compare-heading" className="text-lg font-semibold tracking-tight text-slate-900">
+            5. 修复前后对比
+          </h2>
+          <p className="mt-1 text-sm leading-relaxed text-slate-600">
+            两侧使用同一背景与同一句示例文字，只有文字颜色随方案变化。
+            {applied
+              ? ' 当前展示的是本次「已应用修复」前后的实际结果。'
+              : ' 右侧为「建议修复后」，尚未应用到上方配色，仅作预览。'}
+          </p>
+          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <CompareColumn
+              heading="修复前"
+              headingId="compare-before-heading"
+              textColor={beforeColor}
+              backgroundColor={backgroundColor}
+              sample={SAMPLE_TEXT}
+            />
+            <CompareColumn
+              heading={applied ? '已应用修复' : '建议修复后'}
+              headingId="compare-after-heading"
+              textColor={afterColor}
+              backgroundColor={backgroundColor}
+              sample={SAMPLE_TEXT}
+            />
+          </div>
+        </section>
+      ) : null}
+
+      {cssPreview ? (
+        <section
+          aria-labelledby="css-heading"
+          className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+        >
+          <h2 id="css-heading" className="text-lg font-semibold tracking-tight text-slate-900">
+            6. 对比 CSS 代码
+          </h2>
+          <p className="mt-1 text-sm leading-relaxed text-slate-600">
+            下列代码由当前配色与算法结果实时生成，颜色值与上方一致；更改配色会同步更新或清除。
+          </p>
+          <pre className="mt-3 overflow-x-auto rounded-xl bg-slate-900 px-4 py-3 text-xs leading-relaxed text-slate-100">
+            <code>{cssPreview}</code>
+          </pre>
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="mt-3 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 transition-colors hover:border-indigo-700 hover:text-indigo-900"
+          >
+            <Copy className="size-4" aria-hidden="true" />
+            复制修复后的 CSS
+          </button>
+        </section>
+      ) : null}
     </div>
   )
 }

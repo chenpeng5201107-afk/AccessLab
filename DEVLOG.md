@@ -571,3 +571,303 @@ npm run build   → ✓ 2092 modules transformed, built in 1.83s
 2. 文档文字会影响 CSS 产物，建议后续用 `@source not "../**/*.md";` 之类的显式声明隔离（本轮不动）。
 3. 上一轮记的「聚合提示不区分是哪个字段非法」保持原状，由字段级红字补足。
 4. Day 1 的另外两个实验（表单标签、键盘焦点）与实验结果报告仍未开发，按计划留给 Day 2。
+
+---
+
+## 2026-11-17 · Day 2：智能配色修复、修复前后对比与 CSS 代码导出
+
+范围：只给「色彩对比度实验」新增**确定性修复算法 + 应用/撤销 + 前后对比 + CSS 复制**。
+未开发表单标签/键盘焦点实验、未做完整结果报告、未接数据库/AI、未改技术栈、未重构无关模块。
+`src/lib/contrast.ts` 的 WCAG 算法**一字未动**，修复全部复用它做真实计算。
+新增文件均为新写，Git 历史保留，未覆盖 Day 1 功能。
+
+### 0. 开工前检查（含 Day 1 遗留复核）
+
+- 基线：`npm test` **23/23** 通过，`npm run build` 通过，工作树干净（HEAD `34b77ec`）。
+- Day 1 遗留三项复核：
+  1. **默认配色 + 非法草稿 + 重置**：`resetSignal` 机制（`ColorControl.tsx:34`、`ContrastLabPage.tsx`）确实有效，
+     浏览器实测重置后文本框回 `#777777`、`aria-invalid` 清除、聚合/字段提示清零——**问题已修复，本轮补了回归测试**（见 §4 #10）。
+  2. **Hash 路由 / 跳转主内容**：实验页 `location.hash='#main'` 后 `h1` 仍为「色彩对比度实验」，未踢回首页——正常。
+  3. **320px 遮挡**：读数条 `static`，同源 iframe 320×653 实测无横向溢出、0 个控件 <44px——正常。
+  三项均无需重开修复。
+
+### 1. 任务一 · 修复算法（`src/lib/colorRepair.ts`，纯函数）
+
+`suggestTextColor(text, bg, minRatio=4.5)` 输出 `{ ok, originalTextColor, suggestedTextColor, beforeRatio, afterRatio, needsRepair, reason }`。
+
+算法与约束对应关系：
+
+- **只用 `contrast.ts` 真实计算**，无任何写死结果；最终用生成的十六进制重新算 `contrastRatio` 复核。
+- 输入任一侧非法 → `ok:false, reason:'invalid-color'`，不伪造结论（约束 9）。
+- 当前 `beforeRatio >= minRatio`（未取整真实值判定）→ `needsRepair:false`、建议色 = 原色，**不改**（约束 8）。
+- 需修复时：把文字色沿 RGB 三通道同方向分别朝**纯黑**与**纯白**线性逼近；每个方向用**整数步二分搜索**
+  （`STEPS=256`）找「首次满足 `minRatio`」的取整配色。取整可能让边界差一点，向端点方向最多补几步，仍不达标则放弃该方向（约束 4、6）。
+- 两方向候选按 **RGB 欧氏距离**取更小者（约束 5）。距离随逼近比例单调，故二分得到的最小 `k` 即该方向最小改动。
+- 两方向都不可达 → `ok:false, reason:'unreachable'`。注：因 `ratio(black,bg)` 与 `ratio(white,bg)` 之积恒为 21，
+  二者必有 ≥ √21≈4.58 > 4.5，故 4.5 目标恒有解；`unreachable` 仅为更高门槛兜底。
+- 单调性依据：文字色朝单端移动时三通道同向 → 亮度单调 → 对固定背景的对比度呈「先降后升」的 V 形，
+  起点在降段且 `< minRatio`，达标集合恰为 `[k*, STEPS]` 后缀，二分 lower_bound 成立。
+- 注释与 UI 文案均**明确声明这不是全局最优、不保证人眼感知差异最小**，只是尽量减小 RGB 改动的实用建议。
+
+CSS 生成：`cssBlock / buildRepairCss / buildAfterCss` 全部按入参动态拼接（`applied` 决定后段标题「建议修复后」或「已应用修复」），不含硬编码颜色。
+
+### 2. 任务二 · 工作流状态机（`src/lib/repairWorkflow.ts`，纯 reducer）
+
+把「生成 / 应用 / 撤销 / 改色失效」抽成与 React 解耦的 `repairReducer(state, event)`，便于在 node 环境做交互逻辑测试：
+
+- `color-changed`（含重置）→ 回到 `idle`，清空建议与快照，杜绝过期结论被复用。
+- `generate` → 调 `suggestTextColor`；仅当 `ok && needsRepair` 进 `suggested`，否则 `idle` 但保留 suggestion 供文案判断。
+- `apply` → 仅 `suggested` 可执行，快照记 `{ beforeTextColor, afterTextColor, beforeRatio, afterRatio }`；背景不进快照（组件持有且修复不改背景）。
+- `undo` → 仅 `applied` 可执行，回到 `idle`。
+- 非预期时序（idle 下 apply/undo、过期后 apply）一律空操作。
+
+### 3. 任务三 · 页面集成（`src/pages/ContrastLabPage.tsx`）
+
+保留原「1 调整 / 2 预览 / 3 检测」三块不动，下方**增量新增**三块：
+
+- **4 智能修复建议**：按钮「生成修复建议」→ 展示建议色 + 预期对比度 + 「仅改文字色、背景不变」说明 + 「应用该修复」；
+  应用后按钮组变为「撤销本次修复」，快照区显示前后真实对比度。已 AA 时显示「当前配色已达到普通文本 AA，无需修复。」；
+  存在非法草稿时显示「修复功能已暂停，请先修正颜色」并禁用生成/应用。
+- **5 修复前后对比**：`sm:grid-cols-2`（移动端单列），两侧同背景、同示例句，只有文字色不同；各自显示文字色、背景色、
+  实时 `contrastRatioFromHex` 算出的对比度与 AA 徽标（图标 + 文字 + 数字，不单靠红绿）。未应用标「建议 · 尚未应用」，应用后标「已应用」。
+- **6 对比 CSS 代码**：`<pre><code>{动态文本}</code></pre>`（无 `dangerouslySetInnerHTML`、无编辑器依赖），按钮「复制修复后的 CSS」。
+  复制只在点击时调 `navigator.clipboard.writeText`，**不支持或失败时如实提示、绝不谎报成功**；改色即时清除旧代码。
+
+无障碍/交互：所有按钮为原生 `<button>` 有准确中文名；应用是「写回受控 state」→ 取色器/文本框/预览/检测同源一致，检测随之重算；
+手动改色与程序化应用分走不同 dispatch，避免应用本身触发失效。
+
+### 4. 测试与构建（真实执行）
+
+`npm test`：**44/44 通过**（Day 1 的 23 + 新增 21）。新增两份纯函数测试，沿用项目既定「纯逻辑走 node，DOM 行为走浏览器」策略，**未引入 jsdom / testing-library 等新依赖**。
+
+- `src/lib/colorRepair.test.ts`（13 条）：
+  #1 `#777777/#ffffff`→真实 ≥4.5；#6 精确 `#767676`；#3 白字白底；#4 黑底 `#333333`→`#767676`(4.62)；
+  #2 `#000000/#ffffff` 不改；非法输入 `ok:false/invalid`；7:1 高门槛；背景不变仍达标；#11 CSS 含真实色值与「修复前/建议修复后」；复制段与单块格式。
+- `src/lib/repairWorkflow.test.ts`（8 条）：
+  #7 generate→apply 快照 `after==建议色 / before==#777776→#777777`；#8 undo→idle；#9 改色后 apply 为空操作；
+  已应用后改色清空；#10 重置清空；已 AA/非法 generate 不进 suggested 且 apply 无效；idle 下 apply/undo 空操作。
+
+`npm run build`：`tsc -b` 严格模式通过；
+`dist/index.html 0.61 kB` + `dist/assets/index-Do3tLYqi.js 258.12 kB`(gzip 80.55) + `dist/assets/index-Egjj7OAv.css 25.04 kB`(gzip 5.71)。
+
+**浏览器交互测试**（`vite preview :4188` 生产产物，DOM 事件驱动，与 Day 1 同法）：
+
+| 场景 | 结果 |
+| --- | --- |
+| 默认失败配色点「生成修复建议」 | ✅ 出现应用按钮 + 第 5、6 区块；CSS 实为 `#777777→#767676`；此时未应用、无撤销按钮 |
+| 点「应用该修复」 | ✅ 文本框 `#767676`、取色器 `#767676`、预览 `rgb(118,118,118)` 三者一致；对比徽标「修复前 4.48 未达 / 已应用 4.54 达到」；反馈「…对比度提升至 4.54:1。背景颜色未改变。」 |
+| 点「撤销本次修复」 | ✅ 文本框回 `#777777`、预览 `rgb(119,119,119)`、第 5 区块消失、提示「已撤销…恢复为 #777777」 |
+| 生成后再手动改背景 | ✅ 应用按钮与对比区消失、快照清空（旧建议不被误用） |
+| 当前为达标配色 | ✅ 无生成按钮，显示「当前配色已达到普通文本 AA，无需修复。」 |
+| 文本框输入非法 `#zz` | ✅ `aria-invalid=true`、生成按钮消失、显示「修复功能已暂停…」 |
+| 非法草稿后点重置（#10 回归） | ✅ 文本框回 `#777777`、`aria-invalid` 清除、暂停提示清零、实时区数量回到 1 |
+| 点「复制修复后的 CSS」 | ✅ 无真实用户手势下 clipboard 被拒 → 提示「复制失败，请手动选中…」**未谎报成功**（证明失败分支真实生效；成功分支需人工在可见面板验一次） |
+| Hash 路由回归 | ✅ `#main` 不踢回首页；`#/contrast` 正常 |
+| 320×653 iframe | ✅ 无横向溢出(305/305)、0 个控件 <44px、空闲时实时区数量 1 |
+
+### 5. Qoder 协助过程要点
+
+- 复用 `contrast.ts` 公开函数完成算法，避免任何「假装算过」。
+- 用 `node -e` 预校验 lucide-react 实际导出（`WandSparkles/Check/CircleCheckBig/Undo2/Copy/CircleAlert` 等），杜绝构建期才发现的图标名错误。
+- 用 browser-use 在真实浏览器 DOM 层驱动整套「生成→应用→撤销→改色→非法→重置→复制」链路取证。
+- 全程未创建并行 Agent、未扩范围。
+
+### 6. 本轮遗留 / 需人工确认
+
+1. **复制成功分支未在自动化里跑通**：headless 无用户手势，`clipboard.writeText` 被拒，仅验证了「失败不谎报」。需人工点一次确认成功提示「已复制修复后的 CSS 代码。」。
+2. 肉眼观感 / 真实指针点击 / 真键盘 Tab 仍受内嵌面板 `visibilityState=hidden` 限制（沿 Day 1 结论），本轮证据为 DOM 事件 + `getComputedStyle` + 同源 iframe 几何。
+3. 实时播报区由 Day 1 的「全页唯一」变为「常态唯一 + 瞬时反馈」：空闲 `[role=status]`=1；仅在应用/撤销/复制/暂停等动作后追加 1 条 `role="status"` 反馈（内容为操作结果，非重复播报对比度）。若审查要求绝对单区，可把操作反馈并入读数条同一区域。
+4. 三处新逻辑（算法/状态机/页面）为纯增量；首页、路由、Day 1 控件均未改。
+5. 文档文字仍可能进 CSS 产物（Day 1 遗留 #12 未处理，本轮未动构建配置）。
+6. Day 1 遗留的「Git 未提交」依旧存在，需人工决定提交与推送。
+
+### 7. 部署（Qoder Sites 官方工作流，实测）
+
+复用同一 Project / Site（未新建站点），内容已变 → 新 action `b7848dd7-7779-4248-9ec4-79200118f974`：
+
+- `prepare_site`（`projectRoot`=工作区、`webDirectory: "dist"`、`spa: false`、`projectId 01a1e498-…`）
+  → 首次 `descriptorStatus: pending`；`get_publish_status` 显示 `artifactReady/dependenciesReady/canPublish: true`、`blockers: []`
+  → 以**同一 action + 完全相同输入**重试 `prepare_site` 得 `descriptorStatus: written`（未重新打包上传）。
+- `publish_site` → `get_publish_status`：**`published: true`**、operation `01a1e536-…` `state: succeeded`、`committed: true`、`readiness: publication_completed`。
+- `show_publish_confirmation`（Desktop 交付卡片）已执行。
+- 访问级别：`site.access_mode = public`、`auth_integration_status = not_required`，沿用 Day 1 已开放的公开访问。
+- 线上核对（匿名 + 缓存绕过参数）：入口 `index.html` 引用 `assets/index-Do3tLYqi.js` + `assets/index-Egjj7OAv.css`（Day 2 构建，替换 Day 1 的 `index-BW9yt6RB.js`），
+  两资源 HTTP 200；**sha256 与本地 `dist/` 逐字节一致**（JS `ff7960d293f1692b…`、CSS `89c1d0214df07e45…`）。
+- 线上浏览器冒烟（生产 URL）：实验页 6 个 h2 标题齐备 →「生成修复建议」出 CSS `#777777→#767676` 与应用按钮
+  →「应用」后文本框/取色器均 `#767676`、预览 `rgb(118,118,118)`、应用按钮消失、撤销出现 →「撤销」回 `#777777` 且对比区消失。
+- 地址：https://accessibility-lab-3g6uvbn5duq.qoder.zone
+- 附带回归观察：把缓存参数误写进 hash（`#/contrast?cb=…`）时路由判为未知 hash、保持当前页不报错，符合 Day 1 韧性设计；正确写法 `?cb=…#/contrast`。
+
+---
+
+## 2026-11-17 · Day 2 收尾轮：组件接线层测试、CSS 泄漏修复与重新发布
+
+范围：仍只做色彩对比度实验的修复功能。**未**新增运行时依赖、**未**开发其他实验模块、**未**改技术栈、
+`contrast.ts` 与修复算法本体一字未动。本轮补的是「测试可信度」与「构建产物纯净度」两处欠账。
+
+### 0. 开工前复核（不采信文档结论，全部重跑）
+
+先按任务书要求独立复现 Day 1 三个遗留项与 Day 2 全链路，而不是照抄 `PROJECT_STATUS.md`：
+
+| 复核项 | 方式 | 结果 |
+| --- | --- | --- |
+| Day 1 遗留 #1：默认配色 + 非法草稿 + 重置 | 浏览器实测 + 新增自动化测试 | ✅ 已修复（`resetSignal` 生效），但**当时无任何自动化覆盖** |
+| Day 1 遗留 #2：Hash 路由 / `#main` | 实测 | ✅ 正常 |
+| Day 1 遗留 #3：320px 遮挡 | 同源 iframe 320×653 | ✅ 无溢出（305/305）、0 个控件 <44px、唯一 sticky 是站点头部而非结果浮层 |
+| Day 2 生成→应用→撤销→改色失效→复制 | 浏览器实测 | ✅ 全部通过；应用后输入框/取色器/预览 `rgb(118,118,118)`/读数 4.54:1 四处一致 |
+| 基线 | `npm test` / `npm run build` | ✅ 44/44、构建通过 |
+
+结论：功能本身确实做完了，但任务书第七节的 #7/#8/#9/#10 属于**交互测试**，此前只有 reducer 层断言 +
+一次性浏览器取证，**组件真实接线没有任何可重复的自动化回归**。这是本轮要补的实质缺口。
+
+### 1. 新增 `src/pages/ContrastLabPage.test.tsx`（11 条，DOM 接线层）
+
+按用户决策引入 **仅测试用** 的 `jsdom`（devDependency），生产依赖与产物不受影响；
+不装 testing-library，用 `react-dom/client` + React 19 的 `act` 直接驱动，把新增依赖压到一个包。
+
+- `// @vitest-environment jsdom` 文件级声明，全局 `environment: 'node'` 保持不变，Day 1 的纯函数测试不受影响。
+- 受控输入必须走原生 value setter 再派发 `input`，否则 React 的 change tracking 不认这次赋值（`typeInto`）。
+- 定位一律走语义：`label[htmlFor]` → 输入框、`aria-label` → 取色器、`h2` 文本 → 区块、`h4` → 对比栏，
+  不依赖 Tailwind class 名，样式改动不会连带测试失效。
+- 覆盖：#7 应用后四处同步 + 背景未被改动、#7 对比栏真实数值 ≥4.5 且前 <4.5、#8 撤销恢复并清除对比/CSS 区、
+  #9 手动改色后旧建议与快照失效、#9 已应用后改色同样丢弃、#10 非法草稿重置全恢复、
+  #10 补充「颜色值本身没变但草稿非法」这条最易漏的路径、#11 CSS 含真实色值且改色即清除、
+  已达标显示「无需修复」、jsdom 无 `navigator.clipboard` 时如实提示不支持、各步按钮可访问名称齐全。
+
+### 2. 变异测试（证明这些测试不是摆设）
+
+逐条把实现改坏，确认对应测试真的会红，改回后再全量跑：
+
+| 注入的缺陷 | 应被抓到 | 实测 |
+| --- | --- | --- |
+| `ColorControl.tsx:34` 依赖数组去掉 `resetSignal`（即复现 Day 1 遗留 #1） | #10 两条 | ✅ 2 红 |
+| `handleTextColorChange` 不再 dispatch `color-changed` | #9 补充、#11 | ✅ 2 红 |
+| `handleApply` 忘记 `setTextColor` | #7、#8 | ✅ 2 红 |
+
+三处变异均被相关用例捕获，且**只**使对应用例变红。改动已全部回滚并核对与备份逐字节一致。
+
+### 3. `colorRepair.test.ts` 补 3 条（13→16），覆盖此前无测试的输出分支
+
+- `unreachable` 分支此前从未被执行。用 `#7c7c7c` 背景 + `minRatio=7` 触发：测试内先自证
+  纯黑 5.00:1、纯白 4.20:1 都够不到 7:1，才断言算法如实返回 `ok:false / unreachable / 建议色为 null`，
+  不伪造方案。并补一条同配色在 4.5 目标下仍有解，说明「只有 4.5:1 有恒有解的保证」。
+- 补「非法输入优先于不可达」的 reason 优先级断言。
+
+### 4. 构建产物泄漏修复（原 Day 1 遗留 #5，本轮处理）
+
+加完测试文件后重跑构建，发现 CSS 从 25.04 kB 涨到 25.32 kB、JS 文件名哈希跟着变。
+逐选择器比对线上 CSS 后定位：Tailwind v4 的自动内容扫描会把**文档和测试里的普通单词**当 class 候选——
+本次是测试里的变量名 `container` 凭空生成了 `.container` 工具类。
+
+修复：`src/index.css` 加两行 `@source not "../**/*.md"` 与 `@source not "../**/*.{test,spec}.{ts,tsx}"`。
+
+收益核对（脚本比对选择器集合，非目测）：
+- 修复后 CSS 24.54 kB，共移除 7 个选择器：`.static`、`.bottom-3`、`.outline`、`.lg:static`、`.lg:bottom-auto`、`.lg:mt-5`、`.lg:shadow-none`。
+- 逐个回查生产源码：这些 token 在 `src/**` 中**均无使用**（`src/App.tsx:43` 用的是 `outline-none`，仍保留），
+  它们只存在于 `DEVLOG.md` 里对 Day 1「已取消的 sticky 结果条」的文字描述中——即纯死代码。
+- 新增选择器 0 个。所以这是严格瘦身，不改变任何界面表现。
+- 附带确认：JS 内容 sha256 与上一版**完全相同**（`ff7960d2…`），只是 Vite 把 JS 文件名哈希与 CSS 文件名绑定，
+  所以名字随 CSS 变了。产物差异只有 CSS。
+
+### 5. 测试与构建（真实执行）
+
+- `npm test`：**58/58 通过**（Day 1 的 23 + Day 2 首轮 21 + 本轮 14 = 算法 16 + 工作流 8 + 对比度 15 + 路由 8 + 组件 11）。
+- `npm run build`：`tsc -b` 严格模式通过；
+  `dist/index.html 0.61 kB` + `dist/assets/index-Cli8dxGx.js 258.12 kB`(gzip 80.55) + `dist/assets/index-CQTV__qT.css 24.54 kB`(gzip 5.63)。
+- 上传前检查 `dist/`：仅 3 个文件，无 sourcemap、无 `.env`、无 localhost 引用。
+
+### 6. 浏览器验证（新生产产物 + 线上）
+
+- `vite preview :4189` 跑新构建全链路：4.48 未达 → 生成（标「建议 · 尚未应用」）→ 应用后
+  文本框/取色器 `#767676`、预览 `rgb(118,118,118)`、读数 4.54:1 达到 AA、CSS 标题转「已应用修复」→
+  撤销回 `#777777` 且对比/CSS 区消失 → 非法草稿 `aria-invalid=true` + 「修复功能已暂停」→ 重置全恢复。
+- 320×653 同源 iframe（新 CSS）：无横向溢出、0 控件 <44px。
+- 线上 `https://…qoder.zone` 复跑同一链路，样式表确为 `index-CQTV__qT.css`。
+- **未能自动执行**：截图仍受内嵌面板 `visibilityState=hidden` 限制
+  （`NATIVE_BROWSER_VIEWPORT_UNAVAILABLE`），肉眼观感与真实指针/真键盘手感仍需人工确认。
+
+### 7. 部署（Qoder Sites 官方工作流）
+
+内容变更 → 同 Project 新 action `ce55226c-8b9c-4138-a273-982448a01964`：
+`prepare_site`（`descriptorStatus: pending`）→ `get_publish_status`（`artifactReady/dependenciesReady/canPublish: true`、`blockers: []`）
+→ 同 action 同输入重试 `prepare_site` 得 `written` → `publish_site` → `published: true`、
+operation `01a1e728-d9c4-7461-835b-dbac4f94d1ca` `state: succeeded`、`committed: true` → `show_publish_confirmation` 已执行。
+
+线上核对：入口引用 `index-Cli8dxGx.js` + `index-CQTV__qT.css`；
+**两资源 sha256 与本地 `dist/` 逐字节一致**（JS `ff7960d293f1692b…`、CSS `0bf2a7d3e8c333a7…`）。
+访问级别仍为 `access_mode: public` / `auth_integration_status: not_required`，本轮未改动访问范围。
+
+### 8. 本轮遗留 / 需人工确认
+
+1. 复制**成功**分支仍无法自动化（剪贴板权限在无手势环境下被拒）；本轮新增的 jsdom 用例只覆盖「不支持时不谎报」。
+   线上失败分支已实测如实提示「复制失败」。成功提示仍建议人工点一次。
+2. 截图/肉眼观感/真键盘 Tab 受 `visibilityState=hidden` 限制，同上。
+3. `role=status` 播报区在动作后为 2 个（读数条 + 瞬时反馈）。经用户确认**保持现状**，理由：两者内容不同、不构成重复播报。
+4. **Day 1 + Day 2 全部改动仍未提交 Git**（HEAD 仍 `34b77ec`）。本轮新增 `jsdom` 也改了 `package.json`/`package-lock.json`。
+   提交与推送需人工决定，未擅自执行。
+
+## 2026-11-17 · Day 2 最终回归缺陷修复轮（非法输入下的状态一致性）
+
+外部审查发现一个未被测试捕获的状态一致性 bug：**非法草稿只翻动了有效性标志，没有通知修复工作流清理旧建议 / 快照**。
+
+### 1. 缺陷复现（先补能失败的测试）
+
+根因定位在 `ColorControl.tsx:71-76`：文本框输入非法草稿时 `normalizeHex` 返回 `null`，`onChange` **不被调用**，
+父组件的 `handleTextColorChange/…`（内部 `dispatchRepair({type:'color-changed'})`）因此不触发；
+而 `onValidityChange` 当时只是 `setTextValid` / `setBackgroundValid`，仅更新有效性、不触碰修复状态机。
+结果 `repair.phase` 仍停在 `suggested` / `applied`，页面上「4. 智能修复建议 / 5. 修复前后对比 / 6. 对比 CSS」
+连同「应用该修复 / 撤销本次修复 / 复制修复后的 CSS」在已经提示「修复功能已暂停」时**继续残留**。
+
+- 场景 A：默认配色生成建议 → 文字色输入 `zz` → 旧建议 / 对比 / CSS / 复制应消失，恢复合法后不得自动复活。
+- 场景 B：生成并应用 → 背景色输入 `ggg` → 旧快照 / 撤销 / 对比 / CSS / 复制应消失，恢复合法后仍需重新生成。
+
+在 `src/pages/ContrastLabPage.test.tsx` 新增两条真实渲染用例（复用现有 `typeInto` 原生 setter + `act`）。
+**先跑这两条确认失败**：均卡在非法期间的 `not.toContain('建议文字颜色')` / `not.toContain('修复已应用')`——即残留产物，精准命中缺陷。
+
+### 2. 最小范围修复（`ContrastLabPage.tsx`，未动算法与布局）
+
+1. `onValidityChange` 从裸 setter 换成 `useCallback(…, [])` 的稳定回调 `handleTextValidity` / `handleBackgroundValidity`：
+   一旦收到非法，除 `setXxxValid(false)` 外**追加 `dispatchRepair({type:'color-changed'})`**，立即把状态机打回 `idle`、清空建议与快照。
+   - 依赖 #7「Effect 依赖 / 回调稳定」：`dispatchRepair` 与两个 state setter 均稳定，`useCallback([])` 保持引用恒定，
+     使 `ColorControl.tsx:41-43` 的 `[invalid, onValidityChange]` effect 只在**非法翻转时**触发一次，不产生无限渲染；
+   - 满足 #4「恢复合法不自动复活」：非法时已清态，恢复合法只走 `onChange → color-changed`（幂等回 `idle`），旧建议不会回来，须手动重新生成。
+2. 渲染处再加一层显式守卫（#2「隐藏对应操作」）：
+   `showRepairOutput` 追加 `!hasInvalidInput`（同时挡住 5 对比、6 CSS 与其中复制按钮），
+   建议块与已应用块条件各追加 `&& !hasInvalidInput`（挡住「应用该修复」「撤销本次修复」）。
+3. `handleCopy` 入口改为 `if (hasInvalidInput || !afterColor) return`（#3 复制函数在非法态也自我保护）。
+4. 保持不动：`STALE_RESULT_NOTICE`「检测仍基于上一次有效配色」提示（#5）、应用 / 撤销 / 重置既有行为（#6）、
+   `contrast.ts` 与 `colorRepair.ts` 算法本体（#8）。
+
+### 3. 测试与构建（真实执行，node v25.2.1 + `export PATH=/d/Soft_Ware`）
+
+- `npm test`：**60/60 通过**（原 58 + 本轮 2；**未删除、未放宽任何旧断言**）。
+  新用例非法期与恢复期都断言；先失败→修复后通过，非以改测试掩盖问题。
+- `npm run build`：`tsc -b` 严格模式通过；
+  `dist/index.html 0.61 kB` + `dist/assets/index-Biknu-lx.js 258.27 kB`(gzip 80.60) + `dist/assets/index-CQTV__qT.css 24.54 kB`(gzip 5.63)。
+  CSS 与上轮同哈希（无样式改动），仅 JS 随逻辑变更。
+
+### 4. 回归验证
+
+- **jsdom（5 文件 60 条）**覆盖全部逻辑流：生成→非法→恢复→重新生成、应用→非法→恢复→重新生成、生成→应用→撤销、默认→非法→重置。
+- **真实浏览器（`vite dev :5175`，CDP 驱动 DOM）**复跑同一场景，实测布尔结果与预期一致：
+  - 场景 A：生成后 `{suggest,apply,copy,compare,css}=true` → 输入 `zz` 后全 `false` 且「修复功能已暂停 / 当前颜色输入无效」=true → 恢复 `#777777` 后旧建议 `false`、`生成修复建议`=true。
+  - 场景 B：应用后 `{applied,undo,copy,compare,css}=true` → 背景 `ggg` 后全 `false` → 恢复 `#777777` 后快照 `false`、`生成修复建议`=true。
+  - 撤销：undo 后文字 / 取色器回 `#777777`、`撤销本次修复` 消失、`生成修复建议` 回来。
+  - 重置：默认配色下留非法草稿 → 点重置后输入框 `#777777`、`aria-invalid` 清除、错误与暂停文案消失。
+  - hash 路由：`#/contrast` 正常渲染实验页，首页 / 实验页导航与「返回首页」链接齐全。
+- **横向溢出 / 控件遮挡 320·390**：本会话内嵌浏览器无可见视口（`viewport=0x0`、`visibilityState=hidden`，报 `NATIVE_BROWSER_VIEWPORT_UNAVAILABLE`），
+  无法做真实像素测量。结构上本轮**只新增隐藏条件、不新增任何元素或宽度**（非法态只让既有区块少渲染），
+  布局/CSS 与上一轮已通过 320 实测的版本一致，溢出风险为零；仍需人工在 320/390 目视确认（承接上轮遗留 #3）。
+
+### 5. 发布状态（未擅自重新发布）
+
+- 线上仍为**上一轮构建** `ce55226c-…`（入口 `index-Cli8dxGx.js`），**不含本轮修复**；本轮 `dist/` 新产物为 `index-Biknu-lx.js`。
+- 访问级别 `public` 未变。用户指令为「完成后停止、等待最终验收」，且发布属对外共享动作，故**本轮未触发 `publish_site`**；
+  建议验收通过后按官方工作流把含修复的新 `dist/` 重新上线。
+
+### 6. 本轮遗留 / 需人工确认
+
+1. 含修复的新构建尚未发布线上（等验收），当前线上仍是修复前版本。
+2. 320/390 真实像素溢出仍需人工目视（本会话无可见视口）。
+3. 复制成功分支、截图观感同前轮，仍受无手势 / 隐藏视口限制。
+4. **Day 1 + Day 2 + 本轮改动全部仍未提交 Git**（HEAD 仍 `34b77ec`），提交与推送需人工决定。
