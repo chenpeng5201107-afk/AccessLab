@@ -53,15 +53,16 @@ Day 1 / Day 2 的页面与算法未被改动，`npm test` 中原有 60 条**零�
 
 - 站点地址：https://accessibility-lab-3g6uvbn5duq.qoder.zone （公开可访问，**当前线上为 Day 2 构建 `index-Biknu-lx.js`，不含 Day 3 表单实验**）
 - 本地开发：`npm run dev` ｜ 预览产物：`npm run preview` ｜ 测试：`npm test` ｜ 构建：`npm run build` → `dist/`
-- 仓库状态：HEAD = `943a3ac`（Day 2 稳定提交，构成 Day 3 的回退点）；Day 3 的 11 项改动（6 改 + 5 新）**尚未提交**，提交与推送均需人工确认。
+- 仓库状态：HEAD = **`737ceb7` `feat: add form label accessibility lab day3`**（13 files，+1496/−59，未推送）；其父提交 `943a3ac` 为 Day 2 稳定版，即**回退点**。
+  唯一有意保留的未提交改动是 `.AccessLab 无障碍实验室.qoder.site` 的 `publication` 块（Sites 工具写入的云端 ID + base64 冻结 `index.html`，与「不跟踪构建产物」的既有约定冲突，经用户确认不入库）。
 - 环境提醒：`node` 不在系统 PATH，会话内需 `export PATH="/d/Soft_Ware:$PATH"`（node v25.2.1 / npm 11.6.2，测试与构建实测正常）。
 
 ## 4. 遗留问题
 
 | # | 问题 | 影响 | 建议处理 |
 | --- | --- | --- | --- |
-| 1 | **Day 3 改动未提交**（HEAD 仍 `943a3ac`） | 表单实验无提交点 | 经用户确认后创建独立 Day 3 提交；**不推送远程** |
-| 2 | **Day 3 未发布**，线上仍是 Day 2 版本 | 评委访问不到表单实验 | 用户授权后按官方工作流发布新 `dist/`（`index-AFw0dV32.js`）；回退手段：`943a3ac` 可重建同哈希产物 + 旧 action `0bf1a61d…` 的历史发布仍在 |
+| 1 | ~~Day 3 改动未提交~~ ✅ 已提交 `737ceb7`（经用户确认，不含 `.qoder.site` 描述符） | — | 如需推送远程由人工决定 |
+| 2 | **Day 3 未发布**（用户选择先人工验收），线上仍是 Day 2 版本 | 评委暂时访问不到表单实验 | 人工验收通过后按官方工作流发布新 `dist/`（`index-AFw0dV32.js`）；回退手段：`943a3ac` 可重建 Day 2 同哈希产物 + 旧 action `0bf1a61d…` 的历史发布仍在平台 |
 | 3 | 320 / 390 横向溢出与 44px 触控目标**在本环境不可测** | 窄屏观感无像素级证据 | 人工在 320/390/768/1440 目视（内嵌浏览器 `viewport=0x0`、`visibilityState=hidden`，此前溢出扫描产出 106 条假阳性） |
 | 4 | **真实物理 Tab 焦点序列未取到证据** | 键盘遍历顺序未实测 | 人工按 Tab 走一遍。录制器两次尝试均 `tabsRecorded: 0`（页面未 attached，按键不驱动焦点遍历），按约定停止重试；结构性替代证据：无正值 `tabindex`、全局 `:focus-visible` 3px indigo |
 | 5 | 真机读屏（NVDA / VoiceOver / TalkBack）未验证；复制成功分支需真实手势 | 「实际朗读」与「复制成功」文案未被真眼真耳确认 | 人工用读屏对比缺陷态/修复态朗读，并各点一次复制按钮 |

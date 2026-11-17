@@ -952,6 +952,9 @@ Qoder Sites 发布（官方 `prepare_site` → `get_publish_status` → `publish
 
 ### 7. Day 3 结项状态
 
-- Day 3 改动**尚未提交**（HEAD 仍 `943a3ac`，即 Day 2 稳定提交，天然构成回退点）；提交清单已展示给用户等确认，**未推送远程**。
-- **线上仍是 Day 2 构建** `index-Biknu-lx.js`，不含表单标签实验；Day 3 发布等用户授权后再执行（发布前保留 `943a3ac` 重建回退 + 旧 action 历史记录两条退路）。
+- Day 3 改动已按用户确认创建独立提交 **`737ceb7` `feat: add form label accessibility lab day3`**（13 files，+1496/−59）；`943a3ac`（Day 2 稳定版）保持为其父提交，构成回退点。**未推送远程，未改写历史**。
+- 按用户决定**未发布 Day 3**：线上仍为 Day 2 构建 `index-Biknu-lx.js`，表单实验只在本地新产物预览（`npm run preview`）可玩。
+  人工验收窄屏 / 键盘 / 读屏通过后，再走官方工作流发布 `dist/`（入口 `index-AFw0dV32.js`）。
+- 有意未纳入提交：`.AccessLab 无障碍实验室.qoder.site` 的 `publication` 块（Sites 工具写入的云端 Project/Site/Deployment/Release ID + base64 冻结 `index.html`）。
+  本仓库自初始提交起不跟踪构建产物（`dist/` 已忽略、`git ls-files dist` 为空），该字段属于构建快照与工具私有状态，经用户确认保持未提交。
 
