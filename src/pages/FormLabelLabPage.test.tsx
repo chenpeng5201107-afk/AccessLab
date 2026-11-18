@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 
+import { ExperimentLedgerProvider } from '../context/ExperimentLedgerContext'
 import { EMAIL_FIELD, NAME_FIELD, demoFormHtml } from '../lib/formLabelDemoFields'
 import { FormLabelLabPage } from './FormLabelLabPage'
 
@@ -70,7 +71,11 @@ beforeEach(() => {
   document.body.appendChild(container)
   root = createRoot(container)
   act(() => {
-    root.render(<FormLabelLabPage />)
+    root.render(
+      <ExperimentLedgerProvider>
+        <FormLabelLabPage />
+      </ExperimentLedgerProvider>,
+    )
   })
 })
 

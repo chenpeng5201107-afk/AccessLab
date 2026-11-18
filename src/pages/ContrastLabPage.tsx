@@ -1,4 +1,4 @@
-import { useCallback, useReducer, useState } from 'react'
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import {
   Check,
   CircleAlert,
@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 
 import { ColorControl } from '../components/ColorControl'
+import { useExperimentLedger } from '../context/ExperimentLedgerContext'
 import { ROUTE_HASH } from '../hooks/useHashRoute'
 import {
   AA_NORMAL_TEXT_RATIO,
@@ -19,6 +20,7 @@ import {
   meetsAaNormalText,
 } from '../lib/contrast'
 import { buildAfterCss, buildRepairCss } from '../lib/colorRepair'
+import { deriveContrastRecord, type ContrastStage } from '../lib/experimentLedger'
 import { initialRepairState, repairReducer } from '../lib/repairWorkflow'
 
 const DEFAULT_TEXT_COLOR = '#777777'
@@ -93,6 +95,7 @@ function CompareColumn({
 }
 
 export function ContrastLabPage() {
+  const { ledger, dispatch } = useExperimentLedger()
   const [textColor, setTextColor] = useState(DEFAULT_TEXT_COLOR)
   const [backgroundColor, setBackgroundColor] = useState(DEFAULT_BACKGROUND_COLOR)
   const [textValid, setTextValid] = useState(true)
@@ -208,6 +211,47 @@ export function ContrastLabPage() {
           applied,
         })
       : null
+
+  const ledgerSyncedRef = useRef(false)
+  const repairStage: ContrastStage =
+    repair.phase === 'applied' ? 'applied' : repair.phase === 'suggested' ? 'suggested' : 'audited'
+
+  /**
+   * 把这一轮真实算出来的结果登记进会话台账（报告页只读台账，不重新检测）。
+   * 首次挂载只在台账为空时写入：做完实验切走再回来不会把成果清零；
+   * 之后的改色 / 生成 / 应用 / 撤销 / 重置都会如实覆盖，不留下过期的「已通过」。
+   */
+  useEffect(() => {
+    const isFirstSync = !ledgerSyncedRef.current
+    ledgerSyncedRef.current = true
+    if (isFirstSync && ledger.contrast !== null) return
+
+    dispatch({
+      type: 'contrast:sync',
+      record: deriveContrastRecord({
+        textColor,
+        backgroundColor,
+        hasInvalidInput,
+        stage: repairStage,
+        repairApplied: applied,
+        beforeTextColor: showRepairOutput ? beforeColor : null,
+        afterTextColor: showRepairOutput ? afterColor : null,
+        css: cssPreview,
+      }),
+    })
+  }, [
+    applied,
+    beforeColor,
+    afterColor,
+    backgroundColor,
+    cssPreview,
+    dispatch,
+    hasInvalidInput,
+    ledger.contrast,
+    repairStage,
+    showRepairOutput,
+    textColor,
+  ])
 
 
   return (

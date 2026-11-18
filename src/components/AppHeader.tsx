@@ -6,6 +6,8 @@ const NAV_ITEMS: Array<{ route: Route; label: string }> = [
   { route: 'home', label: '首页' },
   { route: 'contrast-lab', label: '色彩对比度实验' },
   { route: 'form-label-lab', label: '表单标签实验' },
+  { route: 'keyboard-lab', label: '键盘焦点实验' },
+  { route: 'report', label: '成果报告' },
 ]
 
 interface AppHeaderProps {

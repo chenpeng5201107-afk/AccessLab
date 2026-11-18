@@ -1055,3 +1055,189 @@ Git 历史未改写、未推送远程，`11a43bd` 与 `737ceb7` 均可回退。
 
 **仍未由工具证明的**：无痕浏览器人工目视（本轮是无 Cookie 的 curl + 真实 Chromium，非评委设备）、真机读屏实际朗读、真实指针点击 label 与复制成功分支、320/390 真机观感。
 
+---
+
+## 2026-11-17 · Day 4｜Day 3 结项复核 + 键盘焦点无障碍实验
+
+第三个核心实验：`#/keyboard`「不使用鼠标，你还能找到自己正在操作的位置吗？」。覆盖 WCAG 2.2 SC 2.1.1 Keyboard、SC 2.4.7 Focus Visible，并按需提到 SC 2.4.11 Focus Not Obscured (Minimum)。定位仍是**交互体验与人工验证教学**，不是自动认证工具。
+
+### 1. 阶段 A：Day 3 结项复核（全部重跑，不采信旧记录）
+
+| 检查 | 实测 |
+| --- | --- |
+| `npm test` | **90/90**（7 文件），无失败无跳过 |
+| `npm run build` | 通过，产物仍是 `index-AFw0dV32.js` 282.01 kB + `index-KGhPc1c7.css` 25.70 kB ⇒ `dist/` 就是 HEAD 源码的产物 |
+| `git status` / `git log` | 工作区只有 `.qoder.site` 描述符改动（约定不入库）；`943a3ac`（Day 2）、`737ceb7`（Day 3 功能）、`11a43bd`、`474a30b`（Day 3 治理文档）均存在，历史未改写、未推送 |
+| `.gitignore` | `node_modules` / `dist` / `.env*` / `coverage` / `.vite` / `*.tsbuildinfo` / 日志 / `.DS_Store` 全忽略；`git ls-files dist` 为空 |
+| 线上核对（curl，无 Cookie） | `index.html` 引用 `index-AFw0dV32.js` + `index-KGhPc1c7.css`；该 JS `200 / 282019 B`；响应头**无** `Set-Cookie` / `Location` / `WWW-Authenticate` ⇒ 匿名可直接访问 |
+
+结论：Day 3 已达标上线，**无技术阻断**，阶段 B 直接开工。仍欠的只有人工项（无痕目视、真机读屏），与 Day 3 记录一致。
+
+### 2. 阶段 B：新增与接线
+
+| 文件 | 作用 |
+| --- | --- |
+| `src/lib/keyboardFocusDemo.ts` | **单一来源**：按钮配置、`broken / repaired` 两种样式状态、缺陷态与修复态的 `:focus-visible` 规则文本、整张注入样式表、演示借阅工作流 reducer、观察阶段状态机、结语文案 |
+| `src/lib/keyboardFocusAudit.ts` | **只读真实 DOM** 的检测器：按钮类名 / `tabindex` / 是否原生可聚焦，以及从本页注入样式表里抓 `.kf-demo-btn--*:focus-visible { … }` 判定 `outline: none` 与「实心轮廓缺失」两类问题 |
+| `src/pages/KeyboardFocusLabPage.tsx` | 六段结构：①为什么是硬要求 ②请先别用鼠标（真实可交互示例）③焦点规则现状与修复 ④修复前后对比 + 实时 3:1 计算 ⑤五步人工验证 ⑥CSS 对比与复制，末尾「检查什么 / 不检查什么」声明 |
+| `src/hooks/useHashRoute.ts` | 只追加 `'#/keyboard'` 到 `Route` / `ROUTE_HASH` / `HASH_TO_ROUTE`，`routeFromHash` / `nextRoute` 逻辑未动 |
+| `src/App.tsx`、`src/components/AppHeader.tsx`、`src/pages/HomePage.tsx` | 页面标题、导航第四项、首页第三张卡片改为真实入口并删掉「最后一个还在开发」旧文案 |
+| `src/index.css` | 追加 `@source not "./lib/keyboardFocusDemo.ts";` —— CSS 字符串里的 `outline` / `outline-none` 会被 Tailwind 扫成真实工具类，白白增大产物并让哈希漂移 |
+
+### 3. 焦点样式的边界（用户红线，逐条钉住）
+
+- 站点全局 `:focus-visible { outline: 3px solid indigo-700; outline-offset: 2px }` **保留在 `@layer base`，一个字没删**。
+- 缺陷样式只来自页面内注入的 `<style data-keyboard-focus-demo="true">`，且**不带 layer**：类级选择器 `.kf-demo-btn--broken:focus-visible`（特异度 0,2,0）压过 base 层，只影响实验区三个按钮。
+- 注入表里不存在裸 `:focus-visible`、裸 `button`、裸 `a` 选择器，也不命中 `header/nav/main/footer` —— 由 `App.test.tsx` 断言，并在真实浏览器里对表文本重跑同一组正则。
+- 离开键盘实验后 `style[data-keyboard-focus-demo]` 随组件卸载消失，不残留。
+
+### 4. 测试与构建（真实执行）
+
+`npm test` **180/180（12 文件）**，Day 1 / 2 / 3 的 90 条**一条没删、没放宽**：
+
+| 文件 | 条数 | 归属 |
+| --- | --- | --- |
+| `src/lib/contrast.test.ts` | 15 | Day 1 |
+| `src/lib/colorRepair.test.ts` | 16 | Day 2 |
+| `src/lib/repairWorkflow.test.ts` | 8 | Day 2 |
+| `src/pages/ContrastLabPage.test.tsx` | 13 | Day 2 |
+| `src/lib/formLabelAudit.test.ts` | 13 | Day 3 |
+| `src/pages/FormLabelLabPage.test.tsx` | 16 | Day 3 |
+| `src/hooks/useHashRoute.test.ts` | 10 | 由 9 增至 10（只加 `#/keyboard` 断言） |
+| `src/lib/keyboardFocusDemo.test.ts` | 26 | **Day 4 新增** |
+| `src/lib/keyboardFocusAudit.test.ts` | 11 | **Day 4 新增** |
+| `src/pages/KeyboardFocusLabPage.test.tsx` | 34 | **Day 4 新增** |
+| `src/pages/HomePage.test.tsx` | 8 | **Day 4 新增**（首页三卡片齐、旧「还在开发」文案已删） |
+| `src/App.test.tsx` | 10 | **Day 4 新增**（深链、前进后退、skip link 不破坏路由、样式边界、卸载不留残余） |
+
+`npm run build`：`tsc -b` 通过 + 2100 modules → `index.html 0.61 kB`、**`index-BfWfinPC.js` 317.53 kB**(gzip 95.84)、**`index-CLPKB9bc.css` 26.23 kB**(gzip 5.84)。
+
+一处 React 19 的真实约束：`App.test.tsx` 想模拟「直接打开深链」时复用已卸载的 root 重渲染，报 `Cannot update an unmounted root`；改为 `unmount → 设 hash → createRoot` 重建子树，这才是深链挂载的正确等价物。
+
+### 5. 真实浏览器取证（headless Chromium + CDP）
+
+**方法说明**：Qoder 内置浏览器本轮没有可视表面（`NATIVE_BROWSER_VIEWPORT_UNAVAILABLE`，`viewport=0x0`、`visibilityState=hidden`），拿不到真实布局与真实按键。于是改用本机 **Microsoft Edge（Chromium）headless + 原生 CDP** 驱动：`Input.dispatchKeyEvent` 发的是可信按键（`:focus-visible` 键盘模态、Enter/Space 激活、Tab 遍历都按真实规则走），`getComputedStyle` 读的是真实级联结果，`Emulation.setDeviceMetricsOverride` / `setEmulatedMedia` 切视口与媒体特性。脚本与 JSON 记录在 `%LOCALAPPDATA%\Temp\accesslab-day4\`（取证产物，未入库），目标 `http://localhost:4174`（Day 4 新 `dist/`）。
+
+| 检查项 | 实测结果 |
+| --- | --- |
+| 真实 Tab 序列（修复前） | skip link → 站点 logo → 首页 → 色彩对比度实验 → 表单标签实验 → 键盘焦点实验 → 返回首页 → **`kf-view-details` → `kf-save-selection` → `kf-step-back`**（第 8/9/10 站逐个进入，无跳跃） |
+| 修复前聚焦态计算样式 | `outline-style: none`（`:focus-visible` 已匹配、宽度仍是 3px 但样式为 none）⇒ 屏幕上没有环；同期平台控件是 `solid 3px` indigo |
+| Enter 操作示例按钮 | `aria-expanded false → true`、`#kf-details` 的 `hidden` 消失、播报「已展开详情：《WCAG 实战》 · 主馆 3 楼 无障碍书架。」 |
+| Space 操作示例按钮 | 已保存列表 `0 / 3 → 1 / 3`，列表真的出现条目，播报「已保存 1 / 3 条…」 |
+| Enter 撤回 | `1 / 3 → 0 / 3`，播报「已撤回最近一次保存：《WCAG 实战》，现在剩 0 条。」；空列表时如实说「没有可撤销的保存记录」 |
+| 键盘激活「修复焦点指示」 | 焦点用 Tab 走到该按钮后按 Enter：三个按钮类名 `--broken → --fixed`，状态徽标「已应用焦点修复」，播报换规则文本 |
+| 修复后聚焦态计算样式 | `outline: solid 3px rgb(67, 56, 202)`、`outline-offset: 3px`、`:focus-visible` 匹配 —— 与页面上展示的那条 CSS 完全对应 |
+| hover 不伪装成焦点 | 未聚焦 + `:hover` 命中时 `outline` 仍是 `none`（只有边框 `#cbd5e1 → #94a3b8`），键盘聚焦才出现环；两张截图对照 `shot-06-hover-only.png` / `shot-09` |
+| 环是否被遮挡 | 三个按钮上下左右四个方向 `elementFromPoint` 命中的都是父容器（`div.bg-white` / `div.flex-wrap`），**没有命中另一个按钮**；相邻按钮最小间距 16px > 环外扩 6px；环完整落在白色卡片内（卡片内边距 16px ≥ 6px）；祖先链无 `overflow` 裁剪 |
+| 无焦点陷阱 | `kf-step-back` 之后继续 Tab：重新读取真实 DOM → 修复焦点指示 → 重置实验 → 复制修复后的 CSS → `<summary>` → 回到文档，焦点确实离开实验区 |
+| 四档视口 | 320 / 390 / 768 / 1440 均 `scrollWidth === clientWidth`（无横向溢出）；1440 两栏（示例区 384px + 右栏 568px），768 及以下单栏；示例按钮恒 `94×44`（≥44px） |
+| `prefers-reduced-motion` | `reduce` 时示例按钮 `transition: 1e-05s`、`animation: none`，而焦点环仍是 `solid 3px rgb(67,56,202)` ⇒ 可见性不依赖动效 |
+| 平台自身焦点未被削弱 | `header nav a` 键盘聚焦 `outline: solid 3px` indigo / `offset: 2px`，与 Day 1–3 一致 |
+| 前进 / 后退（干净标签页真实历史） | `#/` → 点首页卡片 → `#/keyboard`（示例按钮在） → `history.back()` → `#/`（示例按钮不在） → `history.forward()` → `#/keyboard` |
+| 深链刷新保持 | `#/contrast`、`#/form-label`、`#/keyboard` 三条 `Page.reload` 后 `hash / h1 / document.title` 全部不变 |
+| Day 2 回归 | 默认 `#777777/#ffffff = 4.48:1`（未达 AA）→ `#cccccc` 1.61:1 → `#111111` 18.88:1（达到 AA）→ 非法 `#12x` 保留上次有效结论并提示「检测结果仍基于上一次有效配色」→ 重置回 4.48:1 |
+| Day 3 回归 | 缺陷态 `SPAN` / `labels 0` → 修复 `LABEL` / `htmlFor="student-name"` / `labels 1` / `label.control === input` → 重置回 `SPAN` / `labels 0` |
+| 控制台 | 整轮只有 1 条 404：`/favicon.ico`（应用本来就没有 favicon，Day 2/3 同样如此）；无 JS 异常、无 warning |
+| 剪贴板 | 本 headless 环境 `clipboard-write` 权限是 `denied`：键盘激活与鼠标点击**都**如实显示「复制失败，请手动选中右侧「修复后」CSS 复制。」；把 `writeText` 换成记录入参的桩后，交出去的字符串与页面代码块**逐行一致**（成功文案随之出现）。⇒ 页面接线已证，真实剪贴板成功分支仍待人工 |
+
+**一个必须写下来的取证教训**：第一版脚本给 Enter 额外补了一个独立 `char` 事件，同一次按键被合成两次 keypress，「查看详情」被开了又关（播报显示「已收起详情」）。这是**脚本的缺陷，不是页面的缺陷**；改成 `keyDown(text:'\r') + keyUp` 后单次激活，上表所有交互数字都是重跑后的结果。同理，`Page.captureScreenshot` 的 `clip` 是文档坐标而不是视口坐标，第一版按视口坐标截到了页头，修正后才有 `shot-01 / shot-03` 这种「缺陷态无环 / 修复态有环」的对照图。
+
+### 6. 本环境无法验证、需人工确认
+
+1. 真机读屏（NVDA / VoiceOver / TalkBack）对示例按钮的实际朗读，以及焦点移动时的播报体验。
+2. 评委设备上的无痕浏览器目视；Qoder 内置浏览器可视面板截图（本轮 `visible=false`，需要用户打开 In-app Browser 面板）。
+3. 真实剪贴板成功分支（本轮权限 `denied`，只证明了失败提示诚实 + 交给 API 的字符串正确）。
+4. OS 级 `prefers-reduced-motion`（本轮用 CDP 媒体仿真，不是系统设置）。
+5. 「环在你眼里够不够明显」这一条本来就只有人能回答，页面已按此措辞写明。
+
+### 7. Day 4 结论与状态
+
+- 键盘焦点实验开发、测试、真实浏览器取证完成；Day 1 / 2 / 3 零回归。
+- 站点线上仍是 Day 3 构建 `index-AFw0dV32.js`，**Day 4 未经确认不覆盖线上**。
+- 回退路径不变：`git checkout 943a3ac|737ceb7` → `npm run build` → 新 action 发布（历史 action 不能重新变当前版本）。
+
+## 2026-11-18 · Day 4 人工确认修复收尾轮（键盘到达次数）
+
+Day 4 结项后复核「我已完成观察」的语义，发现它把「焦点曾经到过按钮」和「用户真的用键盘走过一遍」混为一谈。本轮只做这一件事，范围严格限定在键盘实验。
+
+| 改动 | 实测 |
+| --- | --- |
+| `src/lib/keyboardFocusDemo.ts` | 观察次数拆成 `beforeSightings` / `afterSightings` 两条独立计数；新增只认键盘的判定与「应用修复保留前轮、后轮清零」的转移 |
+| `src/pages/KeyboardFocusLabPage.tsx` | 计数挂在真实 `focus` / `blur` 上，并要求键盘模态（`:focus-visible` 匹配）才算一次；鼠标点击聚焦、Enter/Space 激活都不计数 |
+| 「我已完成观察」启用条件 | 修复前有键盘记录 **且** `:focus-visible` 修复已应用 **且** 修复后有键盘记录，三条同时成立才可点；缺任何一条按钮保持禁用并说明缺哪一条 |
+| 「重置实验」 | 清掉两轮次数 + 本人确认 + 修复状态，回到缺陷态 |
+| 确认后的语义 | 只登记「已完成人工观察」，结语文案不出现「符合 WCAG」「已通过认证」 |
+| 测试 | `keyboardFocusDemo.test.ts` 26 → **38**、`KeyboardFocusLabPage.test.tsx` 34 → **41**，`npm test` **199/199**；旧 180 条未删未放宽 |
+
+真实浏览器复核（headless Edge + CDP，`Input.dispatchKeyEvent` 可信按键）：鼠标聚焦次数不涨、Tab 到达才涨；修复前 `3 次 / 0 次` 时按钮 `disabled: true`，应用修复后仍是 `3 次 / 0 次`（后轮清零），再 Tab 一轮变 `3 次 / 3 次` 才可点；点击后播报与结语逐字为「你已经体验了焦点指示修复。本次实验只验证了指定组件的焦点显示与基本操作，不能代表整个网站已经符合全部无障碍规范。」
+
+## 2026-11-18 · Day 5｜统一成果报告 `#/report`
+
+把「首页 → 色彩实验 → 表单标签实验 → 键盘焦点实验 → 成果报告 → 导出修复成果」这条链闭合。报告页**不重新判断颜色、标签或焦点**，只登记三个实验页已经跑出来的真实结论，并按「检测 / 修复 / 复验 / 人工确认」四档分开写。
+
+### 1. 新增与接线
+
+| 文件 | 作用 |
+| --- | --- |
+| `src/lib/experimentLedger.ts` | 台账的**纯逻辑层**：`emptyLedger`、`deriveContrastRecord` / `deriveFormRecord` / `deriveKeyboardRecord`、`snapshotFromAudit`、`reduce`（含 JSON 去重 bail-out）。每一条结论都由实验页已有的检测/算法结果推导，报告页拿不到「凭空数字」 |
+| `src/context/ExperimentLedgerContext.tsx` | React Context + `useReducer`，挂在 `App` 根上 ⇒ 切路由不丢记录；**不写 localStorage、不发请求**，刷新即清空 |
+| `src/lib/reportModel.ts` | 页面与 Markdown 的**同一份数据源**：概览计数、四档状态、每实验的证据与限制、`NON_CERTIFICATION_STATEMENT`、`buildReportMarkdown()` |
+| `src/pages/ReportPage.tsx` | 总览 + 三张实验卡（状态 / 问题 / 修复 / 证据 / WCAG 依据 / 未检查范围 / 回实验页入口）+ 需要人工验证的条目 + 说明 + 复制 / 下载 / 清空 |
+| `src/lib/reportModel.test.ts` 11、`src/lib/experimentLedger.test.ts` 16、`src/pages/ReportPage.test.tsx` 17、`src/App.report.test.tsx` 11 | 单元 + **整棵 `App` 的跨路由真实集成**：在同一个根里走完三个实验再看报告 |
+| `src/hooks/useHashRoute.ts`、`src/App.tsx`、`src/components/AppHeader.tsx`、`src/pages/HomePage.tsx` | 追加 `'#/report'` 映射、导航第五项「成果报告」、首页第四张卡片与轻量入口；`Route` / `routeFromHash` / `nextRoute` 逻辑未动 |
+| 三个实验页 | 各加一段「把本次结果镜像进台账」的 effect；`report === null`（异步检测未回来）时**不消费**首挂载跳过标记 |
+| `index.html` + `public/favicon.svg` | 补上 favicon，顺带关掉遗留 #11（`/favicon.ico` 404） |
+| `#main` | 去掉 `outline-none`，让全局 `:focus-visible` 生效 ⇒ 关闭遗留 #10（skip link 落点自身无可见焦点） |
+
+### 2. 测试与构建（真实执行）
+
+`npm test` **254/254（16 文件）**，Day 1–4 的 199 条**一条没删、没放宽**（Day 5 净增 55 条，全部来自 4 个新文件）：
+
+| 文件 | 条数 | | 文件 | 条数 |
+| --- | --- | --- | --- | --- |
+| `lib/contrast.test.ts` | 15 | | `lib/keyboardFocusDemo.test.ts` | 38 |
+| `lib/colorRepair.test.ts` | 16 | | `lib/keyboardFocusAudit.test.ts` | 11 |
+| `lib/repairWorkflow.test.ts` | 8 | | `pages/KeyboardFocusLabPage.test.tsx` | 41 |
+| `pages/ContrastLabPage.test.tsx` | 13 | | `pages/HomePage.test.tsx` | 8 |
+| `lib/formLabelAudit.test.ts` | 13 | | `App.test.tsx` | 10 |
+| `pages/FormLabelLabPage.test.tsx` | 16 | | `lib/experimentLedger.test.ts` | **16（Day 5）** |
+| `hooks/useHashRoute.test.ts` | 10 | | `lib/reportModel.test.ts` | **11（Day 5）** |
+| `pages/ReportPage.test.tsx` | **17（Day 5）** | | `App.report.test.tsx` | **11（Day 5）** |
+
+`npm run build`：`tsc -b` 通过 + 2104 modules → `index.html 0.67 kB`、**`index-C9lhVihd.js` 359.92 kB**(gzip 108.20)、**`index-9irSWUca.css` 27.62 kB**(gzip 6.09)。
+
+集成测试抓到的一处真实缺陷：重新进入 `#/keyboard` 时，异步 DOM 检测让 effect 跑第二遍，把上一轮保留的记录覆盖成「尚未记录」。修法是让首挂载跳过标记只在 `report !== null` 时才消费 —— 语义上「还没检测」不该被当成「用户重新检测了一遍」。
+
+### 3. 真实浏览器取证（headless Chromium + CDP）
+
+方法同 Day 4（`Input.dispatchKeyEvent` 可信按键、`getComputedStyle` 真实级联、`Emulation` 切视口、`Page.reload` 测刷新）。脚本与 JSON 在 `%LOCALAPPDATA%\Temp\accesslab-day5-verify\`（取证产物，不入库），目标 `http://localhost:4173`（含 Day 5 改动与 favicon 的 `dist/`）。
+
+| 检查项 | 实测结果 |
+| --- | --- |
+| 跨路由真实聚合 | 首页 → 色彩（生成建议 + 应用）→ 表单（修复标签）→ 键盘（Tab 三轮 + 修复 + Tab 三轮 + 我已完成观察）→ 报告：`已记录 3 / 3`、`已实际执行修复 3 / 3`、`已重新验证 3 / 3`、`仍需人工验证 3 项` |
+| 数字与实验页一致 | 色彩 `#767676 / #ffffff`、修复前 `4.48:1` 未达 AA、修复后 `4.54:1` 达到 AA，预览色 `rgb(119,119,119) → rgb(118,118,118)`；表单 `2 项：缺少程序化关联的可见标签、只有 placeholder 在承担标签职责 → 没有发现问题`，控件数 `2 个`；键盘 `3 次 / 3 次` 且「是：由你点击「我已完成观察」记录，不是程序自动判定」 |
+| 未运行 ≠ 0 项 | 只跑表单时报告写 `1 / 3`，色彩与键盘均为「尚未记录的实验：色彩对比度实验、键盘焦点实验」 |
+| 撤销 / 重置失效 | 撤销色彩修复 → 报告回到「已检测当前配色，尚未生成修复建议」且不再出现 `4.54`；表单重置 → 「已检测，尚未修复」；键盘重置 → 「尚未记录到键盘体验」 |
+| 刷新清空 | `Page.reload` 后 `0 / 3`、6 处「未记录」文案、复制按钮禁用、`localStorage` / `sessionStorage` 键数 `0`、无 Cookie |
+| 页面 / Markdown / 剪贴板 / 下载同源 | 交给 `clipboard.writeText` 的字符串与 `#report-markdown-source` **逐字相同**；下载得到 `AccessLab-成果报告-20261118114209.md`（5165 字节，`matchesTextarea: true`）；`readText` 回读被浏览器策略拒绝（`NotAllowedError`），故以「写入入参 + 落盘文件」两侧比对取证，不谎称读回了剪贴板 |
+| 清空需明确确认 | 第一下进入确认态（记录仍在、复制仍可用）；取消后 `3 / 3` 不变；确认后 `0 / 3` + 播报「已清空本次会话登记的实验记录…」，触发按钮变禁用态，焦点交给状态提示本身而非掉回 `<body>` |
+| 320 / 390 / 768 / 1440 | 四档 `pageOverflow: false`；320 与 390 的溢出全部由 `<pre>` 内部横向滚动承担（`scrollWidth 659 > clientWidth 246`，`overflow-x: auto`） |
+| skip link 与 `#main` | 首个 Tab 站点是「跳转到主要内容」（`solid 3px` 环可见）；Enter 后 `document.activeElement === <main id="main">`，`getComputedStyle` 读到 `solid 3px … offset 2px`，截图 `shot-00-skip-link-and-main-focus.png` |
+| 导航 | `['首页','色彩对比度实验','表单标签实验','键盘焦点实验','成果报告']`，全部 `height ≥ 44`、宽度 48–104px，键盘聚焦 `solid 3px` 环可见 |
+| 标题层级 | 报告页 `[1,2,3,2,3,4,4,3,4,4,3,4,4,2,3,2]`：一个 `h1`、无跳级；`role="status"` 区唯一且 `aria-live="polite"` / `aria-atomic="true"` |
+| 控制台与网络 | 整轮 `console-messages: []`；请求只有 `/`、`/assets/index-C9lhVihd.js`、`/assets/index-9irSWUca.css`、`/favicon.svg`（`200`）⇒ 遗留 #11 的 `/favicon.ico` 404 消失 |
+
+### 4. 本环境无法验证、需人工确认
+
+1. 真机读屏对报告页结构与播报顺序的实际体验（无障碍树与 `role=status` 只是结构证据）。
+2. 评委设备上的无痕浏览器目视，以及 Qoder 内置浏览器可视面板截图（本轮仍 `visible=false`）。
+3. 真实剪贴板「复制成功」分支（headless 下 `clipboard-read` 被策略拒绝，成功文案只在单测里以桩验证过）。
+4. OS 级 `prefers-reduced-motion`（本轮用 CDP 媒体仿真）。
+
+### 5. Day 5 结论与状态
+
+- 报告页、台账、Markdown 导出、本地下载、清空确认全部开发完成并通过测试与真实浏览器取证；Day 1–4 零回归。
+- 线上仍是 Day 3 构建 `index-AFw0dV32.js`；Day 4 / Day 5 改动**尚未提交、尚未发布**，等用户确认。
+
+
+

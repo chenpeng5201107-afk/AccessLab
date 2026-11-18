@@ -1,18 +1,23 @@
 import { useEffect, useRef } from 'react'
 
 import { AppHeader } from './components/AppHeader'
+import { ExperimentLedgerProvider } from './context/ExperimentLedgerContext'
 import { useHashRoute, type Route } from './hooks/useHashRoute'
 import { ContrastLabPage } from './pages/ContrastLabPage'
 import { FormLabelLabPage } from './pages/FormLabelLabPage'
 import { HomePage } from './pages/HomePage'
+import { KeyboardFocusLabPage } from './pages/KeyboardFocusLabPage'
+import { ReportPage } from './pages/ReportPage'
 
 const PAGE_TITLES: Record<Route, string> = {
   home: 'AccessLab｜无障碍实验室',
   'contrast-lab': '色彩对比度实验｜AccessLab 无障碍实验室',
   'form-label-lab': '表单标签实验｜AccessLab 无障碍实验室',
+  'keyboard-lab': '键盘焦点实验｜AccessLab 无障碍实验室',
+  report: '统一成果报告｜AccessLab 无障碍实验室',
 }
 
-export default function App() {
+function AppShell() {
   const route = useHashRoute()
   const mainRef = useRef<HTMLElement>(null)
   const lastRouteRef = useRef<Route>(route)
@@ -42,11 +47,15 @@ export default function App() {
 
       <AppHeader currentRoute={route} />
 
-      <main id="main" ref={mainRef} tabIndex={-1} className="grow outline-none">
+      <main id="main" ref={mainRef} tabIndex={-1} className="grow">
         {route === 'contrast-lab' ? (
           <ContrastLabPage />
         ) : route === 'form-label-lab' ? (
           <FormLabelLabPage />
+        ) : route === 'keyboard-lab' ? (
+          <KeyboardFocusLabPage />
+        ) : route === 'report' ? (
+          <ReportPage />
         ) : (
           <HomePage />
         )}
@@ -58,10 +67,22 @@ export default function App() {
             AccessLab 无障碍实验室 · 让每个人都能更轻松地使用互联网。
           </p>
           <p>
-            对比度依据 WCAG 2.2 相对亮度算法实时计算 · 仅覆盖单条成功标准 · 纯前端，无数据库
+            对比度依据 WCAG 2.2 相对亮度算法实时计算 · 每个实验只覆盖对应的成功标准 · 纯前端，无数据库
           </p>
         </div>
       </footer>
     </div>
+  )
+}
+
+/**
+ * 台账挂在路由与页面之上：换页面不会丢掉本次会话已登记的成果，
+ * 刷新页面则回到空台账（内存 only，没有任何持久化）。
+ */
+export default function App() {
+  return (
+    <ExperimentLedgerProvider>
+      <AppShell />
+    </ExperimentLedgerProvider>
   )
 }

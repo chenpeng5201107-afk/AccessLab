@@ -24,9 +24,10 @@ const EXPERIMENTS = [
   {
     index: 3,
     title: '键盘焦点实验',
-    summary: '只用 Tab 键走一遍流程，你会发现自己页面里藏着的死角。',
+    summary: '别用鼠标，只按 Tab 走一遍：焦点走到哪了，你还看得出来吗？',
     icon: Keyboard,
-    status: 'upcoming' as const,
+    status: 'available' as const,
+    href: ROUTE_HASH['keyboard-lab'],
   },
 ]
 
@@ -101,8 +102,9 @@ export function HomePage() {
             </h1>
 
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-slate-700">
-              很多人上网时看不清按钮、找不到输入框，却没人告诉他们问题出在哪。
-              AccessLab 把真实页面摆在你面前：改一个颜色，立刻看见问题，也立刻看见修好后的样子。
+              很多人上网时看不清按钮、找不到输入框、用键盘走两步就丢了位置，却没人告诉他们问题出在哪。
+              AccessLab 把真实页面摆在你面前：改一个颜色、补一个标签关联、再用 Tab 走一遍焦点，
+              立刻看见问题，也立刻看见修好后的样子。
             </p>
 
             <p className="mt-4 text-base font-semibold text-indigo-800">
@@ -167,7 +169,8 @@ export function HomePage() {
         <div className="max-w-2xl">
           <h2 className="text-2xl font-bold tracking-tight text-slate-900">三个实验方向</h2>
           <p className="mt-2 text-base leading-relaxed text-slate-700">
-            前两个已经可以玩。最后一个还在开发，所以我们只放卡片，不放点了没反应的按钮。
+            三个都已经可以体验：换一对颜色、修一个标签关联、再用 Tab 走一遍焦点。
+            每个实验都只覆盖对应的成功标准，结论不代表整站符合 WCAG 2.2。
           </p>
         </div>
 
@@ -178,6 +181,19 @@ export function HomePage() {
             </li>
           ))}
         </ul>
+
+        {/* 轻量入口：报告不是第四个实验，而是把上面三个实验本次会话的真实结果汇总起来 */}
+        <p className="mt-8 max-w-2xl text-sm leading-relaxed text-slate-700">
+          做完实验后，可以去
+          <a
+            href={ROUTE_HASH.report}
+            className="mx-1 inline-flex min-h-11 items-center gap-1 font-semibold text-indigo-800 underline decoration-indigo-400 decoration-2 underline-offset-4 hover:decoration-indigo-800"
+          >
+            统一成果报告
+            <ArrowRight className="size-4" aria-hidden="true" />
+          </a>
+          汇总这一轮的检测、修复与待验证项目，并复制或导出成 Markdown。
+        </p>
       </section>
     </>
   )

@@ -11,6 +11,12 @@ import {
 } from 'lucide-react'
 
 import { ROUTE_HASH } from '../hooks/useHashRoute'
+import { useExperimentLedger } from '../context/ExperimentLedgerContext'
+import {
+  deriveFormRecord,
+  snapshotFromAudit,
+  type IssueSnapshot,
+} from '../lib/experimentLedger'
 import { auditFormLabels, type FieldAuditRow, type FormLabelAuditReport } from '../lib/formLabelAudit'
 import { EMAIL_FIELD, NAME_FIELD, demoFormHtml, demoFormMarkup } from '../lib/formLabelDemoFields'
 
@@ -101,14 +107,43 @@ function FieldResultRow({ row }: { row: FieldAuditRow }) {
 
 export function FormLabelLabPage() {
   const formRef = useRef<HTMLFormElement>(null)
+  const { ledger, dispatch } = useExperimentLedger()
   const [labelFixed, setLabelFixed] = useState(false)
   const [report, setReport] = useState<FormLabelAuditReport | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
+  /** 缺陷态那次检测的摘要：修复后 DOM 已经变了，报告里的「修复前」只能靠它 */
+  const beforeSnapshotRef = useRef<IssueSnapshot | null>(null)
+  const ledgerSyncedRef = useRef(false)
 
   // 检测对象永远是已经渲染出来的真实 DOM 节点，而不是 React 里的某个标志位
   useEffect(() => {
-    setReport(auditFormLabels(formRef.current))
+    const next = auditFormLabels(formRef.current)
+    setReport(next)
+    if (!labelFixed) beforeSnapshotRef.current = snapshotFromAudit(next)
   }, [labelFixed])
+
+  /**
+   * 报告台账登记的是上面那次真实 DOM 检测的结果，而不是「修复按钮被点过」。
+   * 首次挂载在台账已有记录时不覆盖，保证「修完再切去报告」不丢成果；
+   * 重置 / 重新检测会带着新的检测结果重新写入。
+   */
+  useEffect(() => {
+    if (report === null) return
+    const isFirstSync = !ledgerSyncedRef.current
+    ledgerSyncedRef.current = true
+    if (isFirstSync && ledger.formLabel !== null) return
+
+    dispatch({
+      type: 'form-label:sync',
+      record: deriveFormRecord({
+        labelFixed,
+        report,
+        before: beforeSnapshotRef.current,
+        beforeHtml: demoFormHtml(false),
+        afterHtml: demoFormHtml(true),
+      }),
+    })
+  }, [dispatch, labelFixed, ledger.formLabel, report])
 
   const handleRepair = () => {
     if (labelFixed) return

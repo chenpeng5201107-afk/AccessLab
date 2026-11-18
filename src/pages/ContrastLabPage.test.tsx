@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { act } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 
+import { ExperimentLedgerProvider } from '../context/ExperimentLedgerContext'
 import { ContrastLabPage } from './ContrastLabPage'
 
 /**
@@ -80,7 +81,11 @@ describe('ContrastLabPage · 修复交互（组件接线层）', () => {
     document.body.appendChild(container)
     root = createRoot(container)
     act(() => {
-      root.render(<ContrastLabPage />)
+      root.render(
+        <ExperimentLedgerProvider>
+          <ContrastLabPage />
+        </ExperimentLedgerProvider>,
+      )
     })
   })
 

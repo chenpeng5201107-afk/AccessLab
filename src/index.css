@@ -5,6 +5,11 @@
 @source not "../**/*.md";
 @source not "../**/*.{test,spec}.{ts,tsx}";
 
+/* Day 4：键盘焦点实验把真实生效的 CSS 规则存在 TS 里，作为「展示代码 = 生效代码」的单一数据源。
+   这些 CSS 文本会被内容扫描当成 class 候选，凭空生成 .outline / .outline-none 之类的无用工具类，
+   让产物 CSS 随无关文字变大，所以整文件排除（该文件不含任何 Tailwind 类名）。 */
+@source not "./lib/keyboardFocusDemo.ts";
+
 @theme {
   --font-sans:
     'Segoe UI', system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC',
