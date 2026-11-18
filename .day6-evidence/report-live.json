@@ -1,0 +1,1046 @@
+{
+  "meta": {
+    "browser": "Edg/157.0.4341.60",
+    "target": "https://accessibility-lab-3g6uvbn5duq.qoder.zone",
+    "assets": [
+      "index-DgYwPq9n.css",
+      "index-gw0uvRiw.js"
+    ],
+    "flowMs": 7073,
+    "flowSteps": [
+      {
+        "label": "开始第一个实验",
+        "ms": 1143,
+        "targetH": 52
+      },
+      {
+        "label": "生成修复建议",
+        "ms": 1452,
+        "targetH": 44
+      },
+      {
+        "label": "应用该修复",
+        "ms": 1759,
+        "targetH": 44
+      },
+      {
+        "label": "进入表单标签实验",
+        "ms": 2115,
+        "targetH": 44
+      },
+      {
+        "label": "修复标签关联",
+        "ms": 2407,
+        "targetH": 44
+      },
+      {
+        "label": "修复标签关联",
+        "ms": 3029,
+        "targetH": 44
+      },
+      {
+        "label": "进入键盘焦点实验",
+        "ms": 3399,
+        "targetH": 44
+      },
+      {
+        "label": "Tab 走满第一轮（第 1 次尝试）",
+        "ms": 3695,
+        "counter": "3 次",
+        "presses": 4,
+        "before": "3 次",
+        "after": "0 次",
+        "repaired": false,
+        "confirmDisabled": true,
+        "hint": null
+      },
+      {
+        "label": "修复焦点指示",
+        "ms": 4003,
+        "targetH": 44
+      },
+      {
+        "label": "修复焦点指示",
+        "ms": 4624,
+        "targetH": 44
+      },
+      {
+        "label": "Tab 走满第二轮",
+        "ms": 5866,
+        "counter": "3 次",
+        "presses": 18,
+        "before": "3 次",
+        "after": "3 次",
+        "repaired": true,
+        "confirmDisabled": false,
+        "hint": null
+      },
+      {
+        "label": "我已完成观察",
+        "ms": 6188,
+        "targetH": 44
+      },
+      {
+        "label": "查看统一成果报告",
+        "ms": 6565,
+        "targetH": 44
+      },
+      {
+        "label": "复制 Markdown 报告",
+        "ms": 7477,
+        "targetH": 44
+      },
+      {
+        "label": "下载 .md 文件",
+        "ms": 7804,
+        "targetH": 44
+      }
+    ],
+    "firstTab": {
+      "tag": "a",
+      "label": "跳转到主要内容",
+      "outline": "solid 3px oklch(0.457 0.24 277.023) offset=2px",
+      "visible": true
+    }
+  },
+  "layout": [
+    {
+      "route": "#/",
+      "width": 320,
+      "height": 640,
+      "mobile": true,
+      "overflowPx": 0,
+      "offenders": [],
+      "h1": "让网页的障碍，看得见、改得掉。",
+      "navBottom": 208,
+      "mainTop": 221,
+      "smallTargets": [],
+      "pres": [],
+      "bodyOverflowX": "visible"
+    },
+    {
+      "route": "#/",
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "overflowPx": 0,
+      "offenders": [],
+      "h1": "让网页的障碍，看得见、改得掉。",
+      "navBottom": 160,
+      "mainTop": 173,
+      "smallTargets": [],
+      "pres": [],
+      "bodyOverflowX": "visible"
+    },
+    {
+      "route": "#/",
+      "width": 768,
+      "height": 1024,
+      "mobile": false,
+      "overflowPx": -15,
+      "offenders": [],
+      "h1": "让网页的障碍，看得见、改得掉。",
+      "navBottom": 52,
+      "mainTop": 69,
+      "smallTargets": [
+        {
+          "label": "首页",
+          "w": 52,
+          "h": 36
+        },
+        {
+          "label": "色彩对比度实验",
+          "w": 122,
+          "h": 36
+        },
+        {
+          "label": "表单标签实验",
+          "w": 108,
+          "h": 36
+        },
+        {
+          "label": "键盘焦点实验",
+          "w": 108,
+          "h": 36
+        },
+        {
+          "label": "成果报告",
+          "w": 80,
+          "h": 36
+        }
+      ],
+      "pres": [],
+      "bodyOverflowX": "visible"
+    },
+    {
+      "route": "#/",
+      "width": 1440,
+      "height": 900,
+      "mobile": false,
+      "overflowPx": -15,
+      "offenders": [],
+      "h1": "让网页的障碍，看得见、改得掉。",
+      "navBottom": 52,
+      "mainTop": 69,
+      "smallTargets": [
+        {
+          "label": "首页",
+          "w": 52,
+          "h": 36
+        },
+        {
+          "label": "色彩对比度实验",
+          "w": 122,
+          "h": 36
+        },
+        {
+          "label": "表单标签实验",
+          "w": 108,
+          "h": 36
+        },
+        {
+          "label": "键盘焦点实验",
+          "w": 108,
+          "h": 36
+        },
+        {
+          "label": "成果报告",
+          "w": 80,
+          "h": 36
+        }
+      ],
+      "pres": [],
+      "bodyOverflowX": "visible"
+    },
+    {
+      "route": "#/contrast",
+      "width": 320,
+      "height": 640,
+      "mobile": true,
+      "overflowPx": 0,
+      "offenders": [],
+      "h1": "色彩对比度实验",
+      "navBottom": 208,
+      "mainTop": 221,
+      "smallTargets": [],
+      "pres": [],
+      "bodyOverflowX": "visible"
+    },
+    {
+      "route": "#/contrast",
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "overflowPx": 0,
+      "offenders": [],
+      "h1": "色彩对比度实验",
+      "navBottom": 160,
+      "mainTop": 173,
+      "smallTargets": [],
+      "pres": [],
+      "bodyOverflowX": "visible"
+    },
+    {
+      "route": "#/contrast",
+      "width": 768,
+      "height": 1024,
+      "mobile": false,
+      "overflowPx": -15,
+      "offenders": [],
+      "h1": "色彩对比度实验",
+      "navBottom": 52,
+      "mainTop": 69,
+      "smallTargets": [
+        {
+          "label": "首页",
+          "w": 52,
+          "h": 36
+        },
+        {
+          "label": "色彩对比度实验",
+          "w": 122,
+          "h": 36
+        },
+        {
+          "label": "表单标签实验",
+          "w": 108,
+          "h": 36
+        },
+        {
+          "label": "键盘焦点实验",
+          "w": 108,
+          "h": 36
+        },
+        {
+          "label": "成果报告",
+          "w": 80,
+          "h": 36
+        }
+      ],
+      "pres": [],
+      "bodyOverflowX": "visible"
+    },
+    {
+      "route": "#/contrast",
+      "width": 1440,
+      "height": 900,
+      "mobile": false,
+      "overflowPx": -15,
+      "offenders": [],
+      "h1": "色彩对比度实验",
+      "navBottom": 52,
+      "mainTop": 69,
+      "smallTargets": [
+        {
+          "label": "首页",
+          "w": 52,
+          "h": 36
+        },
+        {
+          "label": "色彩对比度实验",
+          "w": 122,
+          "h": 36
+        },
+        {
+          "label": "表单标签实验",
+          "w": 108,
+          "h": 36
+        },
+        {
+          "label": "键盘焦点实验",
+          "w": 108,
+          "h": 36
+        },
+        {
+          "label": "成果报告",
+          "w": 80,
+          "h": 36
+        }
+      ],
+      "pres": [],
+      "bodyOverflowX": "visible"
+    },
+    {
+      "route": "#/form-label",
+      "width": 320,
+      "height": 640,
+      "mobile": true,
+      "overflowPx": 0,
+      "offenders": [],
+      "h1": "表单标签实验",
+      "navBottom": 208,
+      "mainTop": 221,
+      "smallTargets": [],
+      "pres": [
+        {
+          "scrollsItself": true,
+          "overflowX": "auto",
+          "breaksPage": false
+        },
+        {
+          "scrollsItself": true,
+          "overflowX": "auto",
+          "breaksPage": false
+        }
+      ],
+      "bodyOverflowX": "visible"
+    },
+    {
+      "route": "#/form-label",
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "overflowPx": 0,
+      "offenders": [],
+      "h1": "表单标签实验",
+      "navBottom": 160,
+      "mainTop": 173,
+      "smallTargets": [],
+      "pres": [
+        {
+          "scrollsItself": true,
+          "overflowX": "auto",
+          "breaksPage": false
+        },
+        {
+          "scrollsItself": true,
+          "overflowX": "auto",
+          "breaksPage": false
+        }
+      ],
+      "bodyOverflowX": "visible"
+    },
+    {
+      "route": "#/form-label",
+      "width": 768,
+      "height": 1024,
+      "mobile": false,
+      "overflowPx": -15,
+      "offenders": [],
+      "h1": "表单标签实验",
+      "navBottom": 52,
+      "mainTop": 69,
+      "smallTargets": [
+        {
+          "label": "首页",
+          "w": 52,
+          "h": 36
+        },
+        {
+          "label": "色彩对比度实验",
+          "w": 122,
+          "h": 36
+        },
+        {
+          "label": "表单标签实验",
+          "w": 108,
+          "h": 36
+        },
+        {
+          "label": "键盘焦点实验",
+          "w": 108,
+          "h": 36
+        },
+        {
+          "label": "成果报告",
+          "w": 80,
+          "h": 36
+        }
+      ],
+      "pres": [
+        {
+          "scrollsItself": true,
+          "overflowX": "auto",
+          "breaksPage": false
+        },
+        {
+          "scrollsItself": true,
+          "overflowX": "auto",
+          "breaksPage": false
+        }
+      ],
+      "bodyOverflowX": "visible"
+    },
+    {
+      "route": "#/form-label",
+      "width": 1440,
+      "height": 900,
+      "mobile": false,
+      "overflowPx": -15,
+      "offenders": [],
+      "h1": "表单标签实验",
+      "navBottom": 52,
+      "mainTop": 69,
+      "smallTargets": [
+        {
+          "label": "首页",
+          "w": 52,
+          "h": 36
+        },
+        {
+          "label": "色彩对比度实验",
+          "w": 122,
+          "h": 36
+        },
+        {
+          "label": "表单标签实验",
+          "w": 108,
+          "h": 36
+        },
+        {
+          "label": "键盘焦点实验",
+          "w": 108,
+          "h": 36
+        },
+        {
+          "label": "成果报告",
+          "w": 80,
+          "h": 36
+        }
+      ],
+      "pres": [
+        {
+          "scrollsItself": true,
+          "overflowX": "auto",
+          "breaksPage": false
+        },
+        {
+          "scrollsItself": true,
+          "overflowX": "auto",
+          "breaksPage": false
+        }
+      ],
+      "bodyOverflowX": "visible"
+    },
+    {
+      "route": "#/keyboard",
+      "width": 320,
+      "height": 640,
+      "mobile": true,
+      "overflowPx": 0,
+      "offenders": [],
+      "h1": "键盘焦点实验",
+      "navBottom": 208,
+      "mainTop": 221,
+      "smallTargets": [],
+      "pres": [
+        {
+          "scrollsItself": true,
+          "overflowX": "auto",
+          "breaksPage": false
+        },
+        {
+          "scrollsItself": true,
+          "overflowX": "auto",
+          "breaksPage": false
+        },
+        {
+          "scrollsItself": true,
+          "overflowX": "auto",
+          "breaksPage": false
+        },
+        {
+          "scrollsItself": true,
+          "overflowX": "auto",
+          "breaksPage": false
+        }
+      ],
+      "bodyOverflowX": "visible"
+    },
+    {
+      "route": "#/keyboard",
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "overflowPx": 0,
+      "offenders": [],
+      "h1": "键盘焦点实验",
+      "navBottom": 160,
+      "mainTop": 173,
+      "smallTargets": [],
+      "pres": [
+        {
+          "scrollsItself": false,
+          "overflowX": "auto",
+          "breaksPage": false
+        },
+        {
+          "scrollsItself": false,
+          "overflowX": "auto",
+          "breaksPage": false
+        },
+        {
+          "scrollsItself": false,
+          "overflowX": "auto",
+          "breaksPage": false
+        },
+        {
+          "scrollsItself": true,
+          "overflowX": "auto",
+          "breaksPage": false
+        }
+      ],
+      "bodyOverflowX": "visible"
+    },
+    {
+      "route": "#/keyboard",
+      "width": 768,
+      "height": 1024,
+      "mobile": false,
+      "overflowPx": -15,
+      "offenders": [],
+      "h1": "键盘焦点实验",
+      "navBottom": 52,
+      "mainTop": 69,
+      "smallTargets": [
+        {
+          "label": "首页",
+          "w": 52,
+          "h": 36
+        },
+        {
+          "label": "色彩对比度实验",
+          "w": 122,
+          "h": 36
+        },
+        {
+          "label": "表单标签实验",
+          "w": 108,
+          "h": 36
+        },
+        {
+          "label": "键盘焦点实验",
+          "w": 108,
+          "h": 36
+        },
+        {
+          "label": "成果报告",
+          "w": 80,
+          "h": 36
+        }
+      ],
+      "pres": [
+        {
+          "scrollsItself": false,
+          "overflowX": "auto",
+          "breaksPage": false
+        },
+        {
+          "scrollsItself": false,
+          "overflowX": "auto",
+          "breaksPage": false
+        },
+        {
+          "scrollsItself": false,
+          "overflowX": "auto",
+          "breaksPage": false
+        },
+        {
+          "scrollsItself": false,
+          "overflowX": "auto",
+          "breaksPage": false
+        }
+      ],
+      "bodyOverflowX": "visible"
+    },
+    {
+      "route": "#/keyboard",
+      "width": 1440,
+      "height": 900,
+      "mobile": false,
+      "overflowPx": -15,
+      "offenders": [],
+      "h1": "键盘焦点实验",
+      "navBottom": 52,
+      "mainTop": 69,
+      "smallTargets": [
+        {
+          "label": "首页",
+          "w": 52,
+          "h": 36
+        },
+        {
+          "label": "色彩对比度实验",
+          "w": 122,
+          "h": 36
+        },
+        {
+          "label": "表单标签实验",
+          "w": 108,
+          "h": 36
+        },
+        {
+          "label": "键盘焦点实验",
+          "w": 108,
+          "h": 36
+        },
+        {
+          "label": "成果报告",
+          "w": 80,
+          "h": 36
+        }
+      ],
+      "pres": [
+        {
+          "scrollsItself": false,
+          "overflowX": "auto",
+          "breaksPage": false
+        },
+        {
+          "scrollsItself": false,
+          "overflowX": "auto",
+          "breaksPage": false
+        },
+        {
+          "scrollsItself": false,
+          "overflowX": "auto",
+          "breaksPage": false
+        },
+        {
+          "scrollsItself": false,
+          "overflowX": "auto",
+          "breaksPage": false
+        }
+      ],
+      "bodyOverflowX": "visible"
+    },
+    {
+      "route": "#/report",
+      "width": 320,
+      "height": 640,
+      "mobile": true,
+      "overflowPx": 0,
+      "offenders": [],
+      "h1": "统一成果报告",
+      "navBottom": 208,
+      "mainTop": 221,
+      "smallTargets": [],
+      "pres": [],
+      "bodyOverflowX": "visible"
+    },
+    {
+      "route": "#/report",
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "overflowPx": 0,
+      "offenders": [],
+      "h1": "统一成果报告",
+      "navBottom": 160,
+      "mainTop": 173,
+      "smallTargets": [],
+      "pres": [],
+      "bodyOverflowX": "visible"
+    },
+    {
+      "route": "#/report",
+      "width": 768,
+      "height": 1024,
+      "mobile": false,
+      "overflowPx": -15,
+      "offenders": [],
+      "h1": "统一成果报告",
+      "navBottom": 52,
+      "mainTop": 69,
+      "smallTargets": [
+        {
+          "label": "首页",
+          "w": 52,
+          "h": 36
+        },
+        {
+          "label": "色彩对比度实验",
+          "w": 122,
+          "h": 36
+        },
+        {
+          "label": "表单标签实验",
+          "w": 108,
+          "h": 36
+        },
+        {
+          "label": "键盘焦点实验",
+          "w": 108,
+          "h": 36
+        },
+        {
+          "label": "成果报告",
+          "w": 80,
+          "h": 36
+        }
+      ],
+      "pres": [],
+      "bodyOverflowX": "visible"
+    },
+    {
+      "route": "#/report",
+      "width": 1440,
+      "height": 900,
+      "mobile": false,
+      "overflowPx": -15,
+      "offenders": [],
+      "h1": "统一成果报告",
+      "navBottom": 52,
+      "mainTop": 69,
+      "smallTargets": [
+        {
+          "label": "首页",
+          "w": 52,
+          "h": 36
+        },
+        {
+          "label": "色彩对比度实验",
+          "w": 122,
+          "h": 36
+        },
+        {
+          "label": "表单标签实验",
+          "w": 108,
+          "h": 36
+        },
+        {
+          "label": "键盘焦点实验",
+          "w": 108,
+          "h": 36
+        },
+        {
+          "label": "成果报告",
+          "w": 80,
+          "h": 36
+        }
+      ],
+      "pres": [],
+      "bodyOverflowX": "visible"
+    }
+  ],
+  "focusRing": [
+    {
+      "tag": "a",
+      "label": "跳转到主要内容",
+      "outline": "solid 3px oklch(0.457 0.24 277.023) offset=2px",
+      "visible": true
+    },
+    {
+      "tag": "a",
+      "label": "AccessLab\n无障碍实验室",
+      "outline": "solid 3px oklch(0.457 0.24 277.023) offset=2px",
+      "visible": true
+    },
+    {
+      "tag": "a",
+      "label": "首页",
+      "outline": "solid 3px oklab(0.359 0.0217741 -0.142344) offset=2px",
+      "visible": true
+    },
+    {
+      "tag": "a",
+      "label": "色彩对比度实验",
+      "outline": "solid 3px oklab(0.372 -0.00968297 -0.0429213) offset=2px",
+      "visible": true
+    },
+    {
+      "tag": "a",
+      "label": "表单标签实验",
+      "outline": "solid 3px oklab(0.372 -0.00968297 -0.0429213) offset=2px",
+      "visible": true
+    }
+  ],
+  "skip": {
+    "focused": {
+      "label": "跳转到主要内容",
+      "href": "#main"
+    },
+    "steps": [
+      {
+        "press": 1,
+        "label": "成果报告",
+        "href": "#/report"
+      },
+      {
+        "press": 2,
+        "label": "键盘焦点实验",
+        "href": "#/keyboard"
+      },
+      {
+        "press": 3,
+        "label": "表单标签实验",
+        "href": "#/form-label"
+      },
+      {
+        "press": 4,
+        "label": "色彩对比度实验",
+        "href": "#/contrast"
+      },
+      {
+        "press": 5,
+        "label": "首页",
+        "href": "#/"
+      },
+      {
+        "press": 6,
+        "label": "AccessLab\n无障碍实验室",
+        "href": "#/"
+      },
+      {
+        "press": 7,
+        "label": "跳转到主要内容",
+        "href": "#main"
+      }
+    ],
+    "result": {
+      "activeId": "main",
+      "activeTag": "main",
+      "hash": "#/keyboard",
+      "h1": "键盘焦点实验"
+    }
+  },
+  "keyboard": {
+    "firstDemo": {
+      "presses": 2,
+      "isDemo": true,
+      "label": "查看详情",
+      "outline": "none 3px",
+      "boxShadow": "none"
+    },
+    "fixedDemoFocus": {
+      "isDemo": true,
+      "label": "返回上一步",
+      "outline": "solid 3px",
+      "matchesFocusVisible": true
+    },
+    "counters": {
+      "before": "3 次",
+      "after": "3 次",
+      "confirmed": "页面出现「已记录你的观察确认」"
+    },
+    "shellVsDemo": {
+      "brokenPresent": true,
+      "fixedPresent": false,
+      "demoButtonClass": "kf-demo-btn kf-demo-btn--broken",
+      "demoRuleTargets": [
+        ".kf-demo-btn--broken:focus-visible {",
+        ".kf-demo-btn--fixed:focus-visible {",
+        ".kf-demo-btn:focus-visible,"
+      ]
+    },
+    "demoStyleTags": [
+      "demo"
+    ],
+    "brokenReal": "保存选择 → outline none 3px",
+    "navFocused": {
+      "label": "查看详情",
+      "href": null,
+      "outline": "none 3px rgb(30, 41, 59) offset=2px",
+      "isNavLink": false
+    }
+  },
+  "flow": {
+    "afterCta": {
+      "hash": "#/contrast",
+      "h1": "色彩对比度实验",
+      "title": "色彩对比度实验｜AccessLab 无障碍实验室"
+    },
+    "contrastReadouts": {
+      "notices": [
+        "当前对比度 4.54:1 达到 AA",
+        "已应用修复：文字颜色改为 #767676，对比度提升至 4.54:1。背景颜色未改变。"
+      ],
+      "ratio": null
+    },
+    "afterNext1": {
+      "hash": "#/form-label",
+      "h1": "表单标签实验"
+    },
+    "afterNext2": {
+      "hash": "#/keyboard",
+      "h1": "键盘焦点实验"
+    },
+    "reportHead": {
+      "hash": "#/report",
+      "h1": "统一成果报告",
+      "lead": "这次会话登记了 3 / 3 个实验的成果，其中 3 个真正改动了页面，1 个已由你本人确认。",
+      "stats": [
+        "已记录 / 总实验数 3 / 3",
+        "已实际执行修复的实验数 3 / 3",
+        "已进行修复后复核（含人工键盘体验）的实验数 3 / 3",
+        "仍需人工验证的条目 3 项",
+        "当前配色 #767676 / #ffffff",
+        "当前对比度（未取整真实值） 4.54:1",
+        "当前 AA 判定（普通文本 4.5:1） 达到 AA（≥4.5:1）",
+        "修复前文字色 / 背景色 #777777 / #ffffff",
+        "修复前对比度 4.48:1",
+        "修复前 AA 判定 未达 AA（<4.5:1）",
+        "修复后文字色（背景保持不变） #767676",
+        "修复后对比度 4.54:1",
+        "修复后 AA 判定 达到 AA（≥4.5:1）",
+        "是否已实际应用修复 是：点过「应用修复」，实验页面的文字颜色确实换成了建议值",
+        "检查的文本录入控件数 2 个",
+        "修复前问题 2 项：缺少程序化关联的可见标签、只有 placeholder 在承担标签职责",
+        "修复后（最近一次真实 DOM 检测）问题 没有发现问题",
+        "是否真的改过 DOM 是：「姓名」那行文字已从普通文本换成带 for 的 label，随后重新读取真实 DOM",
+        "重新检测后的结论 示例控件的标签关联检查已无问题",
+        "指向不存在控件的 label 0 个",
+        "真实 DOM 规则检测 3 个示例按钮（键盘可走到 3 个），焦点规则问题 0 项",
+        "焦点指示修复是否应用 是：示例按钮已换成带 outline 的 :focus-visible 规则",
+        "修复前键盘导航到达次数 3 次",
+        "修复后键盘导航到达次数 3 次",
+        "你是否已确认观察结果 是：由你点击「我已完成观察」记录，不是程序自动判定",
+        "教学阶段 用户已确认观察结果 — 你确认了自己看到的差别。这条记录来自你的观察，不是程序自动扫描的结论。"
+      ],
+      "chips": [
+        "状态：修复已应用到实验页面，并按新配色重新算过",
+        "状态：已修复并通过重新检测（仅指示例控件的标签关联）",
+        "状态：已完成两轮键盘体验并由你确认观察"
+      ]
+    },
+    "markdownLength": 5651,
+    "copyStatus": [
+      "已复制完整 Markdown 报告，内容与上方展示逐字一致，可直接粘贴到笔记或 .md 文件。"
+    ],
+    "downloadStatus": [
+      "已生成 AccessLab-成果报告-20261118212713.md：文件只在你的浏览器里拼装，没有上传到任何服务器。"
+    ],
+    "downloads": [
+      "AccessLab-成果报告-20261118212713.md.crdownload"
+    ],
+    "downloaded": {
+      "name": "AccessLab-成果报告-20261118212713.md.crdownload",
+      "bytes": 12047,
+      "chars": 5651
+    },
+    "textareaBytes": {
+      "bytes": 12047,
+      "chars": 5651
+    },
+    "ledger": {
+      "atReport": "已记录 / 总实验数 3 / 3",
+      "leftPage": {
+        "h1": "色彩对比度实验",
+        "hash": "#/contrast"
+      },
+      "afterRouteSwitch": "已记录 / 总实验数 3 / 3",
+      "afterReload": {
+        "stat": "已记录 / 总实验数 0 / 3",
+        "h1": "统一成果报告",
+        "title": "统一成果报告｜AccessLab 无障碍实验室",
+        "copyDisabled": [
+          true,
+          true,
+          true
+        ]
+      },
+      "deepLinkUrl": "https://accessibility-lab-3g6uvbn5duq.qoder.zone/index.html#/report"
+    }
+  },
+  "mobile": {
+    "320": {
+      "overflow": 0,
+      "heroStacks": "288px",
+      "comparisonCards": 8
+    },
+    "contrast320": {
+      "overflow": 0,
+      "noticeVisible": {
+        "top": 428,
+        "inViewport": true
+      },
+      "nextVisible": {
+        "h": 44,
+        "inViewport": true
+      }
+    },
+    "flow": [
+      {
+        "label": "生成修复建议",
+        "h": 44,
+        "y": 320
+      },
+      {
+        "label": "应用该修复",
+        "h": 44,
+        "y": 320
+      }
+    ],
+    "report390": {
+      "overflow": 0,
+      "uniqueLinks": [
+        "#/",
+        "#/contrast",
+        "#/form-label",
+        "#/keyboard"
+      ],
+      "preScroll": []
+    }
+  },
+  "motion": {
+    "reduced": {
+      "scrollBehavior": "auto",
+      "linkTransition": "1e-05s"
+    },
+    "normal": {
+      "scrollBehavior": "smooth",
+      "linkTransition": "0.15s"
+    }
+  },
+  "console": []
+}

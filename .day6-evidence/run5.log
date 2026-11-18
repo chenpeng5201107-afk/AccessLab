@@ -1,0 +1,39 @@
+serving C:\Users\zxcvb\OneDrive\Desktop\AccessLab\dist at http://127.0.0.1:56191/index.html
+browser: Edg/157.0.4341.60
+layout #/ @320: overflow=0 small=0 h1="让网页的障碍，看得见、改得掉。"
+layout #/ @390: overflow=0 small=0 h1="让网页的障碍，看得见、改得掉。"
+layout #/ @768: overflow=-15 small=5 h1="让网页的障碍，看得见、改得掉。"
+layout #/ @1440: overflow=-15 small=5 h1="让网页的障碍，看得见、改得掉。"
+layout #/contrast @320: overflow=0 small=0 h1="色彩对比度实验"
+layout #/contrast @390: overflow=0 small=0 h1="色彩对比度实验"
+layout #/contrast @768: overflow=-15 small=5 h1="色彩对比度实验"
+layout #/contrast @1440: overflow=-15 small=5 h1="色彩对比度实验"
+layout #/form-label @320: overflow=0 small=0 h1="表单标签实验"
+layout #/form-label @390: overflow=0 small=0 h1="表单标签实验"
+layout #/form-label @768: overflow=-15 small=5 h1="表单标签实验"
+layout #/form-label @1440: overflow=-15 small=5 h1="表单标签实验"
+layout #/keyboard @320: overflow=0 small=0 h1="键盘焦点实验"
+layout #/keyboard @390: overflow=0 small=0 h1="键盘焦点实验"
+layout #/keyboard @768: overflow=-15 small=5 h1="键盘焦点实验"
+layout #/keyboard @1440: overflow=-15 small=5 h1="键盘焦点实验"
+layout #/report @320: overflow=0 small=0 h1="统一成果报告"
+layout #/report @390: overflow=0 small=0 h1="统一成果报告"
+layout #/report @768: overflow=-15 small=5 h1="统一成果报告"
+layout #/report @1440: overflow=-15 small=5 h1="统一成果报告"
+focus 1 跳转到主要内容 | solid 3px oklch(0.457 0.24 277.023) offset=2px
+focus 2 AccessLab
+无障碍实验室 | solid 3px oklch(0.457 0.24 277.023) offset=2px
+focus 3 首页 | solid 3px oklab(0.362214 0.0220224 -0.145488) offset=2px
+focus 4 色彩对比度实验 | solid 3px oklab(0.372 -0.00968297 -0.0429213) offset=2px
+focus 5 表单标签实验 | solid 3px oklab(0.372 -0.00968297 -0.0429213) offset=2px
+skip link {"label":"跳转到主要内容","href":"#main"} {"activeId":"main","activeTag":"main","hash":"#/keyboard","h1":"键盘焦点实验"}
+file:///C:/Users/zxcvb/OneDrive/Desktop/AccessLab/.day6-evidence/collect.mjs:214
+  if (box.error) throw new Error(`无法点击「${label}」: ${box.error}`)
+                       ^
+
+Error: 无法点击「复制 Markdown 报告」: not-found
+    at clickByLabel (file:///C:/Users/zxcvb/OneDrive/Desktop/AccessLab/.day6-evidence/collect.mjs:214:24)
+    at async step (file:///C:/Users/zxcvb/OneDrive/Desktop/AccessLab/.day6-evidence/collect.mjs:363:15)
+    at async file:///C:/Users/zxcvb/OneDrive/Desktop/AccessLab/.day6-evidence/collect.mjs:439:1
+
+Node.js v25.2.1

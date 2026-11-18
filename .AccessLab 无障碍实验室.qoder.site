@@ -1,1 +1,32 @@
-{"version":1,"name":"AccessLab 无障碍实验室","design":{"version":1,"pages":[{"path":"/","title":"Home"}],"capabilities":[]},"publication":{"actionId":"ce55226c-8b9c-4138-a273-982448a01964","projectId":"01a1e498-acb7-796a-a96d-1c22a6cee214","siteId":"01a1e498-acba-79ec-8703-a119defbf0f6","deploymentId":"01a1e728-a039-7757-bc41-d94ab73321a0","artifactSha256":"e848f14b6dc109b71d14bd59395ba13aa018759aab906c7bda6cb48636d770db","indexSha256":"72666fe88dfd437dc3bec67d107cf25e2a277560a7425a064f776f957f9c108b","releaseId":"01a1e728-d9c4-7402-8017-249edb77fea9","indexHtml":"PCFkb2N0eXBlIGh0bWw+CjxodG1sIGxhbmc9InpoLUNOIj4KICA8aGVhZD4KICAgIDxtZXRhIGNoYXJzZXQ9IlVURi04IiAvPgogICAgPG1ldGEgbmFtZT0idmlld3BvcnQiIGNvbnRlbnQ9IndpZHRoPWRldmljZS13aWR0aCwgaW5pdGlhbC1zY2FsZT0xLjAiIC8+CiAgICA8bWV0YQogICAgICBuYW1lPSJkZXNjcmlwdGlvbiIKICAgICAgY29udGVudD0iQWNjZXNzTGFiIOaXoOmanOeijeWunumqjOWupO+8mumAmui/h+ecn+Wunue7hOS7tuOAgeiHquWKqOajgOa1i+S4juS6pOS6kuW8j+S/ruWkje+8jOW4ruWKqeW8gOWPkeiAheWIm+W7uuabtOaXoOmanOeijeeahOaVsOWtl+S6p+WTgeOAgiIKICAgIC8+CiAgICA8dGl0bGU+QWNjZXNzTGFi772c5peg6Zqc56KN5a6e6aqM5a6kPC90aXRsZT4KICAgIDxzY3JpcHQgdHlwZT0ibW9kdWxlIiBjcm9zc29yaWdpbiBzcmM9Ii9hc3NldHMvaW5kZXgtQ2xpOGR4R3guanMiPjwvc2NyaXB0PgogICAgPGxpbmsgcmVsPSJzdHlsZXNoZWV0IiBjcm9zc29yaWdpbiBocmVmPSIvYXNzZXRzL2luZGV4LUNRVFZfX3FULmNzcyI+CiAgPC9oZWFkPgogIDxib2R5PgogICAgPGRpdiBpZD0icm9vdCI+PC9kaXY+CiAgPC9ib2R5Pgo8L2h0bWw+Cg=="},"actionId":"ce55226c-8b9c-4138-a273-982448a01964","projectId":"01a1e498-acb7-796a-a96d-1c22a6cee214","siteId":"01a1e498-acba-79ec-8703-a119defbf0f6","deploymentId":"01a1e728-a039-7757-bc41-d94ab73321a0","artifactSha256":"e848f14b6dc109b71d14bd59395ba13aa018759aab906c7bda6cb48636d770db","indexSha256":"72666fe88dfd437dc3bec67d107cf25e2a277560a7425a064f776f957f9c108b","releaseId":"01a1e728-d9c4-7402-8017-249edb77fea9","indexHtml":"PCFkb2N0eXBlIGh0bWw+CjxodG1sIGxhbmc9InpoLUNOIj4KICA8aGVhZD4KICAgIDxtZXRhIGNoYXJzZXQ9IlVURi04IiAvPgogICAgPG1ldGEgbmFtZT0idmlld3BvcnQiIGNvbnRlbnQ9IndpZHRoPWRldmljZS13aWR0aCwgaW5pdGlhbC1zY2FsZT0xLjAiIC8+CiAgICA8bWV0YQogICAgICBuYW1lPSJkZXNjcmlwdGlvbiIKICAgICAgY29udGVudD0iQWNjZXNzTGFiIOaXoOmanOeijeWunumqjOWupO+8mumAmui/h+ecn+Wunue7hOS7tuOAgeiHquWKqOajgOa1i+S4juS6pOS6kuW8j+S/ruWkje+8jOW4ruWKqeW8gOWPkeiAheWIm+W7uuabtOaXoOmanOeijeeahOaVsOWtl+S6p+WTgeOAgiIKICAgIC8+CiAgICA8dGl0bGU+QWNjZXNzTGFi772c5peg6Zqc56KN5a6e6aqM5a6kPC90aXRsZT4KICAgIDxzY3JpcHQgdHlwZT0ibW9kdWxlIiBjcm9zc29yaWdpbiBzcmM9Ii9hc3NldHMvaW5kZXgtQ2xpOGR4R3guanMiPjwvc2NyaXB0PgogICAgPGxpbmsgcmVsPSJzdHlsZXNoZWV0IiBjcm9zc29yaWdpbiBocmVmPSIvYXNzZXRzL2luZGV4LUNRVFZfX3FULmNzcyI+CiAgPC9oZWFkPgogIDxib2R5PgogICAgPGRpdiBpZD0icm9vdCI+PC9kaXY+CiAgPC9ib2R5Pgo8L2h0bWw+Cg=="}
+{
+  "version": 1,
+  "name": "AccessLab 无障碍实验室",
+  "design": {
+    "version": 1,
+    "pages": [
+      {
+        "path": "/",
+        "title": "Home"
+      }
+    ],
+    "capabilities": []
+  },
+  "publication": {
+    "actionId": "b7ea5f56-2e7b-4735-b1f1-ef6c050e09bc",
+    "projectId": "01a1e498-acb7-796a-a96d-1c22a6cee214",
+    "siteId": "01a1e498-acba-79ec-8703-a119defbf0f6",
+    "deploymentId": "01a1eed5-9772-763b-857a-83ae5b9c60ed",
+    "artifactSha256": "31907bbfb9aabb55f4b42fd7c7c075b7c5db264bd0267d3e176856f380429ee9",
+    "indexSha256": "a000e8800e549d19fd366cc584e3a28e4ad0473ed2db5b948f1ef259b2f71fc3",
+    "indexHtml": "PCFkb2N0eXBlIGh0bWw+CjxodG1sIGxhbmc9InpoLUNOIj4KICA8aGVhZD4KICAgIDxtZXRhIGNoYXJzZXQ9IlVURi04IiAvPgogICAgPGxpbmsgcmVsPSJpY29uIiBocmVmPSIvZmF2aWNvbi5zdmciIHR5cGU9ImltYWdlL3N2Zyt4bWwiIC8+CiAgICA8bWV0YSBuYW1lPSJ2aWV3cG9ydCIgY29udGVudD0id2lkdGg9ZGV2aWNlLXdpZHRoLCBpbml0aWFsLXNjYWxlPTEuMCIgLz4KICAgIDxtZXRhCiAgICAgIG5hbWU9ImRlc2NyaXB0aW9uIgogICAgICBjb250ZW50PSJBY2Nlc3NMYWIg5peg6Zqc56KN5a6e6aqM5a6k77ya6YCa6L+H55yf5a6e57uE5Lu244CB6Ieq5Yqo5qOA5rWL5LiO5Lqk5LqS5byP5L+u5aSN77yM5biu5Yqp5byA5Y+R6ICF5Yib5bu65pu05peg6Zqc56KN55qE5pWw5a2X5Lqn5ZOB44CCIgogICAgLz4KICAgIDx0aXRsZT5BY2Nlc3NMYWLvvZzml6Dpmpznoo3lrp7pqozlrqQ8L3RpdGxlPgogICAgPHNjcmlwdCB0eXBlPSJtb2R1bGUiIGNyb3Nzb3JpZ2luIHNyYz0iL2Fzc2V0cy9pbmRleC1ndzB1dlJpdy5qcyI+PC9zY3JpcHQ+CiAgICA8bGluayByZWw9InN0eWxlc2hlZXQiIGNyb3Nzb3JpZ2luIGhyZWY9Ii9hc3NldHMvaW5kZXgtRGdZd1BxOW4uY3NzIj4KICA8L2hlYWQ+CiAgPGJvZHk+CiAgICA8ZGl2IGlkPSJyb290Ij48L2Rpdj4KICA8L2JvZHk+CjwvaHRtbD4K",
+    "releaseId": "01a1eed5-cbe8-72af-a5b9-ccbbc906a323"
+  },
+  "actionId": "b7ea5f56-2e7b-4735-b1f1-ef6c050e09bc",
+  "projectId": "01a1e498-acb7-796a-a96d-1c22a6cee214",
+  "siteId": "01a1e498-acba-79ec-8703-a119defbf0f6",
+  "deploymentId": "01a1eed5-9772-763b-857a-83ae5b9c60ed",
+  "artifactSha256": "31907bbfb9aabb55f4b42fd7c7c075b7c5db264bd0267d3e176856f380429ee9",
+  "indexSha256": "a000e8800e549d19fd366cc584e3a28e4ad0473ed2db5b948f1ef259b2f71fc3",
+  "indexHtml": "PCFkb2N0eXBlIGh0bWw+CjxodG1sIGxhbmc9InpoLUNOIj4KICA8aGVhZD4KICAgIDxtZXRhIGNoYXJzZXQ9IlVURi04IiAvPgogICAgPGxpbmsgcmVsPSJpY29uIiBocmVmPSIvZmF2aWNvbi5zdmciIHR5cGU9ImltYWdlL3N2Zyt4bWwiIC8+CiAgICA8bWV0YSBuYW1lPSJ2aWV3cG9ydCIgY29udGVudD0id2lkdGg9ZGV2aWNlLXdpZHRoLCBpbml0aWFsLXNjYWxlPTEuMCIgLz4KICAgIDxtZXRhCiAgICAgIG5hbWU9ImRlc2NyaXB0aW9uIgogICAgICBjb250ZW50PSJBY2Nlc3NMYWIg5peg6Zqc56KN5a6e6aqM5a6k77ya6YCa6L+H55yf5a6e57uE5Lu244CB6Ieq5Yqo5qOA5rWL5LiO5Lqk5LqS5byP5L+u5aSN77yM5biu5Yqp5byA5Y+R6ICF5Yib5bu65pu05peg6Zqc56KN55qE5pWw5a2X5Lqn5ZOB44CCIgogICAgLz4KICAgIDx0aXRsZT5BY2Nlc3NMYWLvvZzml6Dpmpznoo3lrp7pqozlrqQ8L3RpdGxlPgogICAgPHNjcmlwdCB0eXBlPSJtb2R1bGUiIGNyb3Nzb3JpZ2luIHNyYz0iL2Fzc2V0cy9pbmRleC1ndzB1dlJpdy5qcyI+PC9zY3JpcHQ+CiAgICA8bGluayByZWw9InN0eWxlc2hlZXQiIGNyb3Nzb3JpZ2luIGhyZWY9Ii9hc3NldHMvaW5kZXgtRGdZd1BxOW4uY3NzIj4KICA8L2hlYWQ+CiAgPGJvZHk+CiAgICA8ZGl2IGlkPSJyb290Ij48L2Rpdj4KICA8L2JvZHk+CjwvaHRtbD4K",
+  "releaseId": "01a1eed5-cbe8-72af-a5b9-ccbbc906a323"
+}

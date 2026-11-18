@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 
 import { ColorControl } from '../components/ColorControl'
+import { NextStepCard } from '../components/NextStepCard'
 import { useExperimentLedger } from '../context/ExperimentLedgerContext'
 import { ROUTE_HASH } from '../hooks/useHashRoute'
 import {
@@ -67,7 +68,7 @@ function CompareColumn({
   sample: string
 }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4">
+    <div className="min-w-0 rounded-xl border border-slate-200 bg-white p-4">
       <h4 id={headingId} className="text-sm font-semibold text-slate-900">
         {heading}
       </h4>
@@ -102,7 +103,11 @@ export function ContrastLabPage() {
   const [backgroundValid, setBackgroundValid] = useState(true)
   const [resetSignal, setResetSignal] = useState(0)
   const [repair, dispatchRepair] = useReducer(repairReducer, initialRepairState)
-  const [notice, setNotice] = useState<string | null>(null)
+  /**
+   * 反馈落在触发它的那一块旁边：修复类操作在第 4 节，复制在第 6 节。
+   * 它和第 1 节的配色读数区各自播报各自的内容，不会把对方的句子挤掉。
+   */
+  const [notice, setNotice] = useState<{ area: 'repair' | 'css'; text: string } | null>(null)
 
   const ratio = contrastRatioFromHex(textColor, backgroundColor)
   const passes = ratio !== null && meetsAaNormalText(ratio)
@@ -157,18 +162,22 @@ export function ContrastLabPage() {
     if (!canApply || !suggestion?.suggestedTextColor) return
     setTextColor(suggestion.suggestedTextColor)
     dispatchRepair({ type: 'apply' })
-    setNotice(
-      `已应用修复：文字颜色改为 ${suggestion.suggestedTextColor}，对比度提升至 ${formatContrastRatio(
+    setNotice({
+      area: 'repair',
+      text: `已应用修复：文字颜色改为 ${suggestion.suggestedTextColor}，对比度提升至 ${formatContrastRatio(
         suggestion.afterRatio ?? 0,
       )}。背景颜色未改变。`,
-    )
+    })
   }
 
   const handleUndo = () => {
     if (repair.phase !== 'applied' || !repair.snapshot) return
     setTextColor(repair.snapshot.beforeTextColor)
     dispatchRepair({ type: 'undo' })
-    setNotice(`已撤销本次修复，文字颜色恢复为 ${repair.snapshot.beforeTextColor}。`)
+    setNotice({
+      area: 'repair',
+      text: `已撤销本次修复，文字颜色恢复为 ${repair.snapshot.beforeTextColor}。`,
+    })
   }
 
   // 对比区与 CSS 区的数据：已应用取快照，未应用取建议；背景两侧始终相同
@@ -190,14 +199,17 @@ export function ContrastLabPage() {
     if (hasInvalidInput || !afterColor) return
     const css = buildAfterCss(afterColor, backgroundColor)
     if (!navigator.clipboard?.writeText) {
-      setNotice('当前浏览器不支持自动复制，请手动选中下方 CSS 代码复制。')
+      setNotice({
+        area: 'css',
+        text: '当前浏览器不支持自动复制，请手动选中上方 CSS 代码复制。',
+      })
       return
     }
     try {
       await navigator.clipboard.writeText(css)
-      setNotice('已复制修复后的 CSS 代码。')
+      setNotice({ area: 'css', text: '已复制修复后的 CSS 代码。' })
     } catch {
-      setNotice('复制失败，请手动选中下方 CSS 代码复制。')
+      setNotice({ area: 'css', text: '复制失败，请手动选中上方 CSS 代码复制。' })
     }
   }
 
@@ -267,9 +279,24 @@ export function ContrastLabPage() {
         <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
           色彩对比度实验
         </h1>
-        <p className="mt-3 text-base leading-relaxed text-slate-700">
-          调整下方两个颜色，预览区域会实时更新，对比度数值由 WCAG 2.2
-          的相对亮度算法现场计算。默认配色（#777777 / #FFFFFF）是一个典型的「看起来还行、实际不合格」的案例。
+        <ol className="mt-4 space-y-2 text-base leading-relaxed text-slate-700">
+          <li>
+            <strong className="font-semibold text-slate-900">你会遇到什么：</strong>
+            默认配色 <span className="font-mono text-sm">#777777</span> /{' '}
+            <span className="font-mono text-sm">#FFFFFF</span>{' '}
+            看着挺清爽，反差其实不够——典型的「看起来还行、实际不合格」。
+          </li>
+          <li>
+            <strong className="font-semibold text-slate-900">你要做什么：</strong>
+            改下面两个颜色，盯着实时比值跨过 4.5:1；改不出来就让算法给建议，再一键应用。
+          </li>
+          <li>
+            <strong className="font-semibold text-slate-900">修好能看到什么：</strong>
+            同一句示例文字的修复前后对比，加一段可以直接复制走的 CSS。
+          </li>
+        </ol>
+        <p className="mt-3 text-sm leading-relaxed text-slate-600">
+          对比度数值由 WCAG 2.2 的相对亮度算法现场计算，本页每一处结论都是实时算出来的。
         </p>
       </header>
 
@@ -459,7 +486,7 @@ export function ContrastLabPage() {
 
       <section
         aria-labelledby="repair-heading"
-        className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+        className="mt-6 min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
       >
         <h2 id="repair-heading" className="text-lg font-semibold tracking-tight text-slate-900">
           4. 智能修复建议
@@ -553,13 +580,14 @@ export function ContrastLabPage() {
           </div>
         ) : null}
 
-        {notice ? (
+        {notice && notice.area === 'repair' ? (
           <p
             role="status"
             aria-live="polite"
+            aria-atomic="true"
             className="mt-3 rounded-lg bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-800"
           >
-            {notice}
+            {notice.text}
           </p>
         ) : null}
       </section>
@@ -567,7 +595,7 @@ export function ContrastLabPage() {
       {showRepairOutput && beforeColor && afterColor ? (
         <section
           aria-labelledby="compare-heading"
-          className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+          className="mt-6 min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
         >
           <h2 id="compare-heading" className="text-lg font-semibold tracking-tight text-slate-900">
             5. 修复前后对比
@@ -600,7 +628,7 @@ export function ContrastLabPage() {
       {cssPreview ? (
         <section
           aria-labelledby="css-heading"
-          className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+          className="mt-6 min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
         >
           <h2 id="css-heading" className="text-lg font-semibold tracking-tight text-slate-900">
             6. 对比 CSS 代码
@@ -608,7 +636,7 @@ export function ContrastLabPage() {
           <p className="mt-1 text-sm leading-relaxed text-slate-600">
             下列代码由当前配色与算法结果实时生成，颜色值与上方一致；更改配色会同步更新或清除。
           </p>
-          <pre className="mt-3 overflow-x-auto rounded-xl bg-slate-900 px-4 py-3 text-xs leading-relaxed text-slate-100">
+          <pre className="mt-3 min-w-0 overflow-x-auto rounded-xl bg-slate-900 px-4 py-3 text-xs leading-relaxed text-slate-100">
             <code>{cssPreview}</code>
           </pre>
           <button
@@ -619,8 +647,26 @@ export function ContrastLabPage() {
             <Copy className="size-4" aria-hidden="true" />
             复制修复后的 CSS
           </button>
+          {notice && notice.area === 'css' ? (
+            <p
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+              className="mt-3 rounded-lg bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-800"
+            >
+              {notice.text}
+            </p>
+          ) : null}
         </section>
       ) : null}
+
+      <NextStepCard
+        headingId="contrast-next-heading"
+        title="下一步：让输入框拥有正确的标签"
+        description="颜色只是「看得见」的第一层。另一个常见问题是输入框旁边写着名字、读屏软件却读不出来——下一个实验就修这个，改完还能看到真实 DOM 的复检结果。"
+        href={ROUTE_HASH['form-label-lab']}
+        linkLabel="进入表单标签实验"
+      />
     </div>
   )
 }

@@ -10,6 +10,7 @@ import {
   WandSparkles,
 } from 'lucide-react'
 
+import { NextStepCard } from '../components/NextStepCard'
 import { ROUTE_HASH } from '../hooks/useHashRoute'
 import { useExperimentLedger } from '../context/ExperimentLedgerContext'
 import {
@@ -110,7 +111,8 @@ export function FormLabelLabPage() {
   const { ledger, dispatch } = useExperimentLedger()
   const [labelFixed, setLabelFixed] = useState(false)
   const [report, setReport] = useState<FormLabelAuditReport | null>(null)
-  const [notice, setNotice] = useState<string | null>(null)
+  /** 反馈跟着触发动作走：修复 / 重置 / 重新检测在第 4 节，复制结果在第 5 节代码块旁边 */
+  const [notice, setNotice] = useState<{ area: 'fix' | 'code'; text: string } | null>(null)
   /** 缺陷态那次检测的摘要：修复后 DOM 已经变了，报告里的「修复前」只能靠它 */
   const beforeSnapshotRef = useRef<IssueSnapshot | null>(null)
   const ledgerSyncedRef = useRef(false)
@@ -148,38 +150,51 @@ export function FormLabelLabPage() {
   const handleRepair = () => {
     if (labelFixed) return
     setLabelFixed(true)
-    setNotice('已把「姓名」换成与输入框正确关联的 label，检测将在新的 DOM 上重新运行。')
+    setNotice({
+      area: 'fix',
+      text: '已把「姓名」换成与输入框正确关联的 label，检测将在新的 DOM 上重新运行。',
+    })
   }
 
   const handleReset = () => {
     setLabelFixed(false)
-    setNotice('实验已重置：上方又回到「看得见文字、却没有关联标签」的初始状态。')
+    setNotice({
+      area: 'fix',
+      text: '实验已重置：上方又回到「看得见文字、却没有关联标签」的初始状态。',
+    })
   }
 
   const handleReaudit = useCallback(() => {
     const next = auditFormLabels(formRef.current)
     setReport(next)
-    setNotice(
-      `已按当前真实 DOM 重新检测：检查 ${next.checkedControlCount} 个文本录入控件，发现 ${next.issueCount} 项问题。`,
-    )
+    setNotice({
+      area: 'fix',
+      text: `已按当前真实 DOM 重新检测：检查 ${next.checkedControlCount} 个文本录入控件，发现 ${next.issueCount} 项问题。`,
+    })
   }, [])
 
   const handleDemoSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    setNotice('演示表单没有提交：没有发出任何请求，你的输入也不会被保存。')
+    setNotice({
+      area: 'fix',
+      text: '演示表单没有提交：没有发出任何请求，你的输入也不会被保存。',
+    })
   }
 
   const handleCopy = async () => {
     const html = demoFormHtml(true)
     if (!navigator.clipboard?.writeText) {
-      setNotice('当前浏览器不支持自动复制，请手动选中右侧「修复后」代码复制。')
+      setNotice({
+        area: 'code',
+        text: '当前浏览器不支持自动复制，请手动选中上方「修复后」代码复制。',
+      })
       return
     }
     try {
       await navigator.clipboard.writeText(html)
-      setNotice('已复制修复后的 HTML 代码。')
+      setNotice({ area: 'code', text: '已复制修复后的 HTML 代码。' })
     } catch {
-      setNotice('复制失败，请手动选中右侧「修复后」代码复制。')
+      setNotice({ area: 'code', text: '复制失败，请手动选中上方「修复后」代码复制。' })
     }
   }
 
@@ -194,9 +209,22 @@ export function FormLabelLabPage() {
 
       <header className="mt-4 max-w-2xl">
         <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">表单标签实验</h1>
-        <p className="mt-3 text-base leading-relaxed text-slate-700">
-          一个输入框在页面上「看起来有名字」，和辅助技术能不能真的读出这个名字，是两件不同的事。
-          下面这个登记表单视觉上完全正常，检测结果却来自浏览器里真实的 DOM。
+        <ol className="mt-4 space-y-2 text-base leading-relaxed text-slate-700">
+          <li>
+            <strong className="font-semibold text-slate-900">你会遇到什么：</strong>
+            输入框旁边明明写着「姓名」，读屏软件却只念得出「编辑框」——那行字和输入框之间没有程序化的关联。
+          </li>
+          <li>
+            <strong className="font-semibold text-slate-900">你要做什么：</strong>
+            点一次「修复标签关联」，让那行文字真的变成挂在输入框上的 <span className="font-mono text-sm">label</span>。
+          </li>
+          <li>
+            <strong className="font-semibold text-slate-900">修好能看到什么：</strong>
+            检测结果对真实 DOM 重跑一遍，问题数当场清零，还能复制修好的 HTML。
+          </li>
+        </ol>
+        <p className="mt-3 text-sm leading-relaxed text-slate-600">
+          下面的登记表单视觉上完全正常，检测读的是浏览器里真实的 DOM，不是页面上的某个状态位。
         </p>
       </header>
 
@@ -424,14 +452,14 @@ export function FormLabelLabPage() {
           </button>
         </div>
 
-        {notice ? (
+        {notice && notice.area === 'fix' ? (
           <p
             role="status"
             aria-live="polite"
             aria-atomic="true"
             className="mt-3 rounded-lg bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-800"
           >
-            {notice}
+            {notice.text}
           </p>
         ) : null}
       </section>
@@ -490,7 +518,26 @@ export function FormLabelLabPage() {
           <Copy className="size-4" aria-hidden="true" />
           复制修复后的 HTML
         </button>
+
+        {notice && notice.area === 'code' ? (
+          <p
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            className="mt-3 rounded-lg bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-800"
+          >
+            {notice.text}
+          </p>
+        ) : null}
       </section>
+
+      <NextStepCard
+        headingId="form-next-heading"
+        title="下一步：体验键盘焦点"
+        description="标签解决了「读得到」。还有一个问题只有手放在键盘上才能发现：只用 Tab 走一遍页面，你可能完全看不出焦点走到了哪里。下一个实验就让你亲自试一次。"
+        href={ROUTE_HASH['keyboard-lab']}
+        linkLabel="进入键盘焦点实验"
+      />
     </div>
   )
 }

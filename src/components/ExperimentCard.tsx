@@ -22,8 +22,8 @@ export function ExperimentCard({
 
   return (
     <article
-      className={`flex h-full flex-col rounded-2xl border bg-white p-6 shadow-sm ${
-        available ? 'border-slate-200' : 'border-dashed border-slate-300'
+      className={`flex h-full flex-col rounded-2xl border bg-white p-5 shadow-sm transition-colors ${
+        available ? 'border-slate-200 hover:border-indigo-300' : 'border-dashed border-slate-300'
       }`}
     >
       <div className="flex items-start justify-between gap-3">
@@ -57,9 +57,11 @@ export function ExperimentCard({
       {available && href ? (
         <a
           href={href}
-          className="mt-5 inline-flex min-h-11 w-fit items-center gap-1.5 rounded-lg bg-indigo-700 px-4 py-2.5 text-sm font-semibold text-white no-underline transition-colors hover:bg-indigo-800"
+          className="mt-5 inline-flex min-h-11 w-fit items-center gap-1.5 rounded-xl bg-indigo-700 px-4 py-2.5 text-sm font-semibold text-white no-underline transition-colors hover:bg-indigo-800"
         >
           进入实验
+          {/* 三张卡的可见文字相同，读屏逐条列表时要能分清进的是哪一个实验 */}
+          <span className="sr-only"> · {title}</span>
           <ArrowRight className="size-4" aria-hidden="true" />
         </a>
       ) : (

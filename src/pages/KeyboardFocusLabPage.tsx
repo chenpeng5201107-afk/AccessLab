@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
-  ArrowRight,
   Check,
   CircleAlert,
   CircleCheckBig,
@@ -12,6 +11,7 @@ import {
   WandSparkles,
 } from 'lucide-react'
 
+import { NextStepCard } from '../components/NextStepCard'
 import { ROUTE_HASH } from '../hooks/useHashRoute'
 import { useExperimentLedger } from '../context/ExperimentLedgerContext'
 import { contrastRatioFromHex, formatContrastRatio } from '../lib/contrast'
@@ -108,7 +108,8 @@ export function KeyboardFocusLabPage() {
   /** 修复前 / 修复后各一轮，互不借用：应用修复时保留 before、把 after 从零开始 */
   const [sightings, setSightings] = useState<SightingCounts>(emptySightingCounts)
   const [report, setReport] = useState<KeyboardFocusAuditReport | null>(null)
-  const [notice, setNotice] = useState<string | null>(null)
+  /** 反馈跟着触发动作走：规则与流程操作在第 3 节，复制结果在第 6 节代码块旁边 */
+  const [notice, setNotice] = useState<{ area: 'action' | 'code'; text: string } | null>(null)
   const [workflow, setWorkflow] = useState(initialDemoWorkflowState)
   /** 只有键盘导航产生的焦点才计数；用鼠标点按钮同样会移动焦点，但那不是本实验要记录的东西 */
   const keyboardNavRef = useRef(false)
@@ -185,7 +186,7 @@ export function KeyboardFocusLabPage() {
     (event: DemoWorkflowEvent) => {
       const next = demoWorkflowReducer(workflow, event)
       setWorkflow(next)
-      setNotice(next.lastMessage)
+      setNotice(next.lastMessage === null ? null : { area: 'action', text: next.lastMessage })
     },
     [workflow],
   )
@@ -196,9 +197,10 @@ export function KeyboardFocusLabPage() {
     setConfirmed(false)
     // 修复前的那一轮观察必须留住：它是「前后对比」的另一半
     setSightings((current) => startAfterPhase(current))
-    setNotice(
-      '已把示例按钮换成带 outline 的 :focus-visible 规则。现在请再按 Tab 走一遍同样三个按钮，自己确认焦点是否看得见。',
-    )
+    setNotice({
+      area: 'action',
+      text: '已把示例按钮换成带 outline 的 :focus-visible 规则。现在请再按 Tab 走一遍同样三个按钮，自己确认焦点是否看得见。',
+    })
   }
 
   const handleReset = () => {
@@ -206,7 +208,10 @@ export function KeyboardFocusLabPage() {
     setConfirmed(false)
     setSightings(emptySightingCounts())
     setWorkflow(initialDemoWorkflowState)
-    setNotice('实验已重置：示例按钮又回到「键盘能走到、但看不出焦点在哪」的初始状态，前后两轮观察记录一并清零。')
+    setNotice({
+      area: 'action',
+      text: '实验已重置：示例按钮又回到「键盘能走到、但看不出焦点在哪」的初始状态，前后两轮观察记录一并清零。',
+    })
   }
 
   const handleReaudit = useCallback(() => {
@@ -218,27 +223,31 @@ export function KeyboardFocusLabPage() {
         : next.mode === 'broken'
           ? '当前挂的是 outline: none 的规则，焦点位置只能靠猜'
           : '没能从真实 DOM 里认出规则状态'
-    setNotice(
-      `已按真实 DOM 重新读取：${next.buttonCount} 个示例按钮（键盘可走到 ${next.keyboardReachableCount} 个），${verdict}，规则问题 ${next.issueCount} 项。`,
-    )
+    setNotice({
+      area: 'action',
+      text: `已按真实 DOM 重新读取：${next.buttonCount} 个示例按钮（键盘可走到 ${next.keyboardReachableCount} 个），${verdict}，规则问题 ${next.issueCount} 项。`,
+    })
   }, [])
 
   const handleConfirm = () => {
     if (!canConfirm) return
     setConfirmed(true)
-    setNotice(OBSERVATION_STATEMENT)
+    setNotice({ area: 'action', text: OBSERVATION_STATEMENT })
   }
 
   const handleCopy = async () => {
     if (!navigator.clipboard?.writeText) {
-      setNotice('当前浏览器不支持自动复制，请手动选中右侧「修复后」CSS 复制。')
+      setNotice({
+        area: 'code',
+        text: '当前浏览器不支持自动复制，请手动选中上方「修复后」CSS 复制。',
+      })
       return
     }
     try {
       await navigator.clipboard.writeText(FIXED_FOCUS_CSS)
-      setNotice('已复制修复后的 CSS（与上方「修复后」代码块逐字一致）。')
+      setNotice({ area: 'code', text: '已复制修复后的 CSS（与上方「修复后」代码块逐字一致）。' })
     } catch {
-      setNotice('复制失败，请手动选中右侧「修复后」CSS 复制。')
+      setNotice({ area: 'code', text: '复制失败，请手动选中上方「修复后」CSS 复制。' })
     }
   }
 
@@ -261,9 +270,22 @@ export function KeyboardFocusLabPage() {
         <p className="mt-3 text-lg font-semibold text-indigo-800">
           不使用鼠标，你还能找到自己正在操作的位置吗？
         </p>
-        <p className="mt-3 text-base leading-relaxed text-slate-700">
-          键盘用户只能靠屏幕上的焦点轮廓判断「我现在在哪」。这组按钮看起来完全正常，
-          Tab 也走得动，唯一被偷偷拿走的恰恰是那条轮廓线。
+        <ol className="mt-4 space-y-2 text-base leading-relaxed text-slate-700">
+          <li>
+            <strong className="font-semibold text-slate-900">你会遇到什么：</strong>
+            这组按钮看起来完全正常，Tab 也走得动，唯一被偷偷拿走的恰恰是那条焦点轮廓线。
+          </li>
+          <li>
+            <strong className="font-semibold text-slate-900">你要做什么：</strong>
+            先别碰鼠标，按 Tab 依次走完三个按钮，说出你判断的依据；再应用修复，用同样的路走第二遍。
+          </li>
+          <li>
+            <strong className="font-semibold text-slate-900">修好能看到什么：</strong>
+            两轮键盘到达次数各自记账，焦点规则改成了什么也摆在眼前，最后由你本人确认观察结果。
+          </li>
+        </ol>
+        <p className="mt-3 text-sm leading-relaxed text-slate-600">
+          这是一次交互体验与人工验证教学，不是自动认证：程序只能告诉你「哪条规则挂在按钮上」。
         </p>
       </header>
 
@@ -522,14 +544,14 @@ export function KeyboardFocusLabPage() {
             </button>
           </div>
 
-          {notice ? (
+          {notice && notice.area === 'action' ? (
             <p
               role="status"
               aria-live="polite"
               aria-atomic="true"
               className="mt-3 rounded-lg bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-800"
             >
-              {notice}
+              {notice.text}
             </p>
           ) : null}
         </section>
@@ -792,6 +814,17 @@ export function KeyboardFocusLabPage() {
           复制修复后的 CSS
         </button>
 
+        {notice && notice.area === 'code' ? (
+          <p
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+            className="mt-3 rounded-lg bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-800"
+          >
+            {notice.text}
+          </p>
+        ) : null}
+
         <details className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-2">
           <summary className="cursor-pointer rounded-lg px-2 py-3 text-sm font-semibold text-indigo-800">
             展开查看：本页实验区实际注入的完整样式表
@@ -831,25 +864,13 @@ export function KeyboardFocusLabPage() {
         </ul>
       </section>
 
-      <section
-        aria-labelledby="kf-report-heading"
-        className="mt-6 min-w-0 rounded-2xl border border-indigo-200 bg-indigo-50/60 p-5"
-      >
-        <h2 id="kf-report-heading" className="text-lg font-semibold tracking-tight text-slate-900">
-          下一步：查看统一成果报告
-        </h2>
-        <p className="mt-2 text-sm leading-relaxed text-slate-700">
-          这一页把你刚才真实做完的每一步都登记了下来：规则检测、是否应用修复、修复前后两轮键盘记录，
-          以及你自己的确认。报告会把三个实验的结果放在一起，并列出仍然需要人工验证的项目。
-        </p>
-        <a
-          href={ROUTE_HASH.report}
-          className="mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-indigo-700 px-5 py-2.5 text-sm font-semibold text-white no-underline transition-colors hover:bg-indigo-800"
-        >
-          查看统一成果报告
-          <ArrowRight className="size-4" aria-hidden="true" />
-        </a>
-      </section>
+      <NextStepCard
+        headingId="kf-report-heading"
+        title="下一步：查看统一成果报告"
+        description="这一页把你刚才真实做完的每一步都登记了下来：规则检测、是否应用修复、修复前后两轮键盘记录，以及你自己的确认。报告会把三个实验的结果放在一起，并列出仍然需要人工验证的项目。"
+        href={ROUTE_HASH.report}
+        linkLabel="查看统一成果报告"
+      />
     </div>
   )
 }

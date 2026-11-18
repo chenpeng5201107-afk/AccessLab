@@ -1236,8 +1236,160 @@ Day 4 结项后复核「我已完成观察」的语义，发现它把「焦点�
 
 ### 5. Day 5 结论与状态
 
-- 报告页、台账、Markdown 导出、本地下载、清空确认全部开发完成并通过测试与真实浏览器取证；Day 1–4 零回归。
-- 线上仍是 Day 3 构建 `index-AFw0dV32.js`；Day 4 / Day 5 改动**尚未提交、尚未发布**，等用户确认。
+- 键盘焦点实验与统一成果报告开发、测试、真实浏览器取证完成；Day 1 / 2 / 3 / 4 零回归。
+- 提交 `691a160 feat: add keyboard focus lab and unified report`（31 files，+5994/−42；不含 `.qoder.site` 描述符与 `.qoder.zip`），未推送远程。
+- 发布经用户单独授权后完成，见下一节。
+
+## 2026-11-18 · Day 4 + Day 5 公网发布与公网实测
+
+### 1. 发布动作（同一 projectId / siteId，新 action）
+
+| 项 | 结果 |
+| --- | --- |
+| 发布前复核 | HEAD `691a160` 与工作区 `src/` 无差异；`dist/` 四文件（`index-C9lhVihd.js` 359923 B、`index-9irSWUca.css` 27627 B、`favicon.svg` 232 B、`index.html`），无 `.map`、无 `VITE_*`、无数据文件 |
+| 线上发布前状态 | 仍是 Day 3：`index-AFw0dV32.js` 200 / 282019 B，Day 4/5 的 `index-C9lhVihd.js` 404 |
+| `prepare_site` | action **`3217dd18-1ce3-4eda-bf53-71bc2de71b25`**、`webDirectory: dist`、`spa: true`、同 `projectId 01a1e498-acb7-…`；首返 `descriptorStatus: pending` → `artifactReady/dependenciesReady/canPublish` 齐了以后**同 action 同输入重试**恢复描述符 `written`，未重复上传 |
+| `publish_site` | `publishOperationId 01a1ed0c-65ec-…`、`operation.state: succeeded`、`committed: true`、`readiness: publication_completed`、`published: true` |
+| 访问权限 | `access_mode: public`、`auth_integration_status: not_required`；匿名 curl 200 且响应头无 `Set-Cookie` / `Location` / `WWW-Authenticate` |
+| 线上 = 本地 | 三个资源逐个 `cmp` **identical**（JS 359923 B / CSS 27627 B / favicon 232 B）；Day 3 的 `index-AFw0dV32.js` 现返回 404 ⇒ 已被新版本覆盖 |
+
+### 2. 公网真实浏览器实测（headless Edge + CDP，目标线上域名）
+
+| 检查项 | 实测结果 |
+| --- | --- |
+| 外壳 | 入口脚本 `…/assets/index-C9lhVihd.js`；导航 `['首页','色彩对比度实验','表单标签实验','键盘焦点实验','成果报告']`；三页 `document.title` 与 `h1` 正确；`/favicon.svg` 200 |
+| 色彩实验 | 生成建议 + 应用后状态区「当前对比度4.54:1达到 AA」，正文 `当前对比度4.54:1` |
+| 表单实验 | 修复前 `SPAN` / `labels 0` / 无 `label[for]` → 修复后 `LABEL` / `labels 1` / `label.control === input` |
+| 键盘实验（真实按键） | Tab 轨迹 8 个链接站 → `kf-view-details* → kf-save-selection* → kf-step-back*`，修复前徽标 `3 次 / 0 次`、聚焦态 `outline: none 3px …`、「我已完成观察」`disabled: true`；点修复后 Shift+Tab 退回示例组（`kf-view-details` 处读到 `solid 3px rgb(67, 56, 202) offset=3px`）再 Tab，后轮累计 `5 次` ⇒ 按钮解锁，点击后结语逐字命中 |
+| 报告页 | `3 / 3`、`3 / 3`、`3 / 3`、`3 项`；`修复前 3 次 / 修复后 5 次`、确认栏「是：由你点击「我已完成观察」记录，不是程序自动判定」；色彩 `4.48:1 → 4.54:1`；表单 `2 项… → 没有发现问题`；标题层级 `[1,2,3,2,3,4,4,3,4,4,3,4,4,2,3,2]`；`aria-live=polite/aria-atomic=true`；认证声明徽条出现；无总分/百分比表述 |
+| 复制 | 桩住 `writeText` 后：状态「已复制完整 Markdown 报告…」，交出去的字符串长度与 textarea **完全一致且逐字相同** |
+| 下载 | 真实落盘 `AccessLab-成果报告-20261118131122.md`：**10893 B === `TextEncoder` 编码 textarea 的 10893 B**，解码后 `identical: true`（5165 字符），状态区如实写「文件只在你的浏览器里拼装，没有上传到任何服务器」 |
+| 390 视口 | `scrollWidth === clientWidth === 390`、`pageOverflow: false`、无越界元素；长代码块 `overflow-x: auto`（`scrollWidth 659 > clientWidth 316`） |
+| skip link（硬刷新后） | `Page.reload(ignoreCache)` 后首个 Tab 站 = `A[href="#main"]`「跳转到主要内容」，`solid 3px` 环 + `:focus-visible`；Enter 后 `activeElement === MAIN#main`（`tabindex="-1"`）且环 `solid 3px … offset=2px`；台账 `0 / 3` |
+| 会话性 | 硬刷新后 `0 / 3`、9 处「未记录」、复制按钮禁用、`localStorage` / `sessionStorage` 键数 `0` |
+| 控制台 | 两轮公网实测 `console-messages: []`（含 `Runtime.exceptionThrown` 监听） |
+| 截图 | `shot-public-home-1440.png`、`shot-public-report-empty-1440.png`、`shot-public-keyboard-1440.png`（临时目录，不入库） |
+
+**两条取证教训（都是脚本的问题，不是页面的问题，已重跑修正）**：
+① 第一版公网脚本把「下载文件 vs textarea」比成了 `false` —— 原因是我的 `evalJs` 包装器需要显式 `return`，漏写导致拿回 `undefined`；补上 `return` 后同一比对为 `identical: true`、字节数 10893 对 10893。
+② 第一版脚本测 skip link 时用 `Page.navigate` 跳到**同一个 URL**，Chromium 把这当成文档内片段跳转（不重载），顺序焦点起点仍停在页面中下部的 `<summary>`，于是「第一个 Tab 站」读到 SUMMARY；改成 `Page.reload(ignoreCache: true)` 后首站恢复为 skip link。同理，键盘轮次第一轮只到 `2 次` 是因为我把起点 `focus()` 在 `<main>` 上、前三次 Tab 花在了 main 之内的链接上，改为「从文档开头连续 Tab 直到三个示例按钮都到达」才拿到真实的 `3 次`。
+
+## 2026-11-18 · Day 6｜产品体验与视觉精修（不新增功能）
+
+宣传语沿用「让网页的障碍，看得见、改得掉。」。本轮目标只有一个：让评委在约 10 秒看懂产品价值，
+并在约 3 分钟里顺完「首页 → 色彩 → 表单 → 键盘 → 报告」这条已经存在的动线。
+
+### 0. 本轮边界（先说清没动什么）
+
+- **未**新增实验模块、**未**改任何检测算法与阈值、**未**改事件处理与台账写入的**条件和时序**（只改提示的渲染位置与文案）。
+- **未**新增依赖（`package.json` 无改动）、**未**改路由表结构（`ROUTE_HASH` 五条原样，「下一步」只是普通 `<a href="#/…">`）、**未**改状态管理方案。
+- **未**引入动画 / 图标 / 图表库、**未**新增图片、**未**接统计；视觉改动全部用既有 Tailwind 令牌与已有组件。
+- **未**为了统一焦点样式而修掉键盘实验的教学缺陷态：`.kf-demo-btn--broken:focus-visible { outline: none }` 原样保留，注入表仍只命中 `.kf-demo-btn*`。
+- 上一轮**未提交**的 `DEVLOG.md` / `PROJECT_STATUS.md` 改动（Day 4 + Day 5 发布与公网实测记录）一字未改，本节内容全部追加在其后。
+- 「三分钟」是目标动线，页面**没有**新增计时器、完成度或任何「三分钟达标」暗示。
+
+### 1. 改动清单（按任务）
+
+**A 首页价值表达**（`src/pages/HomePage.tsx`、`src/components/ExperimentCard.tsx`）
+
+| 改动 | 说明 |
+| --- | --- |
+| 首屏可扫读 | 标语保留；新增「给谁用 / 解决什么 / 怎么体验」三组 `<dl>` 要点，一屏内读完，不需要滚动 |
+| 唯一主行动 | 只剩一个实心主按钮「开始第一个实验」（→ `#/contrast`）；其余出口降为下划线文字链接，视觉层级拉开，不再有第二个同等强度的按钮 |
+| 对比案例真实化 | 「修复后」不再写死 `#595959`，改为直接调用实验页同一套 `suggestTextColor('#777777', '#ffffff')` → `#767676`；首页显示的 `4.48:1 → 4.54:1` 与进实验页算出来的**必然一致** |
+| 判定不只靠颜色 | 修复前 / 修复后两栏各自带「比值 + 图标 + 达到 AA / 未达 AA」，并在卡片下写明依据：WCAG 2.2 SC 1.4.3 普通文本 AA ≥ 4.5:1；第二案例说明改成「另一种做法：文字不动，背景加深」 |
+| 三张卡一致 | 统一 `p-5`、`rounded-xl` 主链接、hover 边框、`transition-colors`、同一标题层级与摘要长度；主链接补 `sr-only` 的「 · 标题」，读屏逐条念时能分清进的是哪个实验 |
+| 摘要说人话 | 例：表单卡从「看看少了标签关联的输入框，会让屏幕阅读器用户难以确认该填什么…」改为「输入框旁边那行字，读屏软件可能根本读不到。补上真正的关联试试。」 |
+| 没有做 | 无进度百分比 / 完成徽章 / 奖励 / 插画；无「100% 合规」类表述 |
+
+**B 三分钟动线**（新建 `src/components/NextStepCard.tsx` + 三个实验页各一处 + 三页首屏）
+
+- 色彩页尾：「下一步：让输入框拥有正确的标签」→「进入表单标签实验」（`#/form-label`）。
+- 表单页尾：「下一步：体验键盘焦点」→「进入键盘焦点实验」（`#/keyboard`）。
+- 键盘页尾：沿用**唯一**一条「查看统一成果报告」（`#/report`），改用同一个区块呈现，页面上不再有第二个报告出口。
+- 该区块只是一个链接：不自动跳转、不设进入门槛、不判断上一个实验做到哪一步、不写台账，评委随时可以停下或跳走。
+- 三个实验页首屏统一改为「**你会遇到什么 → 你要做什么 → 修好能看到什么**」三小段（`<ol>` 列表项，非新增步骤组件）；
+  WCAG 依据、检查范围与未检查项**一条没删**，从首屏正文收进同页的说明区 / `<details>`，需要时展开。
+
+**C 一致性与反馈位置**（四个页面）
+
+- 统一：标题层级、区块间距、卡片圆角、控件 `min-w-0 rounded-* … p-5`、按钮 `min-h-11`、结果区结构、代码块容器。
+- 反馈跟着动作走：`notice` 从「一个全局字符串」改为「`{ area, text }`」，
+  修复 / 重置 / 重新检测的结果播报在操作所在区块旁边（色彩页第 4 节、表单页第 4 节、键盘页第 3 节），
+  复制成败播报紧贴代码块（色彩页第 6 节、表单页第 5 节、键盘页第 6 节）；**没有**固定在页面底部的 toast，`onClick` 与 reducer 写入逻辑未动。
+  代价与如实记录：色彩页现有 3 个 `role="status"`（读数 / 修复 / 复制）、表单页与键盘页各 2 个、报告页仍是唯一 1 个（见遗留 #13）。
+- 状态说法收敛为五档：检测未完成 / 发现问题 / 达到当前检查目标 / 已应用修复 / 等待人工验证；
+  「已应用修复」处处带范围限定（如表单页 chips「已修复并通过重新检测（仅指示例控件的标签关联）」），不等于「全部通过」；状态一律图标 + 文字，不只靠颜色。
+- 代码块：`<pre>` 统一 `min-w-0 overflow-x-auto`，320 / 390 下由代码块自己滚动；展示内容仍与真实注入样式表 / 真实 DOM 同源，未引入代码编辑器。
+
+**D 报告口径与可读性**（`src/lib/reportModel.ts`、`src/pages/ReportPage.tsx`）
+
+- 统计标签从「已重新验证（复算或重检 DOM）」改为「**已进行修复后复核（含人工键盘体验）的实验数**」；
+  Markdown 汇总行同步为「已进行修复后复核（含人工键盘体验）：N 个实验」；口径解释新增单一来源 `REVERIFIED_HELP`，页面与 Markdown 共用同一段话。
+- `reVerified` 的判定规则**一字未改**（色彩 = 应用过修复且当前仍算得出比值；表单 = 应用过修复且复检问题清零；键盘 = 应用过修复且修复后有 Tab 到达记录），Day 5 相关测试原样通过。
+- 未检查项补齐具体阈值：SC 1.4.3 普通文本 AA 4.5:1 / 大文本 AA 3:1、SC 1.4.6 AAA 7:1 / 大文本 4.5:1、SC 1.4.11 非文本 ≥ 3:1，
+  并新增一条边界说明：色彩实验**只判定内置示例的一对普通文本 AA**。
+- 首屏 lead 改为「这次会话登记了 N / 3 个实验的成果，其中 X 个真正改动了页面，Y 个已由你本人确认」；
+  三张实验卡结构对齐（状态 / 问题 / 修复 / 证据 / 依据 / 未检查范围 / 回实验页）；「仍需人工验证」单独成组；
+  空台账给出去哪个实验的引导；复制 / 下载入口靠近结果。
+- 逐字保留：「刷新页面或关闭标签页就会清空」与「本报告仅针对 AccessLab 内置示例，不是网站 WCAG 合规认证。」
+
+### 2. 测试与构建（真实执行）
+
+| 项 | 结果 |
+| --- | --- |
+| `npm test` | ✅ **274 passed / 17 files**（7.52s，无失败无跳过）；Day 5 的 254 条**一条未删、未放宽** |
+| 本轮新增 | ✅ `src/App.day6.test.tsx` **20 条**（整棵 `App` 层面），覆盖用户列的 11 项：首页单主 CTA 与三条卡片路由、色彩 / 表单下一步链、键盘页唯一报告入口、切路由不清台账、复核统计口径在页面与 Markdown 一致且旧说法消失、未检查项 WCAG 阈值、旧三套检测无回归、复制 / 下载不变质、空台账与待人工验证状态 |
+| `npm run build` | ✅ `tsc -b` 干净 + 2105 modules → `index.html 0.67 kB`、**`index-gw0uvRiw.js` 368.99 kB**(gzip 110.43)、**`index-DgYwPq9n.css` 27.97 kB**(gzip 6.15) |
+| 体积变化 | JS +9.07 kB（gzip 108.20 → 110.43）、CSS +0.35 kB（gzip 6.09 → 6.15）相对 Day 5 的 `359.92 kB / 27.62 kB`；增量来自 NextStepCard 组件与三页首屏说明文本、`reportModel` 的口径 / 未检查项文案、报告页信息层级结构；**依赖零变化**（modules 2104 → 2105 就是新增的 `NextStepCard.tsx`） |
+
+### 3. 真实浏览器取证（headless Edge + 原生 CDP，本地 `dist`，脚本在临时目录 `.day6-evidence/`，不入库）
+
+- 浏览器：`Edg/157.0.4341.60`；被取证产物：`index-gw0uvRiw.js` + `index-DgYwPq9n.css`（与刚跑完的构建同名）。
+- **评委流程 16 步机械耗时 7.9 秒**（脚本连点，不含阅读与思考；远低于三分钟目标，主要时间实际花在键盘实验的两轮 Tab 观察上）。
+- 单页可独立进入：五条 hash 深链直达分别渲染首页标语与四个页面自己的 `h1`，动线不依赖前一步。
+- 动线：首页主按钮 → `#/contrast`「色彩对比度实验」→「下一步」→ `#/form-label`「表单标签实验」→「下一步」→ `#/keyboard`「键盘焦点实验」→「查看统一成果报告」→ `#/report`，全程无自动跳转。
+- 报告读数（真实跑完三个实验）：`已记录 / 总实验数 3 / 3`、`已实际执行修复的实验数 3 / 3`、
+  `已进行修复后复核（含人工键盘体验）的实验数 3 / 3`、`仍需人工验证的条目 3 项`；
+  色彩 `#777777 4.48:1 未达 AA → #767676 4.54:1 达到 AA`；表单 `2 项 → 没有发现问题` 且「是否真的改过 DOM = 是：姓名那行已从普通文本换成带 for 的 label，随后重新读取真实 DOM」；
+  键盘 `修复前 3 次 / 修复后 3 次`，确认项「是：由你点击「我已完成观察」记录，不是程序自动判定」，教学阶段停在「用户已确认观察结果」。
+- 导出同源：页面 textarea 与 Markdown 均 5651 字符；真实落盘 `AccessLab-成果报告-20261118211631.md` **12047 B === `TextEncoder` 编码 textarea 的 12047 B**（逐字节相同）。
+- 会话性：切走再切回仍 `3 / 3`；同页刷新 → `0 / 3` 且复制 / 下载按钮回到禁用（`[true,true,true]`），与页面说法一致。
+- 四档视口：320 / 390 五页 `overflowPx = 0`、无越界元素；768 / 1440 为 `-15px`（滚动条宽度，非溢出）；导航在任何宽度都未压住正文；
+  所有 `<pre>` 只在自己的框里横向滚动，**0 个**撑破页面。
+- 触控目标：320 / 390 下可交互元素全部 `≥ 44px`；768 / 1440 唯一低于 44px 的是 5 个顶部导航链接（**高 36px**，满足 SC 2.5.8 的 24px 最低标准，未达 44px 建议值）→ 记入遗留。
+- 真实键盘：连续 Tab 前 5 站 = skip link → logo → 首页 → 色彩 → 表单，每站 `outline: solid 3px … offset=2px`；
+  在 `#/keyboard` 里按 7 次 Shift+Tab 回到「跳转到主要内容」，Enter 后 `activeElement === main#main` 且仍在键盘实验页。
+- 缺陷态与修复态（真实按键，非 jsdom）：缺陷类名 `kf-demo-btn kf-demo-btn--broken`，
+  Tab 聚焦「查看详情 / 保存选择」时计算样式 `outline: none 3px`、`box-shadow: none`；
+  应用修复后聚焦「返回上一步」= `outline: solid 3px` 且 `:focus-visible` 匹配为 `true`；
+  注入样式表规则只命中 `.kf-demo-btn--broken:focus-visible` / `.kf-demo-btn--fixed:focus-visible` / `.kf-demo-btn:focus-visible`。
+- 减弱动效（CDP 媒体仿真）：`reduce` → `scroll-behavior: auto`、链接 `transition: 1e-05s`；`no-preference` → `smooth` / `0.15s`。
+- 控制台：整轮 **无 error / 无 warning**（含 `Runtime.exceptionThrown` 监听）。
+- 截图 12 张（临时目录，不入库）：`b1-keyboard-broken-focus-1440.png`（缺陷态看不出焦点）↔ `c5-keyboard-fixed-1440.png`（修复态 3px 环）为本轮修改前后对照；
+  另有 `c1-home / c3-contrast-applied / c4-form-fixed / c6-report / a1-home-tabfocus` 与窄屏 `d1-home-320 / d2-contrast-320 / d3-form-390 / d4-keyboard-390 / d5-report-390`。
+- 观察到的疑惑点 / 多余步骤（如实，不改检测结果）：① 768 / 1440 顶部导航 36px 高；
+  ② 键盘实验需要两轮 Tab 才解锁「我已完成观察」，实测禁用态时页面在按钮旁给出「还需要…」说明，但评委可能先点后读；
+  ③ 报告页阶段名与统计标签同屏多次出现「修复后复核」，读起来略重复（保留同一口径优先于去重）。
+- **取证脚本层面的教训**（都是脚本问题，页面本身一次就够）：长页面里「量坐标 → 派发点击」之间异步结果区会把版面顶开一次，
+  导致 `修复标签关联 / 修复焦点指示 / 我已完成观察` 各需要第二次点击才落地；给每个关键动作加「用页面自己的真实痕迹校验 + 重新定位再点」的 `stepChecked()` 后才拿到干净的 `3 / 3`。
+  另一处：校验「修复标签关联」是否生效不能只看 `label[for]` 是否存在（邮箱标签本来就有 `for`），必须钉在 `#student-name` 的 `labels` 上。
+
+### 4. 本环境仍然无法验证、需人工确认
+
+真机读屏（NVDA / VoiceOver / TalkBack）朗读顺序、真实剪贴板「复制成功」分支（headless 权限 `denied`，只能证明交给 `writeText` 的字符串）、
+系统级「减少动效」设置下的观感（本轮用 CDP 媒体仿真）、评委设备无痕浏览器目视，以及 Qoder 内置浏览器可视表面截图。
+
+### 5. Day 6 结论与 Day 7 待办
+
+- 结论：五项任务（A 首页 / B 动线 / C 一致性 / D 报告 / E 复核）本地完成，274 条测试与生产构建通过，真实浏览器复核拿到干净的 `3 / 3` 证据，Day 1–5 零回归。
+- 单独上报（按 D1 要求，未改规则）：「修复后复核」这一列在三个实验里的判定并不同构——
+  色彩不要求「问题清零」（对比度没有清零概念），表单要求复检 `issueCount === 0`，键盘要求修复后真有 Tab 到达记录。
+  口径改名后这句话覆盖面变宽了但规则没变，若要同构化需另开一轮并同步调整 Day 5 测试。
+- Day 7 建议：① 顶部导航在 768 / 1440 下把可点区补到 44px（只加内边距，不改视觉）；
+  ② 人工收一轮真机读屏 + 无痕目视 + 真实复制成功分支；③ 评估大文本 AA 3:1 是否升级为可交互判定（仍属 1.4.3）；
+  ④ 视需要把「修复后复核」的三实验判定同构化（要用户先确认）；⑤ 参赛材料图文整理（不要用取证脚本目录里的 `profile/`、`downloads/`）。
+- Git：本轮改动**尚未提交**，等待用户确认；Sites 描述符与 `.qoder.zip` 仍不入库；发布前需单独请求授权。
 
 
 

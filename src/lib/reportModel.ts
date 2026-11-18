@@ -39,11 +39,22 @@ export const MANUAL_VERIFICATION_ITEMS = [
 
 export const UNCHECKED_SCOPE = [
   '整站符合性：三个实验各自只覆盖示例组件上的少数成功标准，不构成整站结论。',
+  '色彩实验的边界：只对内置示例的一组「前景文字 / 背景色」判定 SC 1.4.3 的普通文本 AA 档（≥ 4.5:1）；这一项通过不代表你的项目、你的其它配色通过。',
+  '大文本对比度：同属 SC 1.4.3，但门槛换成 3:1（AA）；色彩实验只判普通文本那一档，没有判大文本。',
+  '增强对比（AAA）：SC 1.4.6 要求普通文本 7:1、大文本 4.5:1；本实验只做到 AA，不对 AAA 下任何结论。',
+  '非文本对比：SC 1.4.11 管的是界面组件边界与图形（≥ 3:1），和上面两条是不同的成功标准；色彩实验没有测它，键盘实验只对焦点轮廓单独实测过这一条。',
   '键盘操作全链路、焦点顺序、焦点是否被遮挡、拖拽与手势替代。',
   '动态内容、错误提示与帮助文本、语言切换、时区与货币、媒体字幕等。',
-  '大文本（1.4.11 之外的 1.4.3 大字号档位）、图标与非文本控件对比、色觉差异与真实渲染。',
+  '图片内文字、渐变与半透明背景、真实字体渲染差异、色觉差异：程序算不出，也不测量你的屏幕与环境亮度。',
   '真实屏幕阅读器与放大工具下的行为——本项目未做任何真机辅助技术测试。',
 ]
+
+/**
+ * 「修复后复核」这一列到底数了什么，页面上的统计标签与导出的 Markdown 必须共用这一段说明：
+ * 三个实验的复核方式不同，且表单 / 键盘只有在复核结果满足各自目标时才计入。
+ */
+export const REVERIFIED_HELP =
+  '复核 = 修复之后又真实跑过一次：色彩按新配色重算比值、表单重读真实 DOM 且问题清零、键盘用 Tab 把示例按钮重新走过一轮（含人工键盘体验）。仍发现问题的复核实例不计入这一列。'
 
 const ISSUE_LABELS: Record<string, string> = {
   'control-missing-id': '控件没有 id，无法用 for 建立显式关联',
@@ -91,7 +102,12 @@ export interface ReportModel {
   conclusions: string[]
   pendingManual: string[]
   experiments: ExperimentReportView[]
-  statements: { nonCertification: string; sessionScope: string; snapshot: string }
+  statements: {
+    nonCertification: string
+    sessionScope: string
+    snapshot: string
+    reVerifiedHelp: string
+  }
   uncheckedScope: string[]
   hasRecords: boolean
 }
@@ -149,8 +165,8 @@ function contrastView(ledger: LedgerState, record: ContrastRecord | null): Exper
     '色彩对比度实验',
     ROUTE_HASH['contrast-lab'],
     '回到色彩对比度实验',
-    'WCAG 2.2 SC 1.4.3 对比度（最低）——普通文本需要 4.5:1。',
-    '只判定示例预览里「前景文字 / 背景色」这一对的数值对比度。',
+    'WCAG 2.2 SC 1.4.3 对比度（最低）——本实验只判其中「普通文本 AA ≥ 4.5:1」这一档。',
+    '只判定示例预览里「前景文字 / 背景色」这一对配色的普通文本对比度。',
     [
       '还没有记录：先在色彩对比度实验里点一次「生成修复建议」，本页才会登记真实算出的数值。',
       '达标与否一律用未四舍五入的真实比值判定：#777777 / #ffffff ≈4.48:1 属于未达 AA，#767676 / #ffffff ≈4.54:1 才算达到 AA。',
@@ -223,7 +239,7 @@ function contrastView(ledger: LedgerState, record: ContrastRecord | null): Exper
       '达标判定使用未四舍五入的真实比值，展示时才格式化成两位小数。',
     ],
     limits: [
-      '只判定这一对「前景文字 / 背景色」的普通文本 AA（4.5:1）；大文本档位、非文本对比（SC 1.4.11）、图标与焦点轮廓颜色都不在范围内。',
+      '只判定这一对「前景文字 / 背景色」在 SC 1.4.3 普通文本 AA 档（≥ 4.5:1）；同一条 1.4.3 里大文本的 3:1 档、SC 1.4.6 的 AAA 档（普通文本 7:1 / 大文本 4.5:1）、SC 1.4.11 的非文本对比（≥ 3:1）都不在范围内。',
       '不评估图片内的文字、渐变或半透明背景、阴影与真实字体渲染差异。',
       '不测量你的屏幕、环境亮度与色觉差异，也无法验证你是否真的看得清。',
       '结论只适用于实验预览里的示例文字，不代表页面其它文本达标，更不代表整站符合 WCAG 2.2。',
@@ -389,7 +405,7 @@ function buildConclusions(summary: LedgerSummary): string[] {
   return [
     `本次会话在 ${summary.experimentCount} 个实验里登记了 ${summary.recordedCount} 个实验的结果；未登记的实验在下方标为「未记录」。`,
     `已实际执行修复：${summary.repairAppliedCount} 个实验（色彩应用修复 / 表单换上有 for 的 label / 焦点规则换成带 outline 的 :focus-visible）。`,
-    `已按真实算法或真实 DOM 复跑验证：${summary.reVerifiedCount} 个实验。`,
+    `已进行修复后复核（含人工键盘体验）：${summary.reVerifiedCount} 个实验。`,
     `人工确认：${summary.manualConfirmedCount} 个实验（目前只有键盘焦点实验要求本人确认）。`,
     '这里不给总分、也不给百分比，更不给「整体合规」这种结论——三个实验各自只覆盖少数成功标准，剩余判断仍需要人来做。',
   ]
@@ -422,6 +438,7 @@ export function buildReportModel(ledger: LedgerState, generatedAt: Date): Report
       nonCertification: NON_CERTIFICATION_STATEMENT,
       sessionScope: SESSION_SCOPE_STATEMENT,
       snapshot: SNAPSHOT_STATEMENT,
+      reVerifiedHelp: REVERIFIED_HELP,
     },
     uncheckedScope: UNCHECKED_SCOPE,
     hasRecords: summary.recordedCount > 0,
@@ -456,6 +473,8 @@ export function renderReportMarkdown(model: ReportModel): string {
     '## 总览',
     '',
     ...model.conclusions.map((line) => `- ${line}`),
+    '',
+    `> 「已进行修复后复核」这一列怎么数：${model.statements.reVerifiedHelp}`,
     '',
     '### 需要人工验证的项目',
     '',

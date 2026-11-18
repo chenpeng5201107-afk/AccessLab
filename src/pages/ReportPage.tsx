@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   ArrowLeft,
+  ArrowRight,
   CircleAlert,
   CircleCheckBig,
   ClipboardCopy,
@@ -24,9 +25,17 @@ import type { ExperimentProgress } from '../lib/experimentLedger'
 const PROGRESS_ITEMS: Array<{ key: keyof ExperimentProgress; label: string }> = [
   { key: 'inspected', label: '已检测' },
   { key: 'repairApplied', label: '已应用修复' },
-  { key: 'reVerified', label: '已重新验证' },
+  { key: 'reVerified', label: '修复后复核' },
   { key: 'manualConfirmed', label: '已人工确认' },
 ]
+
+/** 状态徽章：颜色之外还带图标与文字，避免只靠红绿区分（同一套色板也用在实验页） */
+const STATUS_TONE: Record<ExperimentReportView['statusTone'], string> = {
+  neutral: 'bg-slate-100 text-slate-800 ring-slate-500/30',
+  pass: 'bg-emerald-50 text-emerald-900 ring-emerald-700/30',
+  warn: 'bg-amber-50 text-amber-900 ring-amber-700/30',
+  fail: 'bg-red-50 text-red-900 ring-red-700/30',
+}
 
 function RowValue({ row }: { row: ReportRow }) {
   return (
@@ -100,10 +109,12 @@ function ExperimentSection({ experiment, order }: { experiment: ExperimentReport
       <h3 id={headingId} className="text-lg font-semibold tracking-tight text-slate-900">
         <span className="text-indigo-800">{order}.</span> {experiment.name}
       </h3>
-      <p className="mt-1.5 text-sm font-semibold text-slate-900">
-        <ListChecks className="mr-1.5 inline-block size-4 shrink-0 align-[-3px] text-indigo-800" aria-hidden="true" />
-        状态：{experiment.statusLabel}
-      </p>
+      <div
+        className={`mt-3 flex items-start gap-2 rounded-xl px-3 py-2 text-sm font-semibold ring-1 ring-inset ${STATUS_TONE[experiment.statusTone]}`}
+      >
+        <ListChecks className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+        <span>状态：{experiment.statusLabel}</span>
+      </div>
 
       <ProgressList progress={experiment.progress} />
 
@@ -134,12 +145,16 @@ function ExperimentSection({ experiment, order }: { experiment: ExperimentReport
       <div className="mt-4 border-t border-slate-200 pt-3 text-sm">
         <p className="font-semibold text-slate-900">WCAG 依据：{experiment.wcagBasis}</p>
         <p className="mt-1 text-slate-700">本次范围：{experiment.scope}</p>
-        <h4 className="mt-3 font-semibold text-slate-900">没有检查的内容</h4>
-        <ul className="mt-1.5 list-disc space-y-1 pl-5 text-slate-700">
-          {experiment.limits.map((limit) => (
-            <li key={limit}>{limit}</li>
-          ))}
-        </ul>
+        <details className="mt-3 min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-2">
+          <summary className="cursor-pointer rounded-lg px-2 py-2.5 text-sm font-semibold text-indigo-800">
+            展开查看：这一项没有检查的内容（{experiment.limits.length} 条）
+          </summary>
+          <ul className="mt-1.5 list-disc space-y-1 px-2 pb-1 text-sm leading-relaxed text-slate-700">
+            {experiment.limits.map((limit) => (
+              <li key={limit}>{limit}</li>
+            ))}
+          </ul>
+        </details>
         <p className="mt-3 rounded-xl bg-amber-50 px-3 py-2 font-semibold text-amber-900 ring-1 ring-inset ring-amber-700/30">
           仍需你人工验证：{experiment.manualCheck}
         </p>
@@ -248,7 +263,7 @@ export function ReportPage() {
         <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">统一成果报告</h1>
         <p className="mt-3 text-base leading-relaxed text-slate-700">
           这一页把三个实验的真实结果放在一起：每个数值都来自实验里已经跑过的检测与计算，
-          本页不重新判断颜色、标签或焦点，只把已有结论按「检测 / 修复 / 复验 / 人工确认」分开登记。
+          本页不重新判断颜色、标签或焦点，只把已有结论按「检测 / 修复 / 修复后复核 / 人工确认」分开登记。
         </p>
         <p className="mt-3 text-sm text-slate-600">报告生成时间：{model.generatedAt}</p>
         <p className="mt-2 rounded-xl bg-amber-50 px-4 py-3 text-sm font-semibold leading-relaxed text-amber-900 ring-1 ring-inset ring-amber-700/30">
@@ -264,30 +279,40 @@ export function ReportPage() {
           1. 本次会话总览
         </h2>
 
-        <dl className="mt-3 grid gap-3 sm:grid-cols-2">
+        <p className="mt-2 text-base font-semibold text-pretty text-slate-900">
+          {model.hasRecords
+            ? `这次会话登记了 ${model.summary.recordedCount} / ${model.summary.experimentCount} 个实验的成果，其中 ${model.summary.repairAppliedCount} 个真正改动了页面，${model.summary.manualConfirmedCount} 个已由你本人确认。`
+            : '这次会话还没有登记任何实验成果：报告只写真实跑过的检测，不会预先替你填上结论。'}
+        </p>
+
+        <dl className="mt-4 grid gap-3 sm:grid-cols-2">
           <div className="rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-3">
             <dt className="text-sm text-slate-600">已记录 / 总实验数</dt>
-            <dd className="mt-1 text-2xl font-bold text-slate-900 tabular-nums">
+            <dd className="mt-1 text-3xl font-bold text-slate-900 tabular-nums">
               {model.summary.recordedCount} / {model.summary.experimentCount}
             </dd>
           </div>
           <div className="rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-3">
             <dt className="text-sm text-slate-600">已实际执行修复的实验数</dt>
-            <dd className="mt-1 text-2xl font-bold text-slate-900 tabular-nums">
+            <dd className="mt-1 text-3xl font-bold text-slate-900 tabular-nums">
               {model.summary.repairAppliedCount} / {model.summary.experimentCount}
             </dd>
           </div>
           <div className="rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-3">
-            <dt className="text-sm text-slate-600">已重新验证（复算或重检 DOM）的实验数</dt>
-            <dd className="mt-1 text-2xl font-bold text-slate-900 tabular-nums">
+            <dt className="text-sm text-slate-600">已进行修复后复核（含人工键盘体验）的实验数</dt>
+            <dd className="mt-1 text-3xl font-bold text-slate-900 tabular-nums">
               {model.summary.reVerifiedCount} / {model.summary.experimentCount}
             </dd>
           </div>
           <div className="rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-3">
             <dt className="text-sm text-slate-600">仍需人工验证的条目</dt>
-            <dd className="mt-1 text-2xl font-bold text-slate-900 tabular-nums">{model.pendingManual.length} 项</dd>
+            <dd className="mt-1 text-3xl font-bold text-slate-900 tabular-nums">{model.pendingManual.length} 项</dd>
           </div>
         </dl>
+
+        <p className="mt-2 text-xs leading-relaxed text-slate-600">
+          「修复后复核」这一列怎么数：{model.statements.reVerifiedHelp}
+        </p>
 
         <ul className="mt-4 list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-slate-700">
           {model.conclusions.map((line) => (
@@ -316,6 +341,32 @@ export function ReportPage() {
               .join('、')}
             。它们没有运行过检测，所以报告里不会替它们编一个结论。
           </p>
+        ) : null}
+
+        {!model.hasRecords ? (
+          <div className="mt-4 rounded-xl border border-indigo-200 bg-indigo-50/60 p-4">
+            <p className="text-sm font-semibold text-slate-900">想让这一页有内容？从任意一个实验开始：</p>
+            <ul className="mt-3 flex flex-wrap gap-2">
+              {[
+                { href: ROUTE_HASH['contrast-lab'], label: '色彩对比度实验' },
+                { href: ROUTE_HASH['form-label-lab'], label: '表单标签实验' },
+                { href: ROUTE_HASH['keyboard-lab'], label: '键盘焦点实验' },
+              ].map((entry) => (
+                <li key={entry.href}>
+                  <a
+                    href={entry.href}
+                    className="inline-flex min-h-11 items-center gap-1.5 rounded-xl bg-indigo-700 px-4 py-2 text-sm font-semibold text-white no-underline transition-colors hover:bg-indigo-800"
+                  >
+                    {entry.label}
+                    <ArrowRight className="size-4" aria-hidden="true" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-xs leading-relaxed text-slate-600">
+              做完任意一次检测再回到这一页，上面的数字和下面的记录都会随之填上。
+            </p>
+          </div>
         ) : null}
 
         <p className="mt-4 text-xs leading-relaxed text-slate-600">{model.statements.sessionScope}</p>
@@ -462,7 +513,7 @@ export function ReportPage() {
         </h2>
         <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-relaxed text-slate-700">
           <li>
-            把「已检测」「已给出建议」「已应用修复」「已重新验证」「已人工确认」当成五件不同的事：
+            把「已检测」「已给出建议」「已应用修复」「已进行修复后复核」「已人工确认」当成五件不同的事：
             本报告分列记录它们，正是为了避免把其中一步说成整件事完成。
           </li>
           <li>

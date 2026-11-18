@@ -1,14 +1,20 @@
-import { ArrowRight, Contrast, Keyboard, TextCursorInput } from 'lucide-react'
+import { ArrowRight, CircleAlert, CircleCheckBig, Contrast, Keyboard, TextCursorInput } from 'lucide-react'
 
 import { ExperimentCard } from '../components/ExperimentCard'
 import { ROUTE_HASH } from '../hooks/useHashRoute'
-import { contrastRatioFromHex, formatContrastRatio, meetsAaNormalText } from '../lib/contrast'
+import {
+  AA_NORMAL_TEXT_RATIO,
+  contrastRatioFromHex,
+  formatContrastRatio,
+  meetsAaNormalText,
+} from '../lib/contrast'
+import { suggestTextColor } from '../lib/colorRepair'
 
 const EXPERIMENTS = [
   {
     index: 1,
     title: '色彩对比度实验',
-    summary: '换一对颜色，马上看到反差够不够，问题出在哪里。',
+    summary: '换一对颜色，当场看到反差够不够，以及该把它改成什么样。',
     icon: Contrast,
     status: 'available' as const,
     href: ROUTE_HASH['contrast-lab'],
@@ -16,7 +22,7 @@ const EXPERIMENTS = [
   {
     index: 2,
     title: '表单标签无障碍实验',
-    summary: '看看少了标签关联的输入框，会让屏幕阅读器用户难以确认该填什么，容易填错或漏填。',
+    summary: '输入框旁边那行字，读屏软件可能根本读不到。补上真正的关联试试。',
     icon: TextCursorInput,
     status: 'available' as const,
     href: ROUTE_HASH['form-label-lab'],
@@ -37,13 +43,18 @@ const FIX_CASES = [
     label: '正文小字',
     sample: '你的书快到期了，记得早点还。',
     before: { fg: '#777777', bg: '#ffffff', caption: '很常见的浅灰正文' },
-    after: { fg: '#595959', bg: '#ffffff', caption: '同一色相，加深一档' },
+    // 直接用实验页那套算法的输出，首页看到的数字进实验页一模一样
+    after: {
+      fg: suggestTextColor('#777777', '#ffffff').suggestedTextColor ?? '#777777',
+      bg: '#ffffff',
+      caption: '算法建议：背景不动，只把文字加深',
+    },
   },
   {
     label: '主按钮文字',
     sample: '立即处理',
     before: { fg: '#ffffff', bg: '#6366f1', caption: '亮靛蓝底 + 白字' },
-    after: { fg: '#ffffff', bg: '#4338ca', caption: '换成深一档的靛蓝' },
+    after: { fg: '#ffffff', bg: '#4338ca', caption: '另一种做法：文字不动，背景加深' },
   },
 ] as const
 
@@ -58,32 +69,55 @@ interface SwatchProps {
 function Swatch({ tag, fg, bg, caption, sample }: SwatchProps) {
   const ratio = contrastRatioFromHex(fg, bg)
   const passes = ratio !== null && meetsAaNormalText(ratio)
+  const before = tag === '修复前'
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-3">
-      <div
-        className="flex min-h-20 items-center justify-center rounded-lg px-3 py-4 text-center text-sm font-semibold"
-        style={{ backgroundColor: bg, color: fg }}
-      >
-        <span>{sample}</span>
-      </div>
-      <p className="mt-2.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
+    <div className="min-w-0 rounded-lg border border-slate-200 bg-white p-3">
+      <div className="flex items-center justify-between gap-2">
         <span
-          className={`rounded-md px-2 py-0.5 font-semibold ${
-            passes ? 'bg-emerald-50 text-emerald-900' : 'bg-red-50 text-red-900'
+          className={`rounded-md px-2 py-0.5 text-xs font-semibold ${
+            before ? 'bg-slate-100 text-slate-800' : 'bg-indigo-100 text-indigo-900'
           }`}
         >
           {tag}
         </span>
-        <span className="font-mono font-semibold text-slate-900 tabular-nums">
+        <span className="font-mono text-base font-bold text-slate-900 tabular-nums">
           {ratio === null ? '—' : formatContrastRatio(ratio)}
         </span>
-        <span className="text-slate-700">{passes ? '反差够用' : '反差偏低，看不清'}</span>
+      </div>
+
+      <div
+        className="mt-2 flex min-h-20 items-center justify-center rounded-md border border-slate-300 px-2 py-4 text-center text-sm font-semibold"
+        style={{ backgroundColor: bg, color: fg }}
+      >
+        <span>{sample}</span>
+      </div>
+
+      <p
+        className={`mt-2 flex flex-wrap items-center gap-1.5 text-xs font-semibold ${
+          passes ? 'text-emerald-900' : 'text-red-900'
+        }`}
+      >
+        {passes ? (
+          <CircleCheckBig className="size-3.5 shrink-0" aria-hidden="true" />
+        ) : (
+          <CircleAlert className="size-3.5 shrink-0" aria-hidden="true" />
+        )}
+        {passes ? '达到 AA' : '未达 AA'}
+        <span className="font-normal text-slate-600">
+          {before ? `（需 ≥ ${AA_NORMAL_TEXT_RATIO}:1）` : `（≥ ${AA_NORMAL_TEXT_RATIO}:1 达标）`}
+        </span>
       </p>
-      <p className="mt-1 text-xs text-slate-600">{caption}</p>
+      <p className="mt-0.5 text-xs text-slate-600">{caption}</p>
     </div>
   )
 }
+
+const AUDIENCE_POINTS = [
+  { term: '给谁用', desc: '学生开发者、前端初学者' },
+  { term: '解决什么', desc: '发现并修好最常见的无障碍问题' },
+  { term: '怎么体验', desc: '三个动手实验，成果还能导出成报告' },
+]
 
 export function HomePage() {
   return (
@@ -101,17 +135,23 @@ export function HomePage() {
               看得见、改得掉。
             </h1>
 
-            <p className="mt-5 max-w-xl text-lg leading-relaxed text-slate-700">
-              很多人上网时看不清按钮、找不到输入框、用键盘走两步就丢了位置，却没人告诉他们问题出在哪。
-              AccessLab 把真实页面摆在你面前：改一个颜色、补一个标签关联、再用 Tab 走一遍焦点，
-              立刻看见问题，也立刻看见修好后的样子。
+            <p className="mt-5 max-w-xl text-lg leading-relaxed text-pretty text-slate-700">
+              页面自己用着没问题，别人可能看不清按钮、找不到输入框、用键盘走两步就丢了位置。
+              AccessLab 把这些缺陷做成能动手改的真实实验：改一处，当场看到差别。
             </p>
 
-            <p className="mt-4 text-base font-semibold text-indigo-800">
-              让每个人都能更轻松地使用互联网。
-            </p>
+            <dl className="mt-6 grid gap-x-6 gap-y-3 border-t border-slate-200 pt-5 sm:grid-cols-3">
+              {AUDIENCE_POINTS.map((point) => (
+                <div key={point.term} className="min-w-0">
+                  <dt className="text-xs font-semibold tracking-wide text-slate-600 uppercase">
+                    {point.term}
+                  </dt>
+                  <dd className="mt-1 text-sm leading-snug font-semibold text-slate-900">{point.desc}</dd>
+                </div>
+              ))}
+            </dl>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-5">
               <a
                 href={ROUTE_HASH['contrast-lab']}
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-indigo-700 px-7 py-3.5 text-base font-bold text-white no-underline shadow-sm transition-colors hover:bg-indigo-800"
@@ -121,7 +161,7 @@ export function HomePage() {
               </a>
               <a
                 href="#experiments"
-                className="inline-flex min-h-12 items-center justify-center rounded-xl px-4 py-3 text-base font-semibold text-indigo-800 underline decoration-indigo-400 decoration-2 underline-offset-4 hover:decoration-indigo-800"
+                className="inline-flex min-h-11 items-center text-sm font-semibold text-indigo-800 underline decoration-indigo-300 decoration-2 underline-offset-4 hover:decoration-indigo-800"
               >
                 查看另外两个实验
               </a>
@@ -132,7 +172,7 @@ export function HomePage() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 shadow-sm">
+          <div className="min-w-0 rounded-2xl border border-slate-200 bg-slate-50 p-5 shadow-sm">
             <h2 className="text-base font-semibold tracking-tight text-slate-900">
               同一句话，只是换个颜色
             </h2>
@@ -142,11 +182,11 @@ export function HomePage() {
 
             <div className="mt-4 space-y-4">
               {FIX_CASES.map((item) => (
-                <div key={item.label}>
-                  <p className="mb-2 text-xs font-semibold tracking-wide text-slate-600 uppercase">
+                <div key={item.label} className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                  <p className="text-xs font-semibold tracking-wide text-slate-600 uppercase">
                     {item.label}
                   </p>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="mt-2 grid gap-2 sm:grid-cols-2">
                     <Swatch tag="修复前" sample={item.sample} {...item.before} />
                     <Swatch tag="修复后" sample={item.sample} {...item.after} />
                   </div>
@@ -154,9 +194,13 @@ export function HomePage() {
               ))}
             </div>
 
+            <p className="mt-3 text-xs leading-relaxed text-slate-600">
+              判定依据：WCAG 2.2 成功标准 1.4.3 给普通文本定的 AA 档，比值需 ≥ {AA_NORMAL_TEXT_RATIO}:1。
+            </p>
+
             <a
               href={ROUTE_HASH['contrast-lab']}
-              className="mt-5 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-indigo-800 underline decoration-indigo-400 decoration-2 underline-offset-4 hover:decoration-indigo-800"
+              className="mt-4 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-indigo-800 underline decoration-indigo-300 decoration-2 underline-offset-4 hover:decoration-indigo-800"
             >
               自己动手改一对颜色
               <ArrowRight className="size-4" aria-hidden="true" />
@@ -169,8 +213,8 @@ export function HomePage() {
         <div className="max-w-2xl">
           <h2 className="text-2xl font-bold tracking-tight text-slate-900">三个实验方向</h2>
           <p className="mt-2 text-base leading-relaxed text-slate-700">
-            三个都已经可以体验：换一对颜色、修一个标签关联、再用 Tab 走一遍焦点。
-            每个实验都只覆盖对应的成功标准，结论不代表整站符合 WCAG 2.2。
+            三个都已经可以体验，建议按顺序做完：换一对颜色、补一个标签关联、再用 Tab 走一遍焦点。
+            每个实验只覆盖对应的成功标准，结论不代表整站符合 WCAG 2.2。
           </p>
         </div>
 
@@ -184,10 +228,10 @@ export function HomePage() {
 
         {/* 轻量入口：报告不是第四个实验，而是把上面三个实验本次会话的真实结果汇总起来 */}
         <p className="mt-8 max-w-2xl text-sm leading-relaxed text-slate-700">
-          做完实验后，可以去
+          每个实验做完都会把真实结果登记进本次会话的台账。做完后可以去
           <a
             href={ROUTE_HASH.report}
-            className="mx-1 inline-flex min-h-11 items-center gap-1 font-semibold text-indigo-800 underline decoration-indigo-400 decoration-2 underline-offset-4 hover:decoration-indigo-800"
+            className="mx-1 inline-flex min-h-11 items-center gap-1 font-semibold text-indigo-800 underline decoration-indigo-300 decoration-2 underline-offset-4 hover:decoration-indigo-800"
           >
             统一成果报告
             <ArrowRight className="size-4" aria-hidden="true" />
