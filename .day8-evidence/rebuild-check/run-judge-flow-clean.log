@@ -1,0 +1,35 @@
+target http://127.0.0.1:52364/index.html
+CLICK 生成修复建议 @320,513 hit=BUTTON|mt-4 inline-flex min-h-11 items-center j|生成修复建议
+LIVE #/contrast 「生成修复建议」: 区域 1 个，本轮变化 0 个
+CLICK 应用该修复 @330,450 hit=BUTTON|mt-3 inline-flex min-h-11 items-center j|应用该修复
+LIVE #/contrast 「应用该修复」: 区域 2 个，本轮变化 2 个
+CLICK 修复标签关联 @320,450 hit=BUTTON|inline-flex min-h-11 items-center justif|修复标签关联
+LIVE #/form-label 「修复标签关联」: 区域 1 个，本轮变化 1 个
+CLICK 修复焦点指示 @728,450 hit=BUTTON|inline-flex min-h-11 items-center justif|修复焦点指示
+LIVE #/keyboard 「修复焦点指示」: 区域 1 个，本轮变化 1 个
+KB-ACTIVATE Enter {"keyName":"Enter","landed":{"label":"查看详情","outline":"none 3px rgb(30, 41, 59)","offset":"2px"},"presses":2,"counts":{"beforeTab":"0","afterTab":"1","afterActivate":"1"},"live":[{"role":"status","live":"polite","text":"已展开详情：《WCAG 实战》 · 主馆 3 楼 无障碍书架。"}],"focusAfter":{"tag":"button","label":"查看详情","isBody":false}}
+KB-ACTIVATE Space {"keyName":"Space","landed":{"label":"查看详情","outline":"none 3px rgb(30, 41, 59)","offset":"2px"},"presses":2,"counts":{"beforeTab":"0","afterTab":"1","afterActivate":"1"},"live":[{"role":"status","live":"polite","text":"已展开详情：《WCAG 实战》 · 主馆 3 楼 无障碍书架。"}],"focusAfter":{"tag":"button","label":"查看详情","isBody":false}}
+CLICK 重置实验 @875,450 hit=BUTTON|inline-flex min-h-11 items-center justif|重置实验
+CLICK 开始第一个实验 @323,434 hit=A|inline-flex min-h-12 items-center justif|开始第一个实验
+CLICK 生成修复建议 @320,513 hit=BUTTON|mt-4 inline-flex min-h-11 items-center j|生成修复建议
+CLICK 应用该修复 @330,450 hit=BUTTON|mt-3 inline-flex min-h-11 items-center j|应用该修复
+CLICK 进入表单标签实验 @334,720 hit=A|mt-4 inline-flex min-h-11 items-center j|进入表单标签实验
+CLICK 修复标签关联 @320,494 hit=BUTTON|inline-flex min-h-11 items-center justif|修复标签关联
+CLICK 进入键盘焦点实验 @334,720 hit=A|mt-4 inline-flex min-h-11 items-center j|进入键盘焦点实验
+R1 {"hits":3,"presses":4,"seen":["查看详情","保存选择","返回上一步"],"counters":{"before":"3","after":null}}
+CLICK 修复焦点指示 @728,491 hit=BUTTON|inline-flex min-h-11 items-center justif|修复焦点指示
+repaired = true
+R2 {"hits":3,"presses":16,"seen":["查看详情","保存选择","返回上一步"],"counters":{"before":"3","after":"3"}}
+CLICK 我已完成观察 @320,452 hit=BUTTON|inline-flex min-h-11 items-center justif|我已完成观察
+KEYBOARD {"round1":{"hits":3,"presses":4,"seen":["查看详情","保存选择","返回上一步"],"counters":{"before":"3","after":null}},"round2":{"hits":3,"presses":16,"seen":["查看详情","保存选择","返回上一步"],"counters":{"before":"3","after":"3"}},"confirmed":true}
+CLICK 查看统一成果报告 @334,720 hit=A|mt-4 inline-flex min-h-11 items-center j|查看统一成果报告
+REPORT {"已记录":"3 / 3","已修复":"3 / 3","复核":"3 / 3","待观察":"1 项","额外验证":"3 项"} countsMatch= true stillPending= false confirmedLine= true
+CLICK 复制 Markdown 报告 @343,494 hit=BUTTON|inline-flex min-h-11 items-center justif|复制 Markdown 报告
+COPY {"hook":{"len":6197,"sameAsTextarea":true},"status":{"all":["已复制完整 Markdown 报告，内容与上方展示逐字一致，可直接粘贴到笔记或 .md 文件。"],"copy":"已复制完整 Markdown 报告，内容与上方展示逐字一致，可直接粘贴到笔记或 .md 文件。"}} {"focusBeforeEnter":{"same":true,"tag":"BUTTON","label":"复制 Markdown 报告"},"hook":{"len":6197,"sameAsTextarea":true},"status":{"all":["已复制完整 Markdown 报告，内容与上方展示逐字一致，可直接粘贴到笔记或 .md 文件。"],"copy":"已复制完整 Markdown 报告，内容与上方展示逐字一致，可直接粘贴到笔记或 .md 文件。"}}
+CLICK 下载 .md 文件 @530,450 hit=BUTTON|inline-flex min-h-11 items-center justif|下载 .md 文件
+EXPORT {"copyByMouse":{"hook":{"len":6197,"sameAsTextarea":true},"status":{"all":["已复制完整 Markdown 报告，内容与上方展示逐字一致，可直接粘贴到笔记或 .md 文件。"],"copy":"已复制完整 Markdown 报告，内容与上方展示逐字一致，可直接粘贴到笔记或 .md 文件。"}},"clipboardReadAfterMouseCopy":{"chars":6425,"sameAsReport":false},"copyByKeyboard":{"focusBeforeEnter":{"same":true,"tag":"BUTTON","label":"复制 Markdown 报告"},"hook":{"len":6197,"sameAsTextarea":true},"status":{"all":["已复制完整 Markdown 报告，内容与上方展示逐字一致，可直接粘贴到笔记或 .md 文件。"],"copy":"已复制完整 Markdown 报告，内容与上方展示逐字一致，可直接粘贴到笔记或 .md 文件。"}},"mdLen":6197,"mdHasThreeState":{"pending":true,"done":true,"extra":true,"noFalsePending":true},"download":{"file":"AccessLab-成果报告-20261119114314.md","bytes":13577,"textareaBytes":13577,"identical":true}}
+SESSION {"afterRouteSwitch":"3 / 3","afterReenterKeyboard":{"hash":"#/keyboard","hasCounters":["修复前：键盘导航到达示例按钮的次数","修复后：键盘导航到达示例按钮的次数"]},"ledgerAfterReenter":"3 / 3","keyboardAfterReenter":"3 次","afterReload":{"stat":"0 / 3","copyDisabled":[true,true,true]}}
+NAV ["#/contrast","#/report","back→#/contrast:色彩对比度实验","fwd→#/report:统一成果报告"]
+NETWORK 90 requests, non2xx= 0 console errors= 0 warnings= 0
+PERF {"domContentLoadedMs":55,"loadMs":56,"resourceCount":4,"slowest":[{"name":"index-Co1Kujov.css","ms":23},{"name":"index-aTyl07hG.js","ms":23},{"name":"main.js?attr=Ca0P8sdi_P-KDVy","ms":19}],"transferBytes":401569}
+PART2 DONE, elapsed 4706 ms

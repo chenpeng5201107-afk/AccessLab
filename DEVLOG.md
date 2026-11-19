@@ -945,7 +945,7 @@ Qoder Sites 发布（官方 `prepare_site` → `get_publish_status` → `publish
 内嵌浏览器**没有附加可见视口**（`window.innerWidth === 0`、`visibilityState === "hidden"`、所有 `clientWidth === 0`，`user.click` 报 `NATIVE_BROWSER_VIEWPORT_UNAVAILABLE`），因此：
 
 1. **320 / 390 横向溢出与 44px 触控目标**：溢出扫描产出 106 条假阳性（连 `html`/`body` 都被判溢出），数据不可用。结构上本页沿用 Day 2 已实测通过的同套栅格（`grid lg:grid-cols-[…]`、`min-w-0` + `overflow-x-auto`、全部控件 `min-h-11`、无 fixed/sticky 浮层），但**仍需人工窄屏目视**。
-2. **真实物理 Tab 焦点序列**：安装 `focusin` 录制器后连按 Tab，录制结果 `tabsRecorded: 0`、`activeElement` 停留在 `main` —— 页面未 attached，按键不驱动焦点遍历。同一问题两次尝试均失败，按约定停止重试并上报。可给的替代证据只有结构性的：本页可聚焦元素全部来自自然 DOM 顺序、无正值 `tabindex`、全局 `:focus-visible` 为 3px indigo 描边。
+2. **真实浏览器 Tab 键事件序列**（当日记作「真实物理 Tab」，11-19 收口轮统一为准确术语）：安装 `focusin` 录制器后连按 Tab，录制结果 `tabsRecorded: 0`、`activeElement` 停留在 `main` —— 页面未 attached，按键不驱动焦点遍历。同一问题两次尝试均失败，按约定停止重试并上报。可给的替代证据只有结构性的：本页可聚焦元素全部来自自然 DOM 顺序、无正值 `tabindex`、全局 `:focus-visible` 为 3px indigo 描边。
 3. **真机读屏**（NVDA / VoiceOver / TalkBack）实际朗读差异、焦点是否落在输入框、错误提示能否被听到。
 4. **真实指针点击 label** 与**复制成功分支**（需真实用户手势）。
 5. 视觉截图观感：本会话无法截图。
@@ -1011,7 +1011,7 @@ Qoder Sites 发布（官方 `prepare_site` → `get_publish_status` → `publish
    `documentElement.clientWidth` 分别为 305（320 扣滚动条）与 375，`scrollWidth` **恒等于** `clientWidth`，
    即**无横向溢出**；`code` 块的 `overflow-x-auto` 生效。全页唯一被标记「超出视口」的是 sr-only skip link（`left: -1`，来自 `-1px` 负 margin，不构成滚动）。
 2. **44px 触控目标**（同上）：三页里唯一低于 44px 的可交互元素是 sr-only「跳转到主要内容」（未聚焦时 32×16 且被裁剪，本就不是指点目标；聚焦后恢复为正常按钮）。其余 10–13 个 `a / button / input` 全部 ≥ 44px。
-3. **真实物理 Tab 序列**（遗留 #4）：本轮 `press_key Tab` **能够驱动焦点遍历**（上轮 `tabsRecorded: 0` 的阻断已解除）。
+3. **真实浏览器 Tab 键事件序列**（遗留 #4；当日记作「真实物理 Tab 序列」）：本轮 `press_key Tab` **能够驱动焦点遍历**（上轮 `tabsRecorded: 0` 的阻断已解除）。
    实测前 5 站：skip link → 站点 logo → 首页 → 色彩对比度实验 → 表单标签实验；每个焦点元素计算样式为 `outline: solid 3px indigo / offset 2px`，焦点可见性成立。
    结构性补强：全页 `positiveTabindex` 为空 → 焦点顺序即 DOM 顺序；`domOrderTabbables` 依次为 skip link、logo、三条导航、返回首页、`#student-name`、`#student-email`、提交、重新检测、`<summary>`、修复、重置、复制。
    诚实说明两点局限：只逐步走到第 5 站（未逐个按完 14 站）；本轮 `back / forward` 证据被我自己创建的窄屏 iframe 污染了联合会话历史，故后/退一致性仍以 9 条路由单测 + 上面的深链刷新实测为准。
@@ -1389,7 +1389,533 @@ Day 4 结项后复核「我已完成观察」的语义，发现它把「焦点�
 - Day 7 建议：① 顶部导航在 768 / 1440 下把可点区补到 44px（只加内边距，不改视觉）；
   ② 人工收一轮真机读屏 + 无痕目视 + 真实复制成功分支；③ 评估大文本 AA 3:1 是否升级为可交互判定（仍属 1.4.3）；
   ④ 视需要把「修复后复核」的三实验判定同构化（要用户先确认）；⑤ 参赛材料图文整理（不要用取证脚本目录里的 `profile/`、`downloads/`）。
-- Git：本轮改动**尚未提交**，等待用户确认；Sites 描述符与 `.qoder.zip` 仍不入库；发布前需单独请求授权。
+- Git：本节写就时改动**尚未提交**（当时在等你确认）。**§6 已更新事实**：你随后以 **`82ecef4 11-18阶段性提交`** 把 Day 6 源码、`NextStepCard.tsx`、`App.day6.test.tsx`、三份治理文档、`.day6-evidence/` 与 Sites 描述符一并入库并推送了 origin/main——「描述符与取证目录不入库」的旧口径从那次提交起不再成立。
+
+### 6. Day 6 公网发布与公网实测（用户授权「更新 site」）
+
+发布走的是**同一个现有站点**（未建新站、未改访问范围）：`get_context` 复用 `projectId 01a1e498-acb7-…` / `siteId 01a1e498-acba-…`
+→ `prepare_site` 新 action **`b7ea5f56-2e7b-4735-b1f1-ef6c050e09bc`**（`webDirectory: dist`、`spa: true`，首返 `descriptorStatus: pending`）
+→ `get_publish_status` 就绪（`preparation.state: ready`、`canPublish: true`、`blockers: []`、`access_mode: public`）
+→ 同 action 同输入重试 `prepare_site` 拿回 `descriptorStatus: written`（未重复上传）
+→ `publish_site` → `published: true`、`operation.state: succeeded`、`committed: true`、`readiness: publication_completed`。
+
+| 公网核对 | 实测 |
+| --- | --- |
+| 线上引用 | `index.html` 指向 `index-gw0uvRiw.js` + `index-DgYwPq9n.css`；两者 curl 下载后与本地 `dist/assets/` **`cmp` identical**（368996 B / 27977 B）；Day 5 的 `index-C9lhVihd.js` → **404** |
+| 免登录 | 匿名请求 `200`，响应头无 `Set-Cookie` / `Location` / `WWW-Authenticate`；`site.access_mode` 仍是 `public`（未把私有站点改成公开） |
+| 同一套脚本换目标 | 给 `collect.mjs` 加 `LIVE_URL` 开关（公网产物写 `report-live.md` / `report-live.json` / `shots-live/` / `downloads-live/`），本地与公网共用同一套判定，不为线上另写脚本 |
+| 评委流程 | `Edg/157.0.4341.60`，**15 步 / 机械耗时 7.1 秒**；五条深链各自独立渲染正确 `h1`；首页主按钮 → 色彩 →「下一步」→ 表单 →「下一步」→ 键盘 → 报告，无自动跳转 |
+| 读数 | lead「这次会话登记了 3 / 3 个实验的成果，其中 3 个真正改动了页面，1 个已由你本人确认」；四项 `3/3、3/3、3/3、3 项`；色彩 `4.48 → 4.54`；表单「没有发现问题」+「是否真的改过 DOM = 是」；键盘 `3 次 / 3 次` 且确认项写明「由你点击…不是程序自动判定」 |
+| 导出 | Markdown 5651 字符；真实落盘 `AccessLab-成果报告-20261118212713.md` **12047 B === textarea 编码后 12047 B**（脚本读目录时看到的是浏览器尚未改名的 `.crdownload` 中间态，落定后为同名 `.md`，字节数不变） |
+| 会话性 | 切走再切回 `3 / 3`；同页刷新 `0 / 3` 且复制 / 下载禁用 `[true,true,true]` |
+| 视口与键盘 | 320 / 390 `overflowPx: 0`、768 / 1440 `-15px`（滚动条）；代码块 0 个撑破页面；缺陷态真实 Tab `outline: none 3px`、修复态 `solid 3px` + `:focus-visible` 为 `true`；外壳 skip link / logo / 四条导航 `solid 3px offset 2px`；Shift+Tab 7 站回到 skip link，Enter 后 `activeElement === main#main` |
+| 减弱动效 / 控制台 | `reduce` → `auto` / `1e-05s`；整轮 `error / warning: 无` |
+| 截图 | `shots-live/` 12 张，其中 `b1-keyboard-broken-focus-1440.png` ↔ `c5-keyboard-fixed-1440.png` 是**线上**的修改前后对照 |
+
+**这一节的结论已在当天闭合**：Day 6 是先发布、后提交（你当时只授权了「更新 site」），所以公网跑取证的那一刻线上没有对应 commit。发布与取证完成后，你以 **`82ecef4 11-18阶段性提交`**（56 files，+6743/−165，21:27:51）把 Day 6 全部源码与测试入库，`git ls-remote --heads origin` 显示 **`refs/heads/main` 与本地 HEAD 同为 `82ecef4`** ⇒ 线上 `index-gw0uvRiw.js` 现在能追溯到一个确定的 commit，`git checkout 82ecef4 → npm run build → 新 action 发布` 这条回退路径成立。
+仍然没有对应的 commit 的是**本节发布记录本身**（§6 与 `PROJECT_STATUS.md` §2.10、PRD 的 Day 6 段）——它们是 `82ecef4` 之后的未提交改动，等你确认后补一次 `docs: record day6 publication and live evidence` 即可；本轮我没有执行任何 `git add` / `commit` / `push`。
+
+## 2026-11-18 · Day 7｜综合质量与无障碍专项验收（不新增功能）
+
+### 0. 本轮边界（先说清没动什么）
+
+- **未**新增实验 / 页面 / 路由 / 依赖 / 状态管理，**未**做视觉重设计，**未**扩范围；
+  改动集中在你点名的 A1 / A2 / A3 三项，外加取证中发现并修掉的**一处真实键盘缺陷**（B1 焦点交接）。
+- **未**改任何检测算法、阈值、对比度计算、台账写入的判定条件与时序，**未**改 hash 路由表。
+- 键盘实验的教学缺陷态 `.kf-demo-btn--broken:focus-visible { outline: none }` **原样保留**，
+  没有为了「减少 `role=status` 数量」或视觉统一去动它。
+- 旧测试**一条未删、未跳过、未放宽**：Day 6 的 17 文件 / 274 条全部保留，本轮净增 1 文件 / 21 条 → **18 文件 / 295 条**。
+- 本轮**未执行**任何 `git add` / `commit` / `push`，也**未发布**：线上仍是 Day 6 的 `index-gw0uvRiw.js`。
+  Day 6 留下的未提交文档改动（`DEVLOG.md` §6、`PROJECT_STATUS.md` §2.10、PRD Day 6 段、Sites 描述符）**完整保留**。
+
+### 1. 改动清单（按任务）
+
+| 任务 | 文件 | 改了什么 | 实测结果 |
+| --- | --- | --- | --- |
+| A1 首页主操作偏低 | `src/pages/HomePage.tsx`（+15/−15） | 把唯一一个主按钮「开始第一个实验」从三组要点之后提到**核心价值句之后**，压缩首屏留白；品牌句、三张实验卡、「给谁用 / 解决什么 / 怎么体验」一条不删 | 320×568 按钮顶边 **499px（折线内）**、390×844 为 470px、768 为 356px、1440×900 为 408px；`href="#/contrast"` 全页唯一 |
+| A2 报告人工验证三态 | `src/lib/reportModel.ts`（+107/−17）+ `src/pages/ReportPage.tsx`（+28/−6） | 拆成 `pendingManual`（仍待你本人完成）/ `confirmedManual`（已由你确认）/ `extraVerification`（建议额外进行的辅助技术与真实场景验证）三份数组，新增 `manualVerificationGroups()`；页面小标题「（N 项）」、`<li>` 列表与 Markdown **同一份数组**；统计区补两行「实验内仍待你本人完成的观察」「建议额外进行的辅助技术验证」 | 真实点完三实验 + 确认后：`1 项 / 1 项 / 3 项`，「你还没有点『我已完成观察』」不再出现，改出现「实验内已确认：键盘焦点实验」；未确认时同一位置变回 `2 项 / 0 项 / 3 项`；色彩那条永远留在「仍待完成」并写明「实验页没有记录这一步的按钮」 |
+| A3 导航可点区 | `src/components/AppHeader.tsx`（+3/−3） | 去掉宽屏那条 `sm:min-h-9`（它把导航从 44px 压回 36px），五条链接在**所有断点**统一 `min-h-11`；给 logo 链接也补 `min-h-11`；同时把导航容器 `gap-3→gap-2`、`py-3→py-2.5`、`px-3→px-2.5`，让页头不因补高度而变高（宽屏实测仍 65px）。文案 / 顺序 / 图标 / 视觉层级不动 | 320 / 390 / 768 / 1440 × 5 路由共 20 组实测导航高度全部 `[44,44,44,44,44]`；`aria-current="page"` 仍唯一 |
+| B1 焦点交接（本轮发现的真缺陷） | `ContrastLabPage.tsx`（+24/−2）/ `FormLabelLabPage.tsx`（+15/−1）/ `KeyboardFocusLabPage.tsx`（+15/−1） | 五个动作（生成建议 / 应用修复 / 撤销 / 修复标签关联 / 修复焦点指示）会用结果块**顶掉原按钮**，按钮消失后浏览器把焦点退回 `<body>`，键盘用户既看不见焦点也读不到结果。改为 `tabIndex={-1}` + `focus()` 主动把焦点交给新出现的那一块（沿用报告页既有的 `statusRef` 约定），重置动作不触发交接 | 修复前实测 `afterTag: "body"`；修复后色彩三步分别落在「建议 · 尚未应用」块 / 「修复已应用」块 / 「已撤销本次修复…」，表单落在「标签关联已修复…」，键盘落在「已应用焦点修复」，下一次 Tab 落在同区下一个可用控件 |
+| 测试 | `src/App.day7.test.tsx`（新增 21 条） | A2 三态 6 + A2 数字同源 5 + A1 主操作 2 + A3 导航 2 + B1 焦点交接 4 + 旧功能回归 2；三条实验靠真实点击在完整 App（外壳 + hash 路由 + 会话台账）里跑完，报告读数与页面同一条数据链 | 21/21 通过；jsdom 只用于状态与结构，**焦点体验一律由真实浏览器取证**（见 §3） |
+
+### 2. 测试与构建（真实执行）
+
+| 项 | 结果 |
+| --- | --- |
+| `npx tsc --noEmit` | 干净，无类型错误 |
+| `npm test` | **18 文件 / 295 条全部通过**，0 失败 0 跳过（Day 6 为 17 / 274，本轮 +1 文件 +21 条，旧测试零删改）；本轮末尾两次全量运行分别用时 13.29s / 12.80s |
+| `npm run build` | 通过（`tsc -b && vite build`，2105 modules），两次分别 349ms / 396ms，产物哈希一致 |
+| 产物 | `dist/index.html` 678 B、`assets/index-mFcMtZD3.js` **372750 B / gzip 110277 B**、`assets/index-CFHpowcy.css` **29485 B / gzip 6256 B**、`favicon.svg` 232 B；合计 4 个文件 403145 B（gzip 117213 B）。与 Day 6 线上（JS 368996 B / CSS 27977 B）相比 JS **+3754 B**、CSS **+1508 B**，来自报告三态文案与焦点交接逻辑，无新增依赖 |
+| 资源哈希变化 | Day 6 线上 `index-gw0uvRiw.js` + `index-DgYwPq9n.css` → 本轮 `index-mFcMtZD3.js` + `index-CFHpowcy.css` ⇒ **Day 7 的修改尚未上线** |
+
+### 3. 真实浏览器取证（headless Edge / Chrome + 原生 CDP，本地 `dist`，脚本与产物在 `.day7-evidence/`）
+
+驱动方式同 Day 6：`Input.dispatchKeyEvent` 真实按键、`Input.dispatchMouseEvent` 命中校验后点击、
+`getComputedStyle` 读真实级联、`Emulation.setDeviceMetricsOverride` 切视口、`Accessibility.getFullAXTree` 读可访问性树、
+`Page.setDownloadBehavior` 真实落盘、`Network.*` 数请求。脚本 `verify.mjs` / `verify2–4.mjs`（Edge）、`verify5.mjs`（Edge + Chrome）、`verify6.mjs`（两台浏览器性能），结果 `part1–part6*.json`、截图 `shots/` 12 张。
+
+| 检查 | 结果 |
+| --- | --- |
+| D1 视口矩阵 **20 组**（4 视口 × 5 路由，最终构建上重跑） | 横向溢出 320 / 390 = `0`、768 / 1440 = `-15px`（滚动条，非溢出）；**小于 24px 的可点击目标 0 个**；导航 20/20 组 44px；`header` 高 165（窄屏两行）/ 65（宽屏一行）；`h1` 始终在页头之下 |
+| B1 键盘真实动线 | skip link 首站 `outline: solid 3px offset 2px` → Enter 后 `activeElement === <main id="main">`；三实验全部用 Tab + Enter 走完；色彩页 8 次 Tab 到「生成修复建议」，Enter 激活后焦点在建议块；Shift+Tab 反向可达；缺陷态示例按钮真实 Tab 后 `outline: none`（教学缺陷未被破坏） |
+| B1 Enter / Space 激活 | 「查看详情」`Enter` 与 `Space` 都能展开详情（`live` 出现「已展开详情…」），键盘到达计数**不因激活而膨胀**（`0 → 1 → 1`），激活后焦点仍在原按钮 |
+| `:focus-visible` 真实判定 | 修复态示例按钮：Tab 抵达 → `matches(':focus-visible') = true`、`outline: solid 3px rgb(67, 56, 202)`；同一颗按钮鼠标点击 → `false` / `outline: none`。**Edge 157 与 Chrome 158 结果一致** |
+| 语义（B2） | 五路由 `h1` 各 1 个、标题层级无跳级、`nav[aria-label="主导航"]`、`aria-current="page"` 唯一、无名可交互控件 0；可访问性树 `banner / navigation / main / contentinfo` **各 1 个** ⇒ 实验页内层的 `<header>`（DOM 计数 2）**不会被暴露成第二个 banner 地标**，先前按标签计数产生的疑问已排除 |
+| C 色彩回归 | `4.48:1 未达 AA` → 建议 `4.54:1` → 应用后 `4.54` → 撤销恢复 `#777777 / 4.48`；非法 `#12zz` 时 `aria-invalid=true`、`aria-describedby` 同时挂出提示与错误、修复区显示「存在无效颜色，修复功能已暂停」且**生成按钮消失**；恢复合法后旧建议不复活 |
+| C 表单回归 | 修复前 `student-name` 的 `input.labels = 0`、修复后 `= 1`（真实 DOM），点 `<label>` 能把焦点送进对应输入框；复检结论「没有发现问题」 |
+| C 键盘回归 | 鼠标点击示例按钮**不计入**键盘到达次数；真实 Tab 两轮各 `3 次`；「我已完成观察」在计数不足时 `disabled`，走完后才可点；「重置实验」把计数清零且不误触发焦点交接 |
+| C 台账与会话性 | 切走再切回报告仍 `3 / 3`；**重进键盘实验不会覆盖其它两项记录**；同页刷新 `0 / 3` 且三个导出按钮禁用 `[true,true,true]` |
+| 报告导出 | Markdown 6197 字符；鼠标点复制与键盘 Enter 激活同一颗按钮都调用 `clipboard.writeText`，钩子取到的字符串与页面 textarea `===` 相同（`same: true`），状态区都出现「已复制完整 Markdown 报告…」；真实落盘 `AccessLab-成果报告-20261118232920.md` **13577 B === textarea UTF-8 字节数**（Edge 与 Chrome 各一次，结果相同） |
+| 清空与取消 | 「清空本次实验记录」→ 二次确认区出现「确认清空记录 / 取消，保留记录」且焦点落在按钮上（`isBody: false`）；取消后读数 `1 / 3` 不变；确认后统计归零、三组人工验证条目一起消失 |
+| 深链 / 前进后退 | `?d7=deep#/form-label` 直接加载 → `h1` 为「表单标签实验」、`document.title` 同步；`#/contrast ↔ #/report` 的 `history.back/forward` 均正确恢复页面 |
+| D3 请求与性能（两台浏览器一致） | 整页首次加载**属于本应用的请求只有 4 个**：`/index.html`(200/917 B)、`/assets/index-CFHpowcy.css`(200/29785 B)、`/assets/index-mFcMtZD3.js`(200/373050 B)、`/favicon.svg`(200/532 B)，**非 2xx = 0**；hash 路由切换 **0 个应用请求**；`console error / warning / exception = 0`；本机 loopback 计时 DCL 114–118ms、load 115–118ms、TTFB 12–15ms（**这是本机静态服务的数字，不代表公网加载时间**）；`longtask` 0 条 |
+| 线上只读核对 | `get_site.siteId 01a1e498-acba-…` → `lifecycle: active`、`access_mode: public`；匿名 GET 首页 `200` 且仍引用 Day 6 资源，两个资源 `200` + `content-encoding: gzip`、`cache-control: no-cache`；不存在的资源路径 `404`（0 B，**没有 SPA 回退**，与 hash 路由方案一致） |
+| 环境噪音（与应用无关，记录口径） | 本机 Edge / Chrome 都额外注入了 `/​<guid>/main.js`、`/init`、`/to/wsm.sessionActivated`、`/to/wsm.onHashChange` 一类**本地安全组件**请求（两台浏览器同样出现）。这些不属于 AccessLab，已从「应用请求数」里剔除，否则会误报成「应用每次切路由发一个请求」 |
+| 评委动线机械耗时 | 首页 → 色彩（生成 + 应用）→ 表单（修复）→ 键盘（两轮 Tab + 修复 + 确认）→ 报告，全程真实按键与点击 **5023ms**（脚本机械耗时，不含人阅读时间） |
+
+### 4. 本环境仍然无法验证、需人工确认
+
+| 项 | 为什么不能算通过 | 建议怎么补 |
+| --- | --- | --- |
+| 真机屏幕阅读器（NVDA / VoiceOver / TalkBack） | 本机没有可读屏环境。本轮给的是 DOM 语义、CSS 级联与**浏览器可访问性树**证据，**不是**真实朗读证据 | Day 8 用真机读屏走一遍：报告页三组人工验证的朗读顺序、五个动作后的焦点交接是否被播报、色彩页「生成修复建议」的读数变化 |
+| 「生成修复建议」的播报层 | 实测这一步**不写入任何 live region**（前后 live 文本都是「当前对比度 4.48:1 未达 AA」），焦点交接只是将读数交给键盘用户自己读。修与不修都需产品决策（新增 `aria-live` 会与既有读数区双播报） | 列为 P2 观察项，等真机读屏结果再决定 |
+| OS 剪贴板回读 | `writeText` 交给 API 的字符串已证明与页面逐字一致，但无头环境 `readText()` 回读到 6425 字符 ≠ 报告的 6197 字符（拿到的是系统里已有的内容），**这一项标未验证** | 真机鼠标 + 键盘各复制一次，粘贴到记事本核对 |
+| 非 Chromium 内核 | 只跑了 Edge 157 与 Chrome 158。Firefox / Safari / WebKit、真机移动浏览器、系统级 `prefers-reduced-motion` 全部**未验证** | Day 8 如需，请在装有 Firefox / Safari 的机器上重跑 `verify5.mjs`（脚本只需换浏览器可执行文件路径） |
+| Lighthouse / 真实网络性能 | 本轮没跑 Lighthouse，也**不报任何分数**；只有本机 loopback 计时与产物体积 | 如需 Lighthouse，请在目标网络环境下人工跑，并把报告作为独立附件 |
+| 无痕浏览器目视 | 匿名 curl 与 headless 新配置文件不等于评委在无痕窗口里的目视结果 | 人工在无痕窗口开线上地址确认（当前线上仍是 Day 6，Day 7 未发布） |
+
+### 5. Day 7 结论与 Day 8 待办
+
+**Day 7 的四项改动都已闭合，295 条测试与构建全绿，Edge + Chrome 两台浏览器端到端取证通过；除此之外没有任何新的功能、依赖或视觉改动。**
+当前状态是「本地已验收、Git 未提交、公网未发布」——这三件事都需要你逐项确认，本轮我只做到读取与本地取证。
+
+Day 8 建议顺序：
+
+1. **Git**：等你确认后分两次提交——① `fix: close day7 accessibility and focus-handoff gaps`（Day 7 的 7 个源码文件 + `src/App.day7.test.tsx`）② `docs: record day6 publication and day7 verification`（Day 6 遗留 + 本轮的文档段落；`DEVLOG.md` 里这两段是同一条连续 hunk，硬拆要手写补丁），再决定是否推送 `origin/main`；本轮未执行任何 Git 写操作。
+2. **发布**：若要把 Day 7 上线，需要单独授权，走「同一 `projectId` / `siteId` 新 action → `prepare_site` → `get_publish_status` → `publish_site`」，发布后用同一套脚本对公网重跑取证并核对线上与本地逐字节一致（不得把构建通过当成发布成功）。
+3. **人工项**：真机读屏、无痕目视、真实剪贴板、其它内核浏览器，结论写回本文档与 `PROJECT_STATUS.md`。
+4. **参赛材料**：可引用的真实证据现在有两处——`.day6-evidence/`（43 个文件，已随 `82ecef4` 入库，含本地与公网各 12 张截图与两份落盘 `.md`）与 `.day7-evidence/`（31 个文件：10 份脚本、8 份 `.json` 结果、12 张截图、1 份落盘 `.md`，**是否入库待你确认**）；另有线上站点封面图与公开地址。仍然没有：读屏录屏、用户测试、第三方审计、宣传视频。
+
+---
+
+## 2026-11-19 · Day 8｜最终复验 + 参赛交付材料（零源码改动）
+
+### 0. 本轮边界（先说清没动什么）
+
+**本轮没有修改任何 `src/` 下的业务代码，也没有新增依赖、路由、实验或视觉设计。**
+Day 7 的四项改动（A1 首页主按钮上提、A2 报告人工验证三态、A3 导航 44px、B1 焦点交接）在源码里已逐项 grep 复核确认存在，
+按「当前代码正常就不要重复修改」的要求**一处未再动**。本轮做的三件事：
+①在最新源码上重跑质量闸门并复现构建；②用真实浏览器重跑一遍评委动线并把截图/读数落盘成可引用的参赛证据；③产出 `submission/` 参赛材料包。
+Git 与发布**依然未执行**（详见 §5）。
+
+### 1. 质量闸门（真实执行，非引用 Day 7 结论）
+
+| 项 | 结果 |
+| --- | --- |
+| `npx tsc --noEmit` | 干净，0 输出 |
+| `npm test` | **18 个测试文件 / 295 条全部通过**，与 Day 7 记录持平；旧测试零删改、零跳过、零放宽断言 |
+| `npm run build` | 通过，产出 4 个文件 |
+| 可复现构建 | 先 `rm -rf dist` 再重建：`index-mFcMtZD3.js` **372750 B** / `index-CFHpowcy.css` **29485 B**，哈希与 Day 7 记录**逐字符一致** ⇒ 产物只由源码决定 |
+| 五条路由入包 | 压缩产物里 `#/`、`#/contrast`、`#/form-label`、`#/keyboard`、`#/report` 全部存在 |
+| 依赖 | `package.json` 未变动；运行时依赖仍是 `react` / `react-dom` / `lucide-react` 三个，零后端、零数据库、零第三方 API |
+| 环境口径 | 本机 `node` 不在 PATH，所有命令前需 `export PATH="/d/Soft_Ware:$PATH"`（遗留问题 #14，与应用无关） |
+
+### 2. Day 7 四项修复的存在性复核（源码 grep + 运行时各一次）
+
+| 项 | 源码位置 | Day 8 运行时读数 |
+| --- | --- | --- |
+| A1 首页主按钮在折线内 | `HomePage.tsx:135` 品牌句、`:148` 「开始第一个实验」 | 320×568 顶边 **499px（inFold=true）**；390=470、768=356、1440=408，四档全在折线内 |
+| A2 报告人工验证三态 + 数字同源 | `reportModel.ts:134-138`、`:458-482`、`:506-521`（`pendingManual` / `confirmedManual` / `extraVerification` + `manualVerificationGroups()`） | 三组标题逐字为「实验内仍待你本人完成的观察（**1 项**）」/「实验内已由你确认完成的观察（**1 项**）」/「建议额外进行的辅助技术与真实场景验证（**3 项**）」；`countsMatch=true`；无虚假「你还没有点」提示 |
+| A3 导航 44px | `AppHeader.tsx:23/45/46`（`min-h-11`，无 `sm:min-h-9`） | 20 组视口的 `allNavH` 集合只有一个值 **{44}** |
+| B1 焦点交接 | `ContrastLabPage.tsx:545/577/606`、`FormLabelLabPage.tsx:442`、`KeyboardFocusLabPage.tsx:534`、`ReportPage.tsx:457`（`tabIndex={-1}` + `focus()`） | 六个动作后 `activeElement` **无一退回 `<body>`**，见 §3 逐条落点 |
+
+### 3. 真实浏览器复验（headless Edge 157 + 原生 CDP，本地 `dist`，脚本与产物在 `.day8-evidence/`）
+
+驱动方式与 Day 7 相同：`Input.dispatchKeyEvent` 真实按键、`Input.dispatchMouseEvent` 命中校验后点击、`getComputedStyle` 读真实级联、`Emulation` 切视口、`Page.setDownloadBehavior` 真实落盘、`Network.*` 数请求。
+三条脚本由 Day 7 的 `verify.mjs` / `verify2.mjs` / `verify4.mjs` 最小改动派生（**只换输出目录、调试端口、临时目录前缀与文件名**，逐行 diff 已核对），另新写 `capture-shots.mjs` 负责截图。
+
+| 项 | Day 8 实测 |
+| --- | --- |
+| 评委动线（`judge-flow.json`） | 首页 → 色彩（生成 + 应用）→ 表单（修复）→ 键盘（两轮 Tab + 修复 + 确认）→ 报告，真实按键与点击，机械耗时 **6287ms**（Day 7 为 5023ms，同一台机器同一构建的量测抖动）。**这是机器操作时间，不含人阅读时间，不得写成「3 分钟达标」** |
+| 键盘两轮 | R1 修复前：4 次 Tab 命中 3 个示例按钮，`before=3 / after=null`；R2 修复后：16 次 Tab 命中同 3 个，`before=3 / after=3`；`我已完成观察` 在门控满足前不可点 |
+| 报告四项计数 | `3 / 3`、`3 / 3`、`3 / 3`、待观察 `1 项`、额外验证 `3 项` |
+| 导出 | 复制载荷 **6197 字符 === 页面 textarea** 逐字一致（鼠标与键盘 Enter 两条路径各自通过，Enter 前 `activeElement` 就是该按钮）；`.md` 真实落盘 `AccessLab-成果报告-20261119094129.md` **13577 B === textarea UTF-8 字节数，identical=true**。OS 剪贴板 `readText()` 回读仍是 6425 字符 ≠ 6197，与 Day 7 同样判定：**无头环境回读不可靠，人工粘贴回读维持未验证** |
+| 会话性 | 路由切走再回来台账 `3 / 3`；重进键盘实验不覆盖他项；**刷新后 `0 / 3` 且三个导出按钮全禁用** |
+| 焦点交接逐条（`focus-handoff.json`） | 生成修复建议 → `div`「建议 · 尚未应用」→ 下次 Tab 落「应用该修复」；应用该修复 → `div`「修复已应用」→ 「撤销本次修复」；撤销 → `p`「已撤销本次修复，文字颜色恢复为 #777777。」→ 「进入表单标签实验」；修复标签关联 → `p`「标签关联已修复…」→「重置实验」；**重置实验 → 焦点仍在「重置实验」自身（未误交接）**；修复焦点指示 → `p`「已应用焦点修复…」→「重置实验」 |
+| 非法输入 / 过期建议 | `#12zz` → `aria-invalid=true` + 两条描述、修复区显示「存在无效颜色，修复功能已暂停」、**生成按钮消失**；改成 `#7b7b7b` 后实时对比度变 `2.29:1` 但**复制按钮 present=false**（旧建议不自动复活） |
+| 视口矩阵（`viewport.json`） | 5 路由 × 320 / 390 / 768 / 1440 = **20 组**：横向溢出 `{0, -15}`（负数是滚动条宽度，即 320/390 溢出为 `0`）、越界元素 **0**、小于 24px 的可点击目标 **0**、代码块未撑破 **0**、`h1` 全在页头之下 |
+| 键盘地图 | skip link 首站 `solid 3px 2px` → Enter 后 `activeElement === <main id="main">`；五条导航与 logo 全 `solid 3px 2px`；键盘实验缺陷态三按钮 `outline: none 3px`（**教学缺陷未被破坏**） |
+| 语义（DOM 计数） | 五路由 `h1` 各 1、标题**无跳级**、`nav[aria-label="主导航"]`、`aria-current="page"` 唯一、无名称可交互控件 **0**。⚠️ 本轮只重跑了 DOM 计数，`banner=1` 那条可访问性树结论沿用 Day 7 的 `part5-*.json`，**本轮未重跑 AX 树** |
+| 控制台与网络 | 三趟跑下来 `console error = 0`、`warning = 0`；整场评委动线总请求 93 个（含本机浏览器注入的本地安全组件），**non-2xx = 0**；属于本应用的资源 4 个、loopback DCL 90ms（本机数字，不代表公网，不出 Lighthouse 分数） |
+
+### 4. 参赛材料包 `submission/`（6 份，全中文，可直接使用）
+
+| 文件 | 体量 | 内容 |
+| --- | --- | --- |
+| `README.md` | 11242 B | 材料总览、功能与技术栈、目录结构、运行命令、Day 1–8 时间线、「这个产品不做什么」诚实边界、赛事规则口径（标注需以官方公告核对） |
+| `forum-post.md` | 25072 B | 天池论坛正式作品帖：官方要求的五部分齐全，9 处 `【插图：…】` 标记 + 4 处 `【请填写…】` 身份占位符；第五部分分 10 节写「哪些交给 Qoder、哪些我自己判断、哪些我不同意它」；第 9 节逐条列明**没有**的证据 |
+| `demo-script.md` | 12476 B | 60–90 秒演示视频分镜（6 段，每段含页面/操作/口播/关键数据/镜头/必须真机还是可剪辑），附 75 秒裁剪方案与约 240 字完整口播稿、红线清单 |
+| `demo-checklist.md` | 8823 B | 录前 A–H 八组检查项，A1 是阻塞项（公网仍是 Day 6，必须先发布再录，否则录进去的是旧版） |
+| `evidence-index.md` | 17560 B | 证据总索引：Day 8 / Day 7 / Day 6 三批 + VCS/构建/部署证据，逐条标注「能证明什么 / 是否独立核验 / 适不适合公开 / 要不要打码」，含 14 张截图逐张说明与 §7 **待补充**清单（10 项） |
+| `final-checklist.md` | 12540 B | A 阻塞项、B 参赛资格（全为「待你本人操作」）、C 帖子五部分对照、D 占位符 D1–D7、E 11 项未验证人工项、F 质量闸门真实数字、G 排期、H 发帖前 10 分钟走查、I 授权事项汇总 |
+
+**取证截图**：`.day8-evidence/shots-post/` 共 **14 张 PNG**（13 张 1440×900 + 1 张 320×567 手机首屏），由 `capture-shots.mjs` 在**同一条连续会话**里按「首页 → 色彩前后 → 表单前后 → 键盘缺陷态/修复态 → 报告」顺序拍摄，画面里的数值与 §3 的 JSON 读数是同一趟运行。
+过程中修正过一处会误导人的取景：键盘实验那两张最初定位到了页面下方**静态示意图卡片**（右侧那张本来就画着焦点环），换成把**真正聚焦的元素**滚到视口中央后重拍——现在的 `09` 缺陷态实测 `outline: none 3px`、`10` 修复态实测 `solid 3px rgb(67, 56, 202) offset 3px`，差异只由页面自身一条 CSS 规则产生。
+
+### 5. 线上仍是 Day 6：本轮唯一的 P0 阻塞项
+
+Day 8 再次只读核对（`curl` 匿名请求 + 资源存在性）：
+
+- 线上 `index.html` 引用 `index-gw0uvRiw.js` + `index-DgYwPq9n.css`（Day 6 构建）；
+- 本地 Day 7/8 构建的 `index-mFcMtZD3.js`、`index-CFHpowcy.css` 在线上**都是 `404`**；
+- 站点 `lifecycle: active`、`access_mode: public`（未新建站点，未改访问范围）。
+
+⇒ **评委现在点开链接看到的是 Day 6**，也就是 Day 7 已经修掉的四个问题（手机首屏看不到主按钮、报告「人工验证」三态未拆、导航 36px、五个主操作后焦点退回 `<body>`）在当前公网上**依然存在**。
+本轮**未执行发布**：A3/A4 只做到「把方案摆出来等你逐项确认」。同样地，Git 也**未执行** `add` / `commit` / `push`，HEAD 仍是 `82ecef4`（与 `origin/main` 一致，无未推送提交）。
+
+### 6. Day 8 结论
+
+**代码质量侧：绿灯且可复现**——tsc 干净、295/295、构建哈希与 Day 7 一致、评委动线与焦点交接在真实按键下重跑无回归、20 组视口无溢出无小目标、控制台干净。
+**材料侧：齐了**——`submission/` 六份 + 14 张同源截图 + 4 份 JSON 证据 + 3 份运行日志。
+**交付侧：两步都还没走**——提交与发布都在等你授权，且**发布必须先于录视频与发帖**（否则公网展示的是旧版）。
+仍然没有的东西照旧没有：真机读屏、非 Chromium 内核、OS 剪贴板人工回读、无痕目视、真实移动网络、用户调研数据、宣传视频。材料与页面里都没有把它们写成已完成。
+
+### 7. 待你确认后的剩余动作
+
+1. **Git**：确认拆两次提交（① Day 7 的 7 个源码文件 + `src/App.day7.test.tsx` ② 三份治理文档的 Day 6 遗留 + Day 7 + Day 8 段落），并决定 `.AccessLab 无障碍实验室.qoder.site`（纯格式重排）、`.day7-evidence/`、`.day8-evidence/`、`submission/` 是否入库；确认后才谈是否推送 `origin/main`。
+2. **发布**：确认后走「同一 `projectId` / `siteId` 新 action → `prepare_site` → `get_publish_status` → `publish_site`」，发布后用匿名请求核对线上引用已变成 `index-mFcMtZD3.js` + `index-CFHpowcy.css` 且与本地逐字节一致，再重跑一遍公网取证。
+3. **录视频 / 发帖**：都排在发布之后。发帖前把 4 处身份占位符换成真实信息、9 处插图标记换成真图。
+4. **人工项**：真机读屏、无痕目视、剪贴板人工回读、Firefox / Safari，结果写回本文档与 `PROJECT_STATUS.md`。
 
 
 
+
+
+---
+
+## 2026-11-19 · Day 8 收口轮｜参赛材料事实口径修正 + 精简版参赛帖（零源码改动）
+
+> 本轮范围：①重跑工程闸门留档；②修正参赛材料里三处**站不住的表述**；③产出正式提交用的**精简版参赛帖**；
+> ④把 Git 提交与 Sites 发布**方案定稿**到可以直接批准执行的程度。**未新增实验、未重构、未改设计、未动一行业务代码。**
+
+### 1. 工程闸门（本轮独立重跑，非引用 Day 8 上午记录）
+
+| 项 | 结果 |
+| --- | --- |
+| 环境 | `export PATH="/d/Soft_Ware:$PATH"` 后 node **v25.2.1** / npm **11.6.2**（直接 `npm` 仍会 `node: not found`，遗留 #14 属实） |
+| `npx tsc --noEmit` | ✅ 无输出，退出码 0（10:36） |
+| `npm test` | ✅ **18 文件 / 295 条全部通过**，14.53s，0 失败 0 跳过（10:36） |
+| `npm run build` | ✅ 2105 modules / 481ms（10:37） |
+| 产物 | `index-mFcMtZD3.js` **372750 B**、`index-CFHpowcy.css` **29485 B**、`index.html` 678 B、`favicon.svg` 232 B —— 与 Day 7、Day 8 上午**逐字符一致**，可复现构建已连续三轮成立；文档与材料改完后于 **11:06** 再跑一遍（tsc 0 / 295 全绿 / 403ms），**哈希仍不变 ⇒ 连续四轮** |
+| 关键数值独立复算 | ✅ 用 WCAG 2.2 相对亮度公式另写脚本重算：`#777777`/`#FFFFFF` = **4.4781**、`#767676`/`#FFFFFF` = **4.5422**、`#000`/`#fff` = **21.00** ⇒ 帖子里的 4.48 / 4.54 / 21:1 与判定（未达 AA / 达到 AA）**属实且非写死** |
+| `git status` | HEAD 仍 `82ecef4`，`main` 与 `origin/main` **0 ahead / 0 behind**；7 个源码文件 + 3 份治理文档 + Sites 描述符为已跟踪修改，`src/App.day7.test.tsx` / `.day7-evidence/` / `.day8-evidence/` / `submission/` 共 **69 个文件未跟踪** |
+
+### 2. 修正之一：开发周期「共 8 天」不成立
+
+原表述：`2026-11-16 → 11-19，共 8 天，单人`。
+**按日历核对**：本文档自己的章节标题就是证据 —— Day 1–3 全部落在 11-16 / 11-17，Day 4–7 全部落在 11-18，Day 8 在 11-19。
+即 **11-16 → 11-19 共 4 个自然日**，"Day 1–8" 是**开发阶段编号**，不是 8 天日历时间。
+已统一改为：**「2026-11-16 → 11-19，4 个自然日、8 个开发阶段，单人」**，涉及
+`submission/forum-post.md`（第五部分开头 + 数据总览表）、`submission/forum-post-final.md`、
+`submission/README.md`（开发历程表上方新增时间口径说明）、`submission/final-checklist.md`（B10 + H 组走查项）。
+
+### 3. 修正之二：「真实物理 Tab」→ 真实浏览器键盘事件
+
+**问题**：现有键盘 / 焦点证据由自动化脚本经 CDP `Input.dispatchKeyEvent` 向真实浏览器发送 Tab 键事件得到，
+能证明**真实内核的焦点变化、键盘顺序与计算样式**，但**无法证明真人手按实体键盘**，原措辞越了这条线。
+**已改**（改为「自动化脚本向真实浏览器发送 Tab 键事件」并补上"能证明 / 不能证明"的界）：
+`submission/forum-post.md`（键盘实验图注 + 第五部分第 3、4 节）、`submission/evidence-index.md`（§1.6 的 09/10/11 三张图说明 + 顶部新增「证据口径统一定义」）、
+`submission/demo-script.md`（顶部新增「口径区分」：**待录视频**用真实按键 ≠ **已归档截图**来自自动化）、`submission/final-checklist.md`（E 组术语口径 + H 组"搜『真实物理』应为 0"）、
+`PROJECT_STATUS.md`（§2 表头 + 遗留 #4）、`DEVLOG.md`（Day 3 复核轮 / Day 4 两处历史记录**就地更正术语并保留当日实况**）。
+**没有因此贬低已有证据**：真实浏览器 + CDP 的键盘取证仍然是本作品最硬的部分之一，只是不再把它说成实体键盘或读屏实测。
+`demo-script.md` 里"录制必须用真实物理键盘"一句**保留** —— 那是对**尚未录制的视频**的操作要求，不是对既有证据的声称。
+
+### 4. 修正之三：未经确认的第一人称经历
+
+`forum-post.md` 原稿含「我以前基本没想过」「无障碍规范我读过但读完留不下东西」「我试过几种学习方式」「`SC 1.4.3` 我背下来了」，
+以及三段以"某类使用者的感受"口吻描述低视力 / 键盘 / 读屏用户体验的文字。
+这些**无法由仓库内任何资料证实**，可能是起草时代入的。已按以下原则处理：
+- **保留**用户已确认的信息：计算机专业学生、单人参赛、全程 Qoder 开发部署；
+- 把个人经历改写为**客观的项目观察**（"学生阶段判断页面做完了的标准通常是…"），不再声称个体历史；
+- 需要第一人称动机的地方加显式标记：**【以下段落是作品动机，请本人按真实经历确认或改写后再发布】**（D5）；
+- 三段"使用者的感受"前加**「以下是从缺陷本身推出的后果，不是用户访谈或真实用户测试的结论」**；
+- **未新增**任何访谈、调查、用户反馈或影响数据；`final-checklist.md` H 组新增"全文搜『请填写』应为 0"与 D5 确认项。
+
+### 5. 修正之四：自检其余无障碍声明（A4）
+
+逐条比对代码 / 证据后确认需要加限定的两处，已改：
+- 「全站可以只用键盘走通 / 焦点环始终可见」→ 明确为**真实浏览器键盘事件 + DOM 与可访问性树核对**；
+- 「遵守 `prefers-reduced-motion`」→ 明确为 **`prefers-reduced-motion: reduce` 下不播动效（CDP 媒体仿真验证），系统级开关下的实际观感未人工复核**。
+核对无误、保持原文的：报告逐字声明「本报告仅针对 AccessLab 内置示例，不是网站 WCAG 合规认证。」（`src/lib/reportModel.ts:26`）；
+色彩只判 SC 1.4.3 普通文本 AA；44px 与 SC 2.5.8 / 2.5.5 的口径区分；未检查项逐条列出。
+**未出现**任何"整站 WCAG 合规""读屏实测通过""跨浏览器已验证"式宣称。
+
+### 6. 新产出：`submission/forum-post-final.md`（正式提交优先用）
+
+原长版 `forum-post.md`（实测 **6338 汉字 / 361 行**）**完整保留**，作为详细技术版本与答辩备份。
+精简版实测（`node` 逐字符统计，只数 `[一-鿿]`）：**五部分正文 2834 汉字**，加「附：数据与边界」共 **3200 汉字**，整份文件 **3538 汉字 / 181 行**（含全角标点则 3809）。
+建议区间是 1800–2500，正文超出约 330 字的部分是**必须保留的证据与边界声明**（三个实验的代表性数值、Qoder 七项分工、我把关的三处、未验证清单），
+按"真实证据需要更多篇幅可适度增加、不机械截断"处理；初稿曾达 3996 汉字，已逐轮压缩。
+结构：`【Hack4Good】` 标题 → 帖首公网链接 + Qoder 账号占位符 → 五部分（自我介绍 / 作品是什么 / 为什么做 / 怎么用 5 步 / 如何用 Qoder 完成）→ 数据与边界 → 帖尾链接。
+**6 处配图标记引用的 8 张 PNG 全部真实存在**（`.day8-evidence/shots-post/` 的 01 / 03 / 04 / 06 / 08 / 09 / 10 / 12，已逐个 `test -f` 验证）；
+**Qoder 会话截图与终端截图明确标「待补充、不得用浏览器截图冒充」** —— 这两类目前没有文件。
+正文**不含**任何"最新版已上线""视频已录好""认证已通过"的声明。
+
+### 7. Git 与发布：方案定稿，仍然**一个写操作都没执行**
+
+提交分组、逐组文件清单、diff 摘要、建议排除项与两个知情细节（本地绝对路径、CRLF 警告）见
+`submission/final-checklist.md` **I-1**；发布链路与回退路径见同文件 **I-2** 与本文档 Day 8 第 7 节。
+本轮**未执行** `git add` / `commit` / `push` / `reset` / `rebase`，**未调用** `prepare_site` / `publish_site`，
+只做了只读核对（`get_site`、匿名 `curl`、`git status`、`git diff --stat`）。
+
+### 8. 本轮公网核验的**真实边界**
+
+只做到了这些：匿名 `GET /` 返回 200 且 `<head>` 引用 `index-gw0uvRiw.js` + `index-DgYwPq9n.css`；
+Day 7 的两个资源名请求返回 **404**；`get_site` 显示 `lifecycle: active`、`access_mode: public`、`backend.status: disabled`。
+**11:07 第四次复确认**结论未变（首页 200 / 57720 B；两个 Day 7 资源仍 `404`）。
+顺带核清一个会造成误判的细节：**匿名首页 57720 B 与本地 `dist/index.html` 的 678 B 不相等是正常的** ——
+差值是 Sites 托管注入的平台脚本（含 4 处 `qoder` 字样），所以发布后的逐字节 `cmp` 只适用于 **JS / CSS 两个资源文件**，
+`index.html` 只核引用到的文件名。
+**没有**在公网上跑通三个实验与报告导出 —— 因为公网上跑的是 Day 6 版本，Day 7 的四项修复尚未发布。
+所以：**在 I-2 的发布 + 线上哈希核对 + 公网重跑取证完成之前，任何材料都不得写"最新版已上线"。**
+本文件 Day 6/7/8 的"三轮构建哈希一致"指的是**本地重建**产物一致，不涉及公网；
+`evidence-index.md` 与 `forum-post-final.md` 里的截图同样来自**本地构建**，已注明发布后需对公网重拍（§7.8）。
+
+### 9. 本轮改了什么 / 明确没改什么
+
+| | |
+| --- | --- |
+| **改了** | 6 份 `submission/` 文档的**事实口径**（时间、键盘证据、第一人称、无障碍声明限定）；新建 `submission/forum-post-final.md`；`PROJECT_STATUS.md` 术语 2 处；`DEVLOG.md` 历史术语就地更正 2 处 + 本条记录 |
+| **没改** | `src/` 全部源码、测试、`package.json`、`package-lock.json`、`.gitignore`、`PRD.md` 的需求与验收口径（本轮无需求变更，无需改动） |
+| **没执行** | `git add` / `commit` / `push` / `reset` / `rebase`；`prepare_site` / `publish_site`；论坛发布 |
+
+### 10. 待用户授权后才能继续的动作
+
+1. **Git 提交授权** → 按 `final-checklist.md` I-1 的四组分组提交（含 `.day7-evidence/` / `.day8-evidence/` / `submission/` 的取舍确认）；
+2. **远程推送授权**（独立于 1）；
+3. **Sites 发布授权**（独立于 1、2）→ 按 I-2 走 `prepare_site` → `publish_site` → 线上哈希核对 → **公网**回归取证；只有全部通过才回填"最新版已上线"；
+4. **身份与资格确认**（D2/D3/D4 + E 组实名认证、大学生认证、原创声明）—— 只能由本人确认，不得代填；
+5. **论坛发布授权**（发帖本身 + 配图 + 若赛事要求过程凭证则需导出 Qoder 会话记录）；
+6. 演示视频**仍未录制**，`final-checklist.md` F2 组保持 ⛔ 未录制状态。
+
+> 收口轮的判定标准只有一条：**材料里的每一句话，都能指回一个真实跑过的命令、一份真实存在的文件或一条明确的"待确认"。**
+> 本轮把三处指不回的话改成了指得回的，其余保持不动。
+
+---
+
+## 2026-11-19 11:14 · Day 8 收口轮之后｜**经用户授权执行 Sites 公开发布 + 公网回归取证**
+
+用户指令：「site 更新一下，git 我提交」⇒ **本轮只发布站点，不碰 Git**（`git add` / `commit` / `push` 全部留给用户）。
+
+### 1. 发布链路（同一站点、同一 `projectId` / `siteId`，未新建站点）
+
+```
+prepare_site  actionId=a8ffa344-a7c6-4982-a5d8-5d54524d4d68   projectId=01a1e498-acb7-796a-a96d-1c22a6cee214
+              webDirectory=dist   spa=false   slug=accessibility-lab   displayName=AccessLab 无障碍实验室
+  → descriptorStatus: pending  → get_publish_status: preparation.state=ready / canPublish=true / blockers=[]
+  → 同 actionId、完全相同输入重试 prepare_site → descriptorStatus=written
+publish_site  → publishOperationId=01a1f1cc-3820-7162-9d17-e6a903d065a5
+  → get_publish_status: published=true / operation.state=succeeded / committed=true / readiness=publication_completed
+```
+`siteId 01a1e498-acba-79ec-8703-a119defbf0f6`、host 未变（`accessibility-lab-3g6uvbn5duq.qoder.zone`）、
+`lifecycle: active`、`access_mode: public`、`auth_integration_status: not_required`、无后端。
+描述符 `.AccessLab 无障碍实验室.qoder.site` 由工具改写为新 action（+12/−12），**仍未提交，留给用户**。
+
+### 2. 公网逐字节核验（匿名请求，无需登录）
+
+| 项 | 结果 |
+| --- | --- |
+| 线上 `index.html` 引用 | `assets/index-mFcMtZD3.js` + `assets/index-CFHpowcy.css` ✅ 已是最新构建 |
+| Day 7 资源 | `200` / `372750 B`、`200` / `29485 B`，与本地 `dist/assets/` **`cmp` 逐字节一致** |
+| SHA-256 | JS `ded139a6…31c903`、CSS `0c615ffc…fde563` —— 线上与本地**两组完全相同** |
+| 旧 Day 6 资源 | `index-gw0uvRiw.js` 现在 **404** ⇒ 版本已整体切换，不是新旧并存 |
+| 静态路由 | `/`、`/index.html`、`/#/report`、`/?day7=deep#/keyboard` 均 `200`；`/favicon.svg` `200 / 232 B` |
+| 响应头 | `cache-control: no-cache` + `last-modified: 19 Nov 2026 03:14:03 GMT`（＝本地 11:14 发布时刻） |
+| `index.html` 大小 | 匿名 57720 B ≠ 本地 678 B —— 差值是**托管层注入的水印脚本**，不是产品差异；因此逐字节 `cmp` 只用于 JS / CSS |
+
+### 3. 公网真实浏览器回归（headless Edge 157 + CDP，脚本与读数入库）
+
+`LIVE_URL` 指向公网域名跑既有取证脚本，输出写入 `*-live.json` **不覆盖本地证据**：
+
+| 检查 | 公网实测 |
+| --- | --- |
+| 色彩实验 | live region 逐字记录 `当前对比度 4.48:1 未达 AA` → 应用后 `4.54:1 达到 AA`，并出现「已应用修复：文字颜色改为 **#767676**，对比度提升至 4.54:1」 |
+| 键盘实验 | 两轮 Tab 各命中 3 个示例按钮（`before=3 / after=3`），人工确认按钮解锁并点击成功 |
+| 统一报告 | `已记录 3 / 3`、`已实际执行修复 3 / 3`、`已进行修复后复核 3 / 3`、`仍需人工观察 1 项`、`建议额外验证 3 项`，**`countsMatch=true`、`stillPending=false`、已确认行存在** |
+| 导出 | 复制载荷 **6197 字符 === 页面 textarea**（鼠标与键盘 Enter 两条路径都通过）；`.md` 真实落盘 **13577 B === textarea 字节数**，`identical=true` |
+| 会话性 | 切路由仍 `3 / 3`、重进键盘实验不覆盖（`3 次` 保留）、**刷新回 `0 / 3` 且三个导出按钮全禁用** |
+| 控制台 / 网络 | 整场动线 75 个请求 **non-2xx = 0**、**console error = 0、warning = 0、exception = 0** |
+| Enter / Space 激活 | 缺陷态按钮两种按键都能激活，`focusAfter.isBody=false`，播报区出现「已展开详情…」 |
+| 深链与前后退 | `#/contrast` → `#/report` → 后退命中 `#/contrast` → 前进命中 `#/report` |
+| 20 组视口 | 5 路由 × 320 / 390 / 768 / 1440：横向溢出集合 `{0, -15}`、小于 24px 可点击目标 **0**、导航高度 **44**、首页主按钮四档 `ctaFold=true`（320 是 `499`，Day 7 修复在公网上生效） |
+| 语义 | 五路由 `h1=1`、标题不跳级、无名称可交互控件 **0**、`nav[aria-label]` 与 `aria-current` 正常 |
+| 缺陷态保真 | 键盘实验三个示例按钮在公网上实测 `outline-style: none`（`none 3px rgb(30,41,59)`）⇒ 教学缺陷没有被"顺手修好" |
+
+新写一条最小探针 `.day8-evidence/probe-public-labels-focus.mjs` → `public-labels-focus.json`，补测两项：
+- **表单真实 DOM**：修复前 `input.labels = 0`；点「修复标签关联」后 **`labels = 1`**，DOM 为
+  `<label for="student-name" class="block text-sm font-semibold text-slate-900">姓名</label>`，**已输入的「张三」未被清空**；
+- **焦点环计算样式**：修复后 Tab 到三个示例按钮，实测 **`outline: solid 3px rgb(67, 56, 202)`，`outline-offset: 3px`**，
+  且修复后第一个 Tab 停靠点是结果块「已应用焦点修复…」⇒ Day 7 的 B1 焦点交接在公网上也生效。
+
+> 探针踩到的两个坑记下来，免得日后误判：①CDP 没有 `Input.enable` 这个方法；
+> ②托管层注入的水印浮层会盖住按钮坐标，导致鼠标点击 `elementFromPoint` 命中的是水印（`contains=false`）——
+> 改用 `focus()` + 真实 Enter 按键激活才拿到结果。**公网 Tab 序列里因此多出 `qoder-sites-badge` 停靠点**，
+> 那是平台注入元素（带 `aria-label`），不属于产品代码，但"公网 Tab 序列 = 本地 Tab 序列"这句话不成立。
+
+产物：`.day8-evidence/judge-flow-live.json`、`viewport-live.json`、`public-labels-focus.json`、`run-judge-flow-live.log`、`run-viewport-live.log`。
+
+### 4. 仍然没有在公网上验证的（不声称）
+
+真机读屏播报、Firefox / Safari、真机移动浏览器与公网加载性能分数、系统级减弱动效观感、OS 剪贴板人工粘贴回读、无痕窗口目视。
+其中**OS 剪贴板**在公网上复测仍是老结果：写入载荷与页面逐字一致，但 `readText()` 回读到 6425 字符的别的内容 ⇒ 维持"未验证"。
+
+### 5. 材料回填
+
+发布与公网核验完成后，才把 `submission/` 与治理文档里的"公网仍是上一版"改为"最新版已上线"，
+并把本地截图的说明从"发布后必须对公网重拍"调整为"线上资源与本地逐字节一致，截图与公网渲染同源"。
+**Git 未动**：工作区仍是 Day 7 源码 +207/−45、三份治理文档、描述符与四个未跟踪目录，等用户自己提交。
+
+### 6. 11:30 补测：五条 hash 深链在公网**冷启动**渲染
+
+前面的公网取证里，路由是脚本内切换得到的；为回答"评委直接把 `#/report` 粘进地址栏会怎样"，
+新写一条探针 `.day8-evidence/probe-public-deeplinks.mjs`：**每个路由开一个全新的 CDP target**，
+用 `<站点>/index.html#/xxx` 直接加载，等 2.5 秒后读 DOM。结果（`public-deeplinks.json`）：
+
+| 路由 | `location.hash` | 页面 `h1` | `main` 数 | skip link | `window.onerror` |
+| --- | --- | --- | --- | --- | --- |
+| `#/` | `#/` | 让网页的障碍，看得见、改得掉。 | 1 | `#main` 在 | 0 |
+| `#/contrast` | `#/contrast` | 色彩对比度实验 | 1 | `#main` 在 | 0 |
+| `#/form-label` | `#/form-label` | 表单标签实验 | 1 | `#main` 在 | 0 |
+| `#/keyboard` | `#/keyboard` | 键盘焦点实验 | 1 | `#main` 在 | 0 |
+| `#/report` | `#/report` | 统一成果报告 | 1 | `#main` 在 | 0 |
+
+⇒ **深链不依赖先访问首页**，静态托管下刷新与直接粘贴都落在同一页；`#/` 之外四页的 DOM 里 `header` 标签数为 2（实验页内层 `<header>`），
+这与 Day 7 可访问性树的结论一致：**DOM 两个 `header` 不等于两个 `banner` 地标**，本轮只数 DOM 标签，未重跑 AX 树。
+
+> 探针自身的一个坑（否则会被误读成产品缺陷）：第一版用 `/跳到|主内容|skip/i` 匹配 skip link 文案，五页全返回 `null`；
+> 换成属性选择器 `a[href="#main"]` 后立刻取到「跳转到主要内容」。那是**脚本的匹配写法问题，不是页面缺 skip link**——
+> 教训是：断言优先绑定在结构性属性（`href` / `id`）上，不要用文案正则当契约。
+
+---
+
+## 2026-11-19 11:49 · Day 8 补记：**重建哈希漂移的根因、一处 CSS 构建隔离修复、第二次公开发布与公网复测**
+
+> 触发点：§6 之后核对 `dist/` 时发现，用当前仓库重新构建出来的资源名是 `index-B61kabqi.js` / `index-ea8UcgoS.css`，
+> 而 11:14 发布上线的是 `index-mFcMtZD3.js` / `index-CFHpowcy.css`。
+> 这意味着 Day 8 复验立起来的那条「从仓库 HEAD 重新构建 = 线上产物」**当场不成立了**。本轮全部动作经用户选择
+> **「保留修复并重新发布（推荐）」**后执行。
+
+### 1. 根因：取证文件被 Tailwind v4 的内容扫描当成 class 候选
+
+逐字节比对先排除了 JS：两份 `index-*.js` 都是 **372750 B**，`cmp` 报告**零字节差异**。
+差异全在 CSS：线上 29485 B、新构建 30444 B。逐条规则做集合差后，多出来的只有三条工具类：
+
+| 凭空多出的类 | 出处 |
+| --- | --- |
+| `.shadow` | `.day7-evidence/` 的 DOM / 类名快照文本 |
+| `.transform`、`.transition` | `.day8-evidence/public-labels-focus.json` 里**平台注入水印**的 class 字符串 |
+
+也就是说：**仓库里的取证文件不是源代码，却参与了产物 CSS 的生成**。这类风险项目并非第一次遇到——
+`src/index.css` 早就为 `.md` 文档和 `*.test.ts(x)` 写过两条 `@source not`，Day 4 还为
+`src/lib/keyboardFocusDemo.ts` 加过一条，理由完全相同。这一次只是**同一类泄漏的第三种形态**：取证目录本身。
+`vite.config.ts` 没有配置任何 `content` / `sources`，所以默认的自动扫描范围就是整个仓库。
+
+### 2. 修复：一处构建隔离（本轮唯一的源码改动）
+
+`src/index.css` 第 8–14 行新增 **7 行（+7 / −0）**：沿用既有写法加两条排除，并写明为什么。
+
+```css
+@source not "../.day*-evidence/**";
+@source not "../**/*.{json,jsonl,log}";
+```
+
+**它只影响构建期"扫描哪些文件找类名候选"，不改变任何一条真正生效的样式规则。**
+
+### 3. 修好之后产物怎么变（逐条核对，不靠"看起来没坏"）
+
+| 项 | Day 7 / 首次发布（11:14） | 修复后（11:49） | 差异 |
+| --- | --- | --- | --- |
+| JS | 372750 B（`index-mFcMtZD3.js`） | **372750 B**（`index-aTyl07hG.js`） | **逐字节相同** |
+| CSS | 29485 B（`index-CFHpowcy.css`）gzip 6256 B | **28219 B**（`index-Co1Kujov.css`）gzip 6078 B | **−1266 B / gzip −178 B** |
+| `index.html` | 678 B | 678 B | 相同 |
+| `favicon.svg` | 232 B | 232 B | 相同 |
+
+被删掉的 **1266 B 全部是死代码**：16 条选择器 / 2632 B（`.visible`、`.ring,.ring-1`、`.blur`、
+以及 `@property --tw-blur / --brightness / --contrast / --grayscale / --hue-rotate / --invert / --opacity /
+--saturate / --sepia / --drop-shadow / --drop-shadow-color / --drop-shadow-alpha / --drop-shadow-size`），
+新增 1 条 `.ring-1`（同一声明、重新分组）；同时 `.shadow / .transform / .transition` 三条与 8 条
+`@supports (color:color-mix(...))` 块发生了**纯粹的分组重排**（声明一字不改）。
+核对方式：`src/` 下**不存在任何 `.json` / `.log` / `.md`** ⇒ 被排除的候选只可能来自取证与文档；
+再取「修复后新产物 ∩ 线上旧产物」的交集，结果**没有任何一条规则被移除**。
+逐条差异与两份 CSS 原文留档在 `.day8-evidence/rebuild-check/`（`live.css` / `new.css` / `removed-rules.txt`）。
+
+顺带的事实修正：那 959 B 的泄漏是**这几天才进仓库的取证文件**带进来的。
+Day 7 记录的 CSS 尺寸 29485 B 当时是对的；**现在写进材料的数字应为 28219 B / gzip 6078 B**。
+
+### 4. 本地行为回归（同一份 `dist/`，`npx vite preview` @127.0.1:4181）
+
+`tsc --noEmit` 退出码 0；`vitest run` **18 个文件 / 295 条全绿**；
+评委动线读数与修复前**逐项相同**：4.48 → 4.54 / `姓名 缺少关联的可见标签` + 4.48 仍在 /
+`outline: none 3px` → `solid 3px` / 报告三组 1 / 1 / 3 / 下载 13577 B；
+20 组视口 **20/20 通过**（`viewport-clean.json` 与逐项日志 `rebuild-check/run-viewport-clean.log`）。
+
+### 5. 第二次公开发布（同一站点，未新建）与逐字节核验
+
+`prepare_site`（新 `actionId d0a23be7-ad65-4e46-b6a7-67db593506c8`，`webDirectory=dist`，`spa=false`）
+→ `descriptorStatus: written` → `publish_site` → `published: true` /
+`publishOperationId 01a1f1ec-f388-7629-b711-ee3ea249174e` / `state: succeeded` / `committed: true`。
+发布前两次干净重建（`rm -rf dist && npm run build` 跑两遍）产物哈希一致 ⇒ 可复现。
+
+| 检查 | 结果 |
+| --- | --- |
+| 公网 `index.html` 资源引用 | `assets/index-Co1Kujov.css` + `assets/index-aTyl07hG.js` ✅ 指向新构建 |
+| 线上 vs 本地逐字节 | `cmp` **零差异**：JS 372750 B、CSS **28219 B**（`Content-Length` 响应头同为 28219） |
+| 旧资源是否已被替换 | `index-mFcMtZD3.js` 与 `index-CFHpowcy.css` 均 **404** ✅ |
+
+### 6. 公网复测（11:50–11:51，headless Edge 157）——与 11:14 基线对比
+
+**四条命令跑完退出码全 0，但第一次把产物写错了位置**：我在 `.day8-evidence/rebuild-check/` 目录内执行，
+而脚本用 `process.cwd()` 推导输出目录，于是证据落进了 `rebuild-check/.day8-evidence/`。
+读数本身仍然有效（`LIVE_URL` 模式下浏览器加载的就是公网），已把四份 JSON 与 `shots-v2/`、`downloads-v2/`
+移入 `.day8-evidence/`（**不覆盖任何已有文件**），日志留在 `rebuild-check/run-*-v2.log`。
+
+| 复测项 | v2 公网读数 | 与 11:14 基线的差异 |
+| --- | --- | --- |
+| 20 组视口审计 | **20/20 通过**、无横向溢出、焦点环始终可见、skip link 首站、`h1=1`、地标齐全、`Enter`/`Space` 都触发 | **`viewport-live.json` 与 `viewport-v2.json` 递归对比：0 处差异；两份日志 `cmp` 完全相同** |
+| 评委动线 | 4.48→4.54→撤销回 4.48、`labels 0→1`、`outline none 3px→solid 3px`、报告三组 1/1/3、复制 6197、下载 13577 B、`Enter`/`Space` 焦点交接四项全 `true`、控制台 `error/warning/exception` 全 0 | 仅 3 处**非结论性**差异：机械耗时 5383→5267 ms、下载文件名里的时间戳、两处点击坐标 ±4 px（元素与文案不变） |
+| 网络与加载 | 74 个请求、`non2xx=0`、控制台错误 0；PERF 记录 `index-Co1Kujov.css` 128 ms / `index-aTyl07hG.js` 124 ms —— **公网确实用的是新资源**（上一轮是 75 个） | 只有资源名与计时变化 |
+| 表单 + 键盘真实按键 | `labels=0 / htmlFor=null` → 回车激活 → `labels=1` + `for="student-name"` + 文本仍是「张三」；缺陷态三按钮均 `outline: none 3px`、修复后 `solid 3px rgb(67, 56, 202)` `offset 3px` | 与上一轮逐项一致；水印仍在 Tab 顺序里加两个 `qoder-sites-badge` 停靠点 |
+| 五条深链冷启动 | `#/`·`#/contrast`·`#/form-label`·`#/keyboard`·`#/report` 全部 `ok=true`：`location.hash` 保持、五个 `h1` 正确、`main=1` `footer=1` `nav=1`、skip link `href="#main"` 都在、JS 错误 0 | 与 11:29 那轮逐项一致 |
+
+**这条重建可复现性现在重新成立**：从仓库 HEAD `npm run build` 得到的两个资源文件与线上**逐字节一致**。
+
+### 7. 本轮造成的两处材料失真（已同步更正，不留错值）
+
+1. 全部材料里「线上产物 = `index-mFcMtZD3.js` + `index-CFHpowcy.css`」「CSS 29485 B / gzip 6256 B」已更新为
+   `index-aTyl07hG.js` + `index-Co1Kujov.css` / **28219 B / gzip 6078 B**；旧值只保留为历史时刻的读数并标明时间。
+2. `.day8-evidence/public-labels-focus.json` 这个文件名在 11:19 的重跑中被覆盖过，
+   §2 记录的 10:21:50 那份快照**只存在于本文档的文字里**。当前公网构建的同名取证结果另存为
+   `v2-public-labels-focus.json`（11:51）。这是"同一文件名反复覆盖"的做法本身有问题，后续探针一律带版本后缀。
+
+
+### 8. 12:06 · 从系统「下载」找回一份公网导出样本（`downloads-os/`）
+
+清理取证目录时发现一件漏掉的事：**11:18:56 那一轮公网核验没有给浏览器设置下载目录**
+（`Page.setDownloadBehavior`），于是 Edge 按系统默认目录把报告写到了 `C:\Users\zxcvb\Downloads\` 里。
+那份样本现在复制回仓库并 `cmp` 核对一致：`.day8-evidence/downloads-os/AccessLab-成果报告-20261119111856.md`
+（**13523 B / 6179 字符**，台账 `2 / 3`），同目录 `README.md` 写清来历。
+
+它反而补上了两条平时拿不到的证据：
+
+1. **下载功能在浏览器默认路径下也能落盘**，不依赖脚本指定的目录——`downloads/` 目录曾被后续脚本清空，
+   这份因此成为**唯一留存的 11:14 版公网导出样本**。
+2. 与完整样本 `downloads-v2/…115045.md`（13577 B / 6197 字符，台账 `3 / 3`）逐行对比：
+   **229 行里只有 9 行不同**——1 行生成时间 + 8 行台账计数与逐项「状态」；**产品文案、声明句、未检查项逐字一致**。
+   这一条顺手证明了台账**不会把没做过的实验算成做过**：只跑色彩 + 表单，导出就如实写 `2 / 3`。
+
+> 口径：参赛帖与答辩要引用的完整样本仍用 `downloads-v2/`，这份部分进度的只作过程证据。
+> 教训与 §7 同源：**取证脚本必须显式设置输出目录与下载目录**，否则证据会散落到仓库外，
+> 而「证据就在这里」的默认假设会让人根本找不到它。
+
+> **一句话教训**：构建产物必须只由源代码决定。仓库里任何"证据"文件都不应该能改变产物字节——
+> 否则每多存一份取证，"从仓库重建 = 线上产物"这条可复现性承诺就悄悄失效一次，而且**没有任何测试会报错**。

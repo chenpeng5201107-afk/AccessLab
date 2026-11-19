@@ -1,0 +1,192 @@
+{
+  "servedFrom": "C:\\Users\\zxcvb\\OneDrive\\Desktop\\AccessLab\\dist",
+  "localLoopback": true,
+  "runs": [
+    {
+      "browser": "edge",
+      "ua": "Edg/157.0.4341.60",
+      "loads": {
+        "appRequestsFirstLoad": [
+          "200 /index.html",
+          "200 /assets/index-CFHpowcy.css",
+          "200 /assets/index-mFcMtZD3.js",
+          "200 /favicon.svg",
+          "200 /index.html?p=320",
+          "200 /assets/index-CFHpowcy.css",
+          "200 /assets/index-mFcMtZD3.js"
+        ],
+        "appCount": 7,
+        "injectedCount": 7,
+        "injectedSample": [
+          "/<id>/main.js",
+          "/<id>/init",
+          "/<id>/<id>/to/wsm.sessionActivated",
+          "/<id>/<id>/to/wsm.onHashChange"
+        ]
+      },
+      "non2xx": [],
+      "perf": {
+        "domContentLoadedMs": 114,
+        "loadMs": 115,
+        "ttfbMs": 15,
+        "domBytes": 917,
+        "resources": [
+          {
+            "name": "/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=__f5_hc-w8EMF3mkZaTVktSfW1xMvPkJV2kJWzI_0OB26GDHHYoW0bhw7N_ebNtoR2YJFcjuXBsJ2F1TUBbOWA",
+            "transferSize": 0,
+            "decodedBodySize": 0,
+            "duration": 28
+          },
+          {
+            "name": "/assets/index-mFcMtZD3.js",
+            "transferSize": 373050,
+            "decodedBodySize": 372750,
+            "duration": 68
+          },
+          {
+            "name": "/assets/index-CFHpowcy.css",
+            "transferSize": 29785,
+            "decodedBodySize": 29485,
+            "duration": 37
+          },
+          {
+            "name": "/7D8B79A2-8974-4D7B-A76A-F4F29624C06B1l5xAImsdmSrLdHbbyqIXHRTCt3Y_sf-7aqi0TOd5Ntg5MkVFnVMdooSEdveSm3c7DqmJVvjSBXpTY0f-R_S2w/init?data=eyJ1cmwiOiJodHRwOi8vMTI3LjAuMC4xOjU1NDgwL2luZGV4Lmh0bWwiLCJwbHVnaW5zIjoid3NtJndudCZjYSZ2cyZ1YSZjYiZ4aHJfY29udGVudCIsImRhdGEiOnsiZGF0YSI6W3sicGx1Z2luIjoid3NtIiwicGFyYW1ldGVycyI6IntcInJlZmVycmVyXCI6XCJcIixcInN0dWJJZFwiOlwiXCJ9In0seyJwbHVnaW4iOiJ3bnQiLCJwYXJhbWV0ZXJzIjoie1wicmVmZXJyZXJcIjpcIlwifSJ9LHsicGx1Z2luIjoidWEiLCJwYXJhbWV0ZXJzIjoie30ifSx7InBsdWdpbiI6Inhocl9jb250ZW50IiwicGFyYW1ldGVycyI6IntcInJlZmVycmVyXCI6XCJcIn0ifV19LCJpc1RvcExldmVsIjp0cnVlLCJwYWdlU3RhcnRUaW1lIjowLCJuYXZpZ2F0aW9uU3RhcnRUaW1lIjoxNzk1MDE2MDEzNjk3fQ%3D%3D&nocache=1a22a&tm=2026-11-18T15%3A33%3A33.757Z",
+            "transferSize": 0,
+            "decodedBodySize": 0,
+            "duration": 5
+          },
+          {
+            "name": "/A9E00780-5288-4471-AB76-18CE326CDAFF/8FB69C16-DB15-474E-8B8A-9AC7D9F21F98/to/wsm.sessionActivated?tm=2026-11-18T15%3A33%3A33.768Z",
+            "transferSize": 0,
+            "decodedBodySize": 0,
+            "duration": 2
+          },
+          {
+            "name": "/favicon.svg",
+            "transferSize": 532,
+            "decodedBodySize": 232,
+            "duration": 12
+          }
+        ],
+        "transferTotal": 404584,
+        "dclRelativeHijack": 114,
+        "counts": {
+          "js": 1,
+          "css": 1
+        },
+        "memory": 3,
+        "longTasks": 0
+      },
+      "routeSwitchRequests": {
+        "app": 0,
+        "injected": [
+          "/A9E00780-5288-4471-AB76-18CE326CDAFF/8F"
+        ]
+      },
+      "at320": {
+        "appRequests": [
+          "200 /index.html?p=320",
+          "200 /assets/index-CFHpowcy.css",
+          "200 /assets/index-mFcMtZD3.js"
+        ],
+        "injectedRequests": 3,
+        "h1": "让网页的障碍，看得见、改得掉。",
+        "interactiveTargets": 14
+      },
+      "consoleMessages": []
+    },
+    {
+      "browser": "chrome",
+      "ua": "Chrome/158.0.8127.37",
+      "loads": {
+        "appRequestsFirstLoad": [
+          "200 /index.html",
+          "200 /assets/index-CFHpowcy.css",
+          "200 /assets/index-mFcMtZD3.js",
+          "200 /favicon.svg",
+          "200 /index.html?p=320",
+          "200 /assets/index-CFHpowcy.css",
+          "200 /assets/index-mFcMtZD3.js"
+        ],
+        "appCount": 7,
+        "injectedCount": 7,
+        "injectedSample": [
+          "/<id>/main.js",
+          "/<id>/init",
+          "/<id>/<id>/to/wsm.sessionActivated",
+          "/<id>/<id>/to/wsm.onHashChange"
+        ]
+      },
+      "non2xx": [],
+      "perf": {
+        "domContentLoadedMs": 118,
+        "loadMs": 118,
+        "ttfbMs": 12,
+        "domBytes": 917,
+        "resources": [
+          {
+            "name": "/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=_BA0SoZFgnoQNgOWRgU5jV8QA-taOvh_0kT8mDyNVg4y2tXIN3s62AgIE5aGYwiJ4PO60IKLlhTSmaIgN_oX0g",
+            "transferSize": 0,
+            "decodedBodySize": 0,
+            "duration": 20
+          },
+          {
+            "name": "/assets/index-CFHpowcy.css",
+            "transferSize": 29785,
+            "decodedBodySize": 29485,
+            "duration": 36
+          },
+          {
+            "name": "/assets/index-mFcMtZD3.js",
+            "transferSize": 373050,
+            "decodedBodySize": 372750,
+            "duration": 68
+          },
+          {
+            "name": "/7D8B79A2-8974-4D7B-A76A-F4F29624C06B3UC5b4SeBe6VfyQCZCXBkoZ1qgwGzOEWCBLmMJoo4CliD-wjvDvs7m0vIzGDAYjKHmVGhdjQtuksjIcQZMs-FQ/init?data=eyJ1cmwiOiJodHRwOi8vMTI3LjAuMC4xOjU1NDgwL2luZGV4Lmh0bWwiLCJwbHVnaW5zIjoid3NtJndudCZjYSZ2cyZ1YSZjYiZ4aHJfY29udGVudCIsImRhdGEiOnsiZGF0YSI6W3sicGx1Z2luIjoid3NtIiwicGFyYW1ldGVycyI6IntcInJlZmVycmVyXCI6XCJcIixcInN0dWJJZFwiOlwiXCJ9In0seyJwbHVnaW4iOiJ3bnQiLCJwYXJhbWV0ZXJzIjoie1wicmVmZXJyZXJcIjpcIlwifSJ9LHsicGx1Z2luIjoidWEiLCJwYXJhbWV0ZXJzIjoie30ifSx7InBsdWdpbiI6Inhocl9jb250ZW50IiwicGFyYW1ldGVycyI6IntcInJlZmVycmVyXCI6XCJcIn0ifV19LCJpc1RvcExldmVsIjp0cnVlLCJwYWdlU3RhcnRUaW1lIjowLCJuYXZpZ2F0aW9uU3RhcnRUaW1lIjoxNzk1MDE2MDE2NDA1fQ%3D%3D&nocache=179ee&tm=2026-11-18T15%3A33%3A36.461Z",
+            "transferSize": 0,
+            "decodedBodySize": 0,
+            "duration": 2
+          },
+          {
+            "name": "/A9E00780-5288-4471-AB76-18CE326CDAFF/F11F0E5C-15C6-42F8-ABC8-BA5F27A57A25/to/wsm.sessionActivated?tm=2026-11-18T15%3A33%3A36.469Z",
+            "transferSize": 0,
+            "decodedBodySize": 0,
+            "duration": 1
+          },
+          {
+            "name": "/favicon.svg",
+            "transferSize": 532,
+            "decodedBodySize": 232,
+            "duration": 13
+          }
+        ],
+        "transferTotal": 404584,
+        "dclRelativeHijack": 118,
+        "counts": {
+          "js": 1,
+          "css": 1
+        },
+        "memory": 3,
+        "longTasks": 0
+      },
+      "routeSwitchRequests": {
+        "app": 0,
+        "injected": [
+          "/A9E00780-5288-4471-AB76-18CE326CDAFF/F1"
+        ]
+      },
+      "at320": {
+        "appRequests": [
+          "200 /index.html?p=320",
+          "200 /assets/index-CFHpowcy.css",
+          "200 /assets/index-mFcMtZD3.js"
+        ],
+        "injectedRequests": 3,
+        "h1": "让网页的障碍，看得见、改得掉。",
+        "interactiveTargets": 14
+      },
+      "consoleMessages": []
+    }
+  ]
+}

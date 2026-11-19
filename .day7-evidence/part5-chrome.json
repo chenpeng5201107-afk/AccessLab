@@ -1,0 +1,201 @@
+{
+  "ua": "Chrome/158.0.8127.37",
+  "target": "http://127.0.0.1:64685/index.html",
+  "roles": [
+    {
+      "hash": "#/",
+      "banner": 1,
+      "navigation": 1,
+      "main": 1,
+      "contentinfo": 1,
+      "region": 0,
+      "status": 0,
+      "heading": 6,
+      "button": 0,
+      "textbox": 0,
+      "domHeaders": 1,
+      "unnamed": 0
+    },
+    {
+      "hash": "#/contrast",
+      "banner": 1,
+      "navigation": 1,
+      "main": 1,
+      "contentinfo": 1,
+      "region": 5,
+      "status": 1,
+      "heading": 8,
+      "button": 2,
+      "textbox": 2,
+      "domHeaders": 2,
+      "unnamed": 0
+    },
+    {
+      "hash": "#/form-label",
+      "banner": 1,
+      "navigation": 1,
+      "main": 1,
+      "contentinfo": 1,
+      "region": 6,
+      "status": 0,
+      "heading": 10,
+      "button": 5,
+      "textbox": 2,
+      "domHeaders": 2,
+      "unnamed": 0
+    },
+    {
+      "hash": "#/keyboard",
+      "banner": 1,
+      "navigation": 1,
+      "main": 1,
+      "contentinfo": 1,
+      "region": 8,
+      "status": 0,
+      "heading": 16,
+      "button": 8,
+      "textbox": 0,
+      "domHeaders": 2,
+      "unnamed": 0
+    },
+    {
+      "hash": "#/report",
+      "banner": 1,
+      "navigation": 1,
+      "main": 1,
+      "contentinfo": 1,
+      "region": 7,
+      "status": 1,
+      "heading": 16,
+      "button": 3,
+      "textbox": 0,
+      "domHeaders": 2,
+      "unnamed": 0
+    }
+  ],
+  "focusVisible": {
+    "byTab": {
+      "reached": true,
+      "sample": {
+        "label": "查看详情",
+        "cls": "kf-demo-btn kf-demo-btn--fixed",
+        "matchesFocusVisible": true,
+        "outline": "solid 3px rgb(67, 56, 202)",
+        "boxShadow": "none"
+      }
+    },
+    "byMouse": {
+      "label": "保存选择",
+      "cls": "kf-demo-btn kf-demo-btn--fixed",
+      "matchesFocusVisible": false,
+      "outline": "none 3px rgb(30, 41, 59)",
+      "boxShadow": "none"
+    }
+  },
+  "compat": {
+    "tabCounts": {
+      "beforeRound": "3",
+      "afterRound": "3"
+    },
+    "reportStat": {
+      "已记录 / 总实验数": "3 / 3",
+      "已实际执行修复的实验数": "3 / 3",
+      "已进行修复后复核（含人工键盘体验）的实验数": "3 / 3",
+      "实验内仍待你本人完成的观察": "1 项",
+      "建议额外进行的辅助技术验证": "3 项"
+    },
+    "manualHeadings": [
+      "实验内仍待你本人完成的观察（1 项）",
+      "实验内已由你确认完成的观察（1 项）",
+      "建议额外进行的辅助技术与真实场景验证（3 项）"
+    ],
+    "manualListItems": [
+      1,
+      1,
+      3
+    ],
+    "pendingLine": false,
+    "copyByMouse": {
+      "hook": {
+        "len": 6197,
+        "same": true
+      },
+      "status": "已复制完整 Markdown 报告，内容与上方展示逐字一致，可直接粘贴到笔记或 .md 文件。"
+    },
+    "copyByKeyboard": {
+      "focused": true,
+      "hook": {
+        "len": 6197,
+        "same": true
+      },
+      "status": "已复制完整 Markdown 报告，内容与上方展示逐字一致，可直接粘贴到笔记或 .md 文件。"
+    },
+    "osClipboard": {
+      "chars": 6425,
+      "sameAsReport": false
+    },
+    "history": [
+      "#/contrast",
+      "#/report",
+      "back=#/contrast/色彩对比度实验",
+      "fwd=#/report/统一成果报告"
+    ],
+    "deepLink": {
+      "hash": "#/form-label",
+      "h1": "表单标签实验",
+      "title": "表单标签实验｜AccessLab 无障碍实验室"
+    },
+    "chrome1440": {
+      "overflowPx": 0,
+      "ctaTop": 408,
+      "ctaSize": {
+        "w": 196,
+        "h": 52
+      },
+      "navHeights": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "under24": [],
+      "countUnder44": 0,
+      "targetsMeasured": 12
+    },
+    "chrome320": {
+      "overflowPx": 0,
+      "ctaTop": 499,
+      "ctaSize": {
+        "w": 196,
+        "h": 52
+      },
+      "navHeights": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "under24": [],
+      "countUnder44": 0,
+      "targetsMeasured": 12
+    }
+  },
+  "download": {
+    "file": "AccessLab-成果报告-20261118232821.md",
+    "bytes": 13577,
+    "textareaBytes": 13577,
+    "identical": true,
+    "firstLines": [
+      "# AccessLab 统一成果报告",
+      "",
+      "- 生成时间：2026-11-18 23:28:21"
+    ]
+  },
+  "network": {
+    "total": 61,
+    "non2xx": []
+  },
+  "console": []
+}

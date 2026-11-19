@@ -123,35 +123,24 @@ export function HomePage() {
   return (
     <>
       <section className="border-b border-slate-200 bg-white">
-        <div className="mx-auto grid max-w-5xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-start lg:gap-12 lg:py-16">
+        <div className="mx-auto grid max-w-5xl gap-10 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-start lg:gap-12 lg:py-16">
           <div>
             <p className="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-900 ring-1 ring-indigo-700/20 ring-inset">
               AccessLab · 无障碍实验室
             </p>
 
-            <h1 className="mt-5 text-3xl font-bold leading-tight tracking-tight text-balance text-slate-900 sm:text-4xl lg:text-[2.75rem]">
+            <h1 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-balance text-slate-900 sm:text-4xl lg:text-[2.75rem]">
               让网页的障碍，
               <br className="hidden sm:block" />
               看得见、改得掉。
             </h1>
 
-            <p className="mt-5 max-w-xl text-lg leading-relaxed text-pretty text-slate-700">
+            <p className="mt-4 max-w-xl text-lg leading-relaxed text-pretty text-slate-700">
               页面自己用着没问题，别人可能看不清按钮、找不到输入框、用键盘走两步就丢了位置。
               AccessLab 把这些缺陷做成能动手改的真实实验：改一处，当场看到差别。
             </p>
 
-            <dl className="mt-6 grid gap-x-6 gap-y-3 border-t border-slate-200 pt-5 sm:grid-cols-3">
-              {AUDIENCE_POINTS.map((point) => (
-                <div key={point.term} className="min-w-0">
-                  <dt className="text-xs font-semibold tracking-wide text-slate-600 uppercase">
-                    {point.term}
-                  </dt>
-                  <dd className="mt-1 text-sm leading-snug font-semibold text-slate-900">{point.desc}</dd>
-                </div>
-              ))}
-            </dl>
-
-            <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-5">
+            <div className="mt-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-5">
               <a
                 href={ROUTE_HASH['contrast-lab']}
                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-indigo-700 px-7 py-3.5 text-base font-bold text-white no-underline shadow-sm transition-colors hover:bg-indigo-800"
@@ -166,6 +155,17 @@ export function HomePage() {
                 查看另外两个实验
               </a>
             </div>
+
+            <dl className="mt-6 grid gap-x-6 gap-y-3 border-t border-slate-200 pt-5 sm:grid-cols-3">
+              {AUDIENCE_POINTS.map((point) => (
+                <div key={point.term} className="min-w-0">
+                  <dt className="text-xs font-semibold tracking-wide text-slate-600 uppercase">
+                    {point.term}
+                  </dt>
+                  <dd className="mt-1 text-sm leading-snug font-semibold text-slate-900">{point.desc}</dd>
+                </div>
+              ))}
+            </dl>
 
             <p className="mt-5 text-xs text-slate-600">
               2026 Qoder 高校创造力大赛 · Hack4Good 技术向善赛道

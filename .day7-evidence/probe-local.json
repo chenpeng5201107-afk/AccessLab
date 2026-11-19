@@ -1,0 +1,546 @@
+{
+  "ctaProbe": [
+    {
+      "width": 320,
+      "height": 568,
+      "mobile": true,
+      "vh": 568,
+      "ctaTopInViewport": 499,
+      "ctaTopInDoc": 499,
+      "ctaHeight": 52,
+      "aboveFold": true,
+      "foldGapPx": 17,
+      "headerHeight": 165,
+      "navRowHeight": 44,
+      "navRowCount": 2,
+      "docHeight": 3415,
+      "overflowPx": 0,
+      "trail": [
+        {
+          "tag": "p",
+          "top": 198,
+          "h": 24,
+          "text": "AccessLab · 无障碍实验室"
+        },
+        {
+          "tag": "h1",
+          "top": 238,
+          "h": 75,
+          "text": "让网页的障碍，看得见、改得掉。"
+        },
+        {
+          "tag": "p",
+          "top": 329,
+          "h": 146,
+          "text": "页面自己用着没问题，别人可能看不清按钮、找不到输入框"
+        },
+        {
+          "tag": "dl",
+          "top": 631,
+          "h": 163,
+          "text": "给谁用 学生开发者、前端初学者 解决什么 发现并修好"
+        },
+        {
+          "tag": "p",
+          "top": 814,
+          "h": 32,
+          "text": "2026 Qoder 高校创造力大赛 · Hack4"
+        },
+        {
+          "tag": "h2",
+          "top": 907,
+          "h": 24,
+          "text": "同一句话，只是换个颜色"
+        },
+        {
+          "tag": "p",
+          "top": 935,
+          "h": 46,
+          "text": "下面两组数值由和实验页相同的算法实时算出，不是配图。"
+        },
+        {
+          "tag": "p",
+          "top": 1010,
+          "h": 16,
+          "text": "正文小字"
+        },
+        {
+          "tag": "p",
+          "top": 1167,
+          "h": 16,
+          "text": "未达 AA （需 ≥ 4.5:1）"
+        },
+        {
+          "tag": "p",
+          "top": 1185,
+          "h": 16,
+          "text": "很常见的浅灰正文"
+        },
+        {
+          "tag": "p",
+          "top": 1355,
+          "h": 16,
+          "text": "达到 AA （≥ 4.5:1 达标）"
+        },
+        {
+          "tag": "p",
+          "top": 1373,
+          "h": 16,
+          "text": "算法建议：背景不动，只把文字加深"
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "height": 640,
+      "mobile": true,
+      "vh": 640,
+      "ctaTopInViewport": 499,
+      "ctaTopInDoc": 499,
+      "ctaHeight": 52,
+      "aboveFold": true,
+      "foldGapPx": 89,
+      "headerHeight": 165,
+      "navRowHeight": 44,
+      "navRowCount": 2,
+      "docHeight": 3415,
+      "overflowPx": 0,
+      "trail": [
+        {
+          "tag": "p",
+          "top": 198,
+          "h": 24,
+          "text": "AccessLab · 无障碍实验室"
+        },
+        {
+          "tag": "h1",
+          "top": 238,
+          "h": 75,
+          "text": "让网页的障碍，看得见、改得掉。"
+        },
+        {
+          "tag": "p",
+          "top": 329,
+          "h": 146,
+          "text": "页面自己用着没问题，别人可能看不清按钮、找不到输入框"
+        },
+        {
+          "tag": "dl",
+          "top": 631,
+          "h": 163,
+          "text": "给谁用 学生开发者、前端初学者 解决什么 发现并修好"
+        },
+        {
+          "tag": "p",
+          "top": 814,
+          "h": 32,
+          "text": "2026 Qoder 高校创造力大赛 · Hack4"
+        },
+        {
+          "tag": "h2",
+          "top": 907,
+          "h": 24,
+          "text": "同一句话，只是换个颜色"
+        },
+        {
+          "tag": "p",
+          "top": 935,
+          "h": 46,
+          "text": "下面两组数值由和实验页相同的算法实时算出，不是配图。"
+        },
+        {
+          "tag": "p",
+          "top": 1010,
+          "h": 16,
+          "text": "正文小字"
+        },
+        {
+          "tag": "p",
+          "top": 1167,
+          "h": 16,
+          "text": "未达 AA （需 ≥ 4.5:1）"
+        },
+        {
+          "tag": "p",
+          "top": 1185,
+          "h": 16,
+          "text": "很常见的浅灰正文"
+        },
+        {
+          "tag": "p",
+          "top": 1355,
+          "h": 16,
+          "text": "达到 AA （≥ 4.5:1 达标）"
+        },
+        {
+          "tag": "p",
+          "top": 1373,
+          "h": 16,
+          "text": "算法建议：背景不动，只把文字加深"
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "vh": 844,
+      "ctaTopInViewport": 470,
+      "ctaTopInDoc": 470,
+      "ctaHeight": 52,
+      "aboveFold": true,
+      "foldGapPx": 322,
+      "headerHeight": 165,
+      "navRowHeight": 44,
+      "navRowCount": 2,
+      "docHeight": 3301,
+      "overflowPx": 0,
+      "trail": [
+        {
+          "tag": "p",
+          "top": 198,
+          "h": 24,
+          "text": "AccessLab · 无障碍实验室"
+        },
+        {
+          "tag": "h1",
+          "top": 238,
+          "h": 75,
+          "text": "让网页的障碍，看得见、改得掉。"
+        },
+        {
+          "tag": "p",
+          "top": 329,
+          "h": 117,
+          "text": "页面自己用着没问题，别人可能看不清按钮、找不到输入框"
+        },
+        {
+          "tag": "dl",
+          "top": 602,
+          "h": 163,
+          "text": "给谁用 学生开发者、前端初学者 解决什么 发现并修好"
+        },
+        {
+          "tag": "p",
+          "top": 785,
+          "h": 16,
+          "text": "2026 Qoder 高校创造力大赛 · Hack4"
+        },
+        {
+          "tag": "h2",
+          "top": 862,
+          "h": 24,
+          "text": "同一句话，只是换个颜色"
+        },
+        {
+          "tag": "p",
+          "top": 890,
+          "h": 46,
+          "text": "下面两组数值由和实验页相同的算法实时算出，不是配图。"
+        },
+        {
+          "tag": "p",
+          "top": 964,
+          "h": 16,
+          "text": "正文小字"
+        },
+        {
+          "tag": "p",
+          "top": 1121,
+          "h": 16,
+          "text": "未达 AA （需 ≥ 4.5:1）"
+        },
+        {
+          "tag": "p",
+          "top": 1139,
+          "h": 16,
+          "text": "很常见的浅灰正文"
+        },
+        {
+          "tag": "p",
+          "top": 1309,
+          "h": 16,
+          "text": "达到 AA （≥ 4.5:1 达标）"
+        },
+        {
+          "tag": "p",
+          "top": 1327,
+          "h": 16,
+          "text": "算法建议：背景不动，只把文字加深"
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "mobile": false,
+      "vh": 1024,
+      "ctaTopInViewport": 356,
+      "ctaTopInDoc": 356,
+      "ctaHeight": 52,
+      "aboveFold": true,
+      "foldGapPx": 616,
+      "headerHeight": 65,
+      "navRowHeight": 44,
+      "navRowCount": 1,
+      "docHeight": 2247,
+      "overflowPx": -15,
+      "trail": [
+        {
+          "tag": "p",
+          "top": 98,
+          "h": 24,
+          "text": "AccessLab · 无障碍实验室"
+        },
+        {
+          "tag": "h1",
+          "top": 138,
+          "h": 90,
+          "text": "让网页的障碍， 看得见、改得掉。"
+        },
+        {
+          "tag": "p",
+          "top": 244,
+          "h": 88,
+          "text": "页面自己用着没问题，别人可能看不清按钮、找不到输入框"
+        },
+        {
+          "tag": "dl",
+          "top": 432,
+          "h": 80,
+          "text": "给谁用 学生开发者、前端初学者 解决什么 发现并修好"
+        },
+        {
+          "tag": "p",
+          "top": 531,
+          "h": 16,
+          "text": "2026 Qoder 高校创造力大赛 · Hack4"
+        },
+        {
+          "tag": "h2",
+          "top": 608,
+          "h": 24,
+          "text": "同一句话，只是换个颜色"
+        },
+        {
+          "tag": "p",
+          "top": 636,
+          "h": 23,
+          "text": "下面两组数值由和实验页相同的算法实时算出，不是配图。"
+        },
+        {
+          "tag": "p",
+          "top": 688,
+          "h": 16,
+          "text": "正文小字"
+        },
+        {
+          "tag": "p",
+          "top": 845,
+          "h": 16,
+          "text": "未达 AA （需 ≥ 4.5:1）"
+        },
+        {
+          "tag": "p",
+          "top": 845,
+          "h": 16,
+          "text": "达到 AA （≥ 4.5:1 达标）"
+        },
+        {
+          "tag": "p",
+          "top": 863,
+          "h": 16,
+          "text": "很常见的浅灰正文"
+        },
+        {
+          "tag": "p",
+          "top": 863,
+          "h": 16,
+          "text": "算法建议：背景不动，只把文字加深"
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "mobile": false,
+      "vh": 900,
+      "ctaTopInViewport": 408,
+      "ctaTopInDoc": 408,
+      "ctaHeight": 52,
+      "aboveFold": true,
+      "foldGapPx": 440,
+      "headerHeight": 65,
+      "navRowHeight": 44,
+      "navRowCount": 1,
+      "docHeight": 1641,
+      "overflowPx": -15,
+      "trail": [
+        {
+          "tag": "p",
+          "top": 130,
+          "h": 24,
+          "text": "AccessLab · 无障碍实验室"
+        },
+        {
+          "tag": "h2",
+          "top": 150,
+          "h": 24,
+          "text": "同一句话，只是换个颜色"
+        },
+        {
+          "tag": "h1",
+          "top": 170,
+          "h": 110,
+          "text": "让网页的障碍， 看得见、改得掉。"
+        },
+        {
+          "tag": "p",
+          "top": 178,
+          "h": 23,
+          "text": "下面两组数值由和实验页相同的算法实时算出，不是配图。"
+        },
+        {
+          "tag": "p",
+          "top": 230,
+          "h": 16,
+          "text": "正文小字"
+        },
+        {
+          "tag": "p",
+          "top": 296,
+          "h": 88,
+          "text": "页面自己用着没问题，别人可能看不清按钮、找不到输入框"
+        },
+        {
+          "tag": "p",
+          "top": 387,
+          "h": 38,
+          "text": "未达 AA （需 ≥ 4.5:1）"
+        },
+        {
+          "tag": "p",
+          "top": 387,
+          "h": 38,
+          "text": "达到 AA （≥ 4.5:1 达标）"
+        },
+        {
+          "tag": "p",
+          "top": 427,
+          "h": 16,
+          "text": "很常见的浅灰正文"
+        },
+        {
+          "tag": "p",
+          "top": 427,
+          "h": 32,
+          "text": "算法建议：背景不动，只把文字加深"
+        },
+        {
+          "tag": "dl",
+          "top": 484,
+          "h": 80,
+          "text": "给谁用 学生开发者、前端初学者 解决什么 发现并修好"
+        },
+        {
+          "tag": "p",
+          "top": 583,
+          "h": 16,
+          "text": "2026 Qoder 高校创造力大赛 · Hack4"
+        }
+      ]
+    }
+  ],
+  "navProbe": [
+    {
+      "width": 320,
+      "height": 568,
+      "mobile": true,
+      "route": "#/",
+      "heights": [
+        "首页=44x48",
+        "色彩对比度实验=44x118",
+        "表单标签实验=44x104",
+        "键盘焦点实验=44x104",
+        "成果报告=44x76"
+      ],
+      "minH": 44,
+      "headerHeight": 165,
+      "overflowPx": 0,
+      "sticky": "sticky",
+      "navRows": 2
+    },
+    {
+      "width": 320,
+      "height": 640,
+      "mobile": true,
+      "route": "#/",
+      "heights": [
+        "首页=44x48",
+        "色彩对比度实验=44x118",
+        "表单标签实验=44x104",
+        "键盘焦点实验=44x104",
+        "成果报告=44x76"
+      ],
+      "minH": 44,
+      "headerHeight": 165,
+      "overflowPx": 0,
+      "sticky": "sticky",
+      "navRows": 2
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "route": "#/",
+      "heights": [
+        "首页=44x48",
+        "色彩对比度实验=44x118",
+        "表单标签实验=44x104",
+        "键盘焦点实验=44x104",
+        "成果报告=44x76"
+      ],
+      "minH": 44,
+      "headerHeight": 165,
+      "overflowPx": 0,
+      "sticky": "sticky",
+      "navRows": 2
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "mobile": false,
+      "route": "#/",
+      "heights": [
+        "首页=44x52",
+        "色彩对比度实验=44x122",
+        "表单标签实验=44x108",
+        "键盘焦点实验=44x108",
+        "成果报告=44x80"
+      ],
+      "minH": 44,
+      "headerHeight": 65,
+      "overflowPx": -15,
+      "sticky": "sticky",
+      "navRows": 1
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "mobile": false,
+      "route": "#/",
+      "heights": [
+        "首页=44x52",
+        "色彩对比度实验=44x122",
+        "表单标签实验=44x108",
+        "键盘焦点实验=44x108",
+        "成果报告=44x80"
+      ],
+      "minH": 44,
+      "headerHeight": 65,
+      "overflowPx": -15,
+      "sticky": "sticky",
+      "navRows": 1
+    }
+  ]
+}

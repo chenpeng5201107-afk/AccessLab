@@ -5,6 +5,13 @@
 @source not "../**/*.md";
 @source not "../**/*.{test,spec}.{ts,tsx}";
 
+/* 取证目录存的是 DOM 类名快照、网络日志与截图元数据，同样会被自动扫描当成 class 候选。
+   11-19 公网探针实测：`public-labels-focus.json` 里导出的平台水印 class 字符串让产物 CSS
+   多出 .shadow / .transform / .transition 共 959 B，两个资源文件名哈希一起漂移，
+   于是「仓库重建 = 线上产物」这条不再成立。与上面排除 .md / 测试文件同一口径处理。 */
+@source not "../.day*-evidence/**";
+@source not "../**/*.{json,jsonl,log}";
+
 /* Day 4：键盘焦点实验把真实生效的 CSS 规则存在 TS 里，作为「展示代码 = 生效代码」的单一数据源。
    这些 CSS 文本会被内容扫描当成 class 候选，凭空生成 .outline / .outline-none 之类的无用工具类，
    让产物 CSS 随无关文字变大，所以整文件排除（该文件不含任何 Tailwind 类名）。 */

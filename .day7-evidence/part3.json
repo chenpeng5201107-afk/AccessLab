@@ -1,0 +1,360 @@
+{
+  "ua": "Edg/157.0.4341.60",
+  "target": "http://127.0.0.1:52495/index.html",
+  "contrast": {
+    "start": {
+      "color": "oklch(0.446 0.043 257.281)",
+      "ratio": null,
+      "verdict": null,
+      "live": [
+        "当前对比度 4.48:1 未达 AA"
+      ]
+    },
+    "suggest": {
+      "label": "生成修复建议",
+      "via": "Tab",
+      "presses": 8,
+      "tag": "button",
+      "disabled": false,
+      "outline": "solid 3px oklab(0.999994 0.0000455678 0.0000200868)",
+      "ring": "none",
+      "before": {
+        "tag": "button",
+        "label": "生成修复建议"
+      },
+      "live": [
+        "当前对比度 4.48:1 未达 AA"
+      ]
+    },
+    "afterSuggest": {
+      "color": "oklch(0.446 0.043 257.281)",
+      "ratio": null,
+      "verdict": null,
+      "live": [
+        "当前对比度 4.48:1 未达 AA"
+      ]
+    },
+    "apply": {
+      "label": "应用该修复",
+      "via": "Tab",
+      "presses": 1,
+      "tag": "button",
+      "disabled": false,
+      "outline": "solid 3px oklab(0.999994 0.0000455678 0.0000200868)",
+      "ring": "none",
+      "before": {
+        "tag": "button",
+        "label": "应用该修复"
+      },
+      "live": [
+        "当前对比度 4.54:1 达到 AA",
+        "已应用修复：文字颜色改为 #767676，对比度提升至 4.54:1。背景颜色未改变。"
+      ]
+    },
+    "afterApply": {
+      "color": "oklch(0.446 0.043 257.281)",
+      "ratio": null,
+      "verdict": null,
+      "live": [
+        "当前对比度 4.54:1 达到 AA",
+        "已应用修复：文字颜色改为 #767676，对比度提升至 4.54:1。背景颜色未改变。"
+      ]
+    },
+    "undo": {
+      "label": "撤销本次修复",
+      "via": "Tab",
+      "presses": 1,
+      "tag": "button",
+      "disabled": false,
+      "outline": "solid 3px oklab(0.279 -0.00709772 -0.040381)",
+      "ring": "none",
+      "before": {
+        "tag": "button",
+        "label": "撤销本次修复"
+      },
+      "live": [
+        "当前对比度 4.48:1 未达 AA",
+        "已撤销本次修复，文字颜色恢复为 #777777。"
+      ]
+    },
+    "afterUndo": {
+      "color": "oklch(0.446 0.043 257.281)",
+      "ratio": null,
+      "verdict": null,
+      "live": [
+        "当前对比度 4.48:1 未达 AA",
+        "已撤销本次修复，文字颜色恢复为 #777777。"
+      ]
+    },
+    "invalid": {
+      "inputId": "_r_0_-picker",
+      "hint": {
+        "id": "_r_0_-picker",
+        "value": "#777777",
+        "invalid": null,
+        "describedby": []
+      },
+      "state": {
+        "color": "oklch(0.446 0.043 257.281)",
+        "ratio": null,
+        "verdict": null,
+        "live": [
+          "当前对比度 4.48:1 未达 AA",
+          "已撤销本次修复，文字颜色恢复为 #777777。"
+        ]
+      }
+    }
+  },
+  "form": {
+    "before": [
+      {
+        "id": "student-name",
+        "labels": 0,
+        "text": ""
+      },
+      {
+        "id": "student-email",
+        "labels": 1,
+        "text": "电子邮箱"
+      }
+    ],
+    "fix": {
+      "label": "修复标签关联",
+      "via": "Tab",
+      "presses": 7,
+      "tag": "button",
+      "disabled": false,
+      "outline": "solid 3px oklab(0.999994 0.0000455678 0.0000200868)",
+      "ring": "none",
+      "before": {
+        "tag": "button",
+        "label": "修复标签关联"
+      },
+      "live": [
+        "已把「姓名」换成与输入框正确关联的 label，检测将在新的 DOM 上重新运行。"
+      ]
+    },
+    "after": {
+      "labels": [
+        {
+          "id": "student-name",
+          "labels": 1,
+          "text": "姓名"
+        },
+        {
+          "id": "student-email",
+          "labels": 1,
+          "text": "电子邮箱"
+        }
+      ],
+      "realLabels": 2
+    },
+    "clickLabel": {
+      "tag": "body",
+      "id": null
+    },
+    "reset": {
+      "label": "重置实验",
+      "via": "Tab",
+      "presses": 14,
+      "tag": "button",
+      "disabled": false,
+      "outline": "solid 3px oklab(0.279 -0.00709772 -0.040381)",
+      "ring": "none",
+      "before": {
+        "tag": "button",
+        "label": "重置实验"
+      },
+      "live": [
+        "实验已重置：上方又回到「看得见文字、却没有关联标签」的初始状态。"
+      ]
+    },
+    "afterReset": {
+      "labels": [
+        0,
+        1
+      ],
+      "spans": 5
+    }
+  },
+  "keyboard": {
+    "mouseOnly": {
+      "before": {
+        "before": "0",
+        "after": null,
+        "confirmDisabled": true
+      },
+      "after": {
+        "before": "0",
+        "after": null,
+        "confirmDisabled": true
+      }
+    },
+    "shiftTab": {
+      "tag": "a",
+      "label": "色彩对比度实验",
+      "outline": "solid 3px"
+    },
+    "tabLanding": {
+      "cls": "kf-demo-btn kf-demo-btn--broken",
+      "outline": "none 3px rgb(30, 41, 59)",
+      "offset": "2px"
+    },
+    "countsAfterTab": {
+      "before": "2",
+      "after": null,
+      "confirmDisabled": true
+    },
+    "afterFixRound": {
+      "before": "2",
+      "after": "3",
+      "confirmDisabled": false
+    },
+    "afterReset": {
+      "before": "0",
+      "after": null,
+      "confirmDisabled": true
+    }
+  },
+  "reportClear": {
+    "before": {
+      "stat": "1 / 3"
+    },
+    "step1EnterTrigger": {
+      "stop": {
+        "label": "清空本次实验记录",
+        "via": "Tab",
+        "presses": 11,
+        "tag": "button",
+        "disabled": false,
+        "outline": "solid 3px oklab(0.279 -0.00709772 -0.040381)",
+        "ring": "none"
+      },
+      "act": {
+        "before": {
+          "tag": "button",
+          "label": "清空本次实验记录"
+        },
+        "live": [
+          "这里的提示只反映你刚才在本报页面上的操作。"
+        ]
+      },
+      "after": {
+        "active": {
+          "tag": "button",
+          "id": null,
+          "isBody": false,
+          "cls": "inline-flex min-h-11 items-center "
+        },
+        "stat": "1 / 3",
+        "live": [
+          "这里的提示只反映你刚才在本报页面上的操作。"
+        ],
+        "buttons": [
+          "确认清空记录",
+          "取消，保留记录"
+        ]
+      }
+    },
+    "step2Cancel": {
+      "stop": {
+        "label": "取消，保留记录",
+        "via": "Tab",
+        "presses": 1,
+        "tag": "button",
+        "disabled": false,
+        "outline": "solid 3px oklab(0.279 -0.00709772 -0.040381)",
+        "ring": "none"
+      },
+      "act": {
+        "before": {
+          "tag": "button",
+          "label": "取消，保留记录"
+        },
+        "live": [
+          "这里的提示只反映你刚才在本报页面上的操作。"
+        ]
+      },
+      "after": {
+        "active": {
+          "tag": "button",
+          "id": null,
+          "isBody": false,
+          "cls": "mt-3 inline-flex min-h-11 items-ce"
+        },
+        "stat": "1 / 3",
+        "live": [
+          "这里的提示只反映你刚才在本报页面上的操作。"
+        ],
+        "buttons": [
+          "清空本次实验记录"
+        ]
+      }
+    },
+    "step3Focused": {
+      "active": {
+        "tag": "button",
+        "id": null,
+        "isBody": false,
+        "cls": "inline-flex min-h-11 items-center "
+      },
+      "stat": "1 / 3",
+      "live": [
+        "这里的提示只反映你刚才在本报页面上的操作。"
+      ],
+      "buttons": [
+        "确认清空记录",
+        "取消，保留记录"
+      ]
+    },
+    "step4Confirm": {
+      "stop": {
+        "label": "确认清空记录",
+        "via": "Tab",
+        "presses": 21,
+        "tag": "button",
+        "disabled": false,
+        "outline": "solid 3px oklab(0.996157 0.000252618 -0.00166338)",
+        "ring": "none"
+      },
+      "act": {
+        "before": {
+          "tag": "button",
+          "label": "确认清空记录"
+        },
+        "live": [
+          "已清空本次会话登记的实验记录。各实验页里的示例仍可重新操作，记录会随新的检测重新写入。"
+        ]
+      },
+      "after": {
+        "active": {
+          "tag": "p",
+          "id": null,
+          "isBody": false,
+          "cls": "mt-3 rounded-lg px-3 py-2 text-sm "
+        },
+        "stat": "0 / 3",
+        "live": [
+          "已清空本次会话登记的实验记录。各实验页里的示例仍可重新操作，记录会随新的检测重新写入。"
+        ],
+        "buttons": [
+          "清空本次实验记录"
+        ]
+      }
+    },
+    "afterConfirm": {
+      "stat": "0 / 3",
+      "disabled": [
+        true,
+        true,
+        true
+      ],
+      "active": {
+        "tag": "p",
+        "isBody": false,
+        "cls": "mt-3 rounded-lg px-3 py-2 text"
+      }
+    }
+  },
+  "console": []
+}

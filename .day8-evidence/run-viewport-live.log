@@ -1,0 +1,35 @@
+target https://accessibility-lab-3g6uvbn5duq.qoder.zone/index.html
+D1 #/ @320: overflow=0 headerH=165 navMin=44 small=0 ctaTop=499 ctaFold=true
+D1 #/ @390: overflow=0 headerH=165 navMin=44 small=0 ctaTop=470 ctaFold=true
+D1 #/ @768: overflow=-15 headerH=65 navMin=44 small=0 ctaTop=356 ctaFold=true
+D1 #/ @1440: overflow=-15 headerH=65 navMin=44 small=0 ctaTop=408 ctaFold=true
+D1 #/contrast @320: overflow=0 headerH=165 navMin=44 small=0 ctaTop=null ctaFold=null
+D1 #/contrast @390: overflow=0 headerH=165 navMin=44 small=0 ctaTop=null ctaFold=null
+D1 #/contrast @768: overflow=-15 headerH=65 navMin=44 small=0 ctaTop=null ctaFold=null
+D1 #/contrast @1440: overflow=-15 headerH=65 navMin=44 small=0 ctaTop=null ctaFold=null
+D1 #/form-label @320: overflow=0 headerH=165 navMin=44 small=0 ctaTop=null ctaFold=null
+D1 #/form-label @390: overflow=0 headerH=165 navMin=44 small=0 ctaTop=null ctaFold=null
+D1 #/form-label @768: overflow=-15 headerH=65 navMin=44 small=0 ctaTop=null ctaFold=null
+D1 #/form-label @1440: overflow=-15 headerH=65 navMin=44 small=0 ctaTop=null ctaFold=null
+D1 #/keyboard @320: overflow=0 headerH=165 navMin=44 small=0 ctaTop=null ctaFold=null
+D1 #/keyboard @390: overflow=0 headerH=165 navMin=44 small=0 ctaTop=null ctaFold=null
+D1 #/keyboard @768: overflow=-15 headerH=65 navMin=44 small=0 ctaTop=null ctaFold=null
+D1 #/keyboard @1440: overflow=-15 headerH=65 navMin=44 small=0 ctaTop=null ctaFold=null
+D1 #/report @320: overflow=0 headerH=165 navMin=44 small=0 ctaTop=null ctaFold=null
+D1 #/report @390: overflow=0 headerH=165 navMin=44 small=0 ctaTop=null ctaFold=null
+D1 #/report @768: overflow=-15 headerH=65 navMin=44 small=0 ctaTop=null ctaFold=null
+D1 #/report @1440: overflow=-15 headerH=65 navMin=44 small=0 ctaTop=null ctaFold=null
+B1 firstTab {"tag":"a","label":"跳转到主要内容","outline":"solid 3px 2px","cls":"sr-only rounded-lg bg-indigo-700 px-4 py"} → Enter {"id":"main","tag":"main","hash":"#/","h1":"让网页的障碍，看得见、改得掉。"}
+B1 #/: 14 站 / 14 个不同焦点，outline:none 的站=0
+B1 #/contrast: 14 站 / 11 个不同焦点，outline:none 的站=3
+B1 #/form-label: 14 站 / 13 个不同焦点，outline:none 的站=2
+B1 #/keyboard: 14 站 / 13 个不同焦点，outline:none 的站=6
+B1 #/report: 14 站 / 11 个不同焦点，outline:none 的站=2
+B1 键盘实验缺陷态 [{"tag":"button","label":"查看详情","outline":"none 3px 2px","cls":"kf-demo-btn kf-demo-btn--broken"},{"tag":"button","label":"保存选择","outline":"none 3px 2px","cls":"kf-demo-btn kf-demo-btn--broken"},{"tag":"button","label":"返回上一步","outline":"none 3px 2px","cls":"kf-demo-btn kf-demo-btn--broken"}]
+B2 #/: h1=1 landmarks=header=1 nav=1 main=1 footer=1 role=status=0 无名称控件=0 跳级=0
+B2 #/contrast: h1=1 landmarks=header=2 nav=1 main=1 footer=1 role=status=1 无名称控件=0 跳级=0
+B2 #/form-label: h1=1 landmarks=header=2 nav=1 main=1 footer=1 role=status=0 无名称控件=0 跳级=0
+B2 #/keyboard: h1=1 landmarks=header=2 nav=1 main=1 footer=1 role=status=0 无名称控件=0 跳级=0
+B2 #/report: h1=1 landmarks=header=2 nav=1 main=1 footer=1 role=status=1 无名称控件=0 跳级=0
+B2 色彩一次操作变化的实时区域 = 0 / 1
+PART1 DONE

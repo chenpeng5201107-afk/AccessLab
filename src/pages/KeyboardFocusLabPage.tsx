@@ -113,6 +113,9 @@ export function KeyboardFocusLabPage() {
   const [workflow, setWorkflow] = useState(initialDemoWorkflowState)
   /** 只有键盘导航产生的焦点才计数；用鼠标点按钮同样会移动焦点，但那不是本实验要记录的东西 */
   const keyboardNavRef = useRef(false)
+  /** 「修复焦点指示」点完换成一行已修复说明：按钮没了，焦点得有人接住 */
+  const repairedLineRef = useRef<HTMLParagraphElement>(null)
+  const pendingRepairedFocusRef = useRef(false)
 
   useEffect(() => {
     const markKeyboard = (event: KeyboardEvent) => {
@@ -135,6 +138,12 @@ export function KeyboardFocusLabPage() {
   // 结论来自已经渲染出来的真实 DOM：按钮身上挂的是哪个类、注入的样式表里写了什么
   useEffect(() => {
     setReport(auditKeyboardFocusDemo(pageRef.current))
+  }, [mode])
+
+  useEffect(() => {
+    if (!pendingRepairedFocusRef.current) return
+    pendingRepairedFocusRef.current = false
+    repairedLineRef.current?.focus()
   }, [mode])
 
   const beforeSightings = sightingTotal(sightings.before)
@@ -193,6 +202,7 @@ export function KeyboardFocusLabPage() {
 
   const handleRepair = () => {
     if (mode === 'repaired') return
+    pendingRepairedFocusRef.current = true
     setMode('repaired')
     setConfirmed(false)
     // 修复前的那一轮观察必须留住：它是「前后对比」的另一半
@@ -519,7 +529,11 @@ export function KeyboardFocusLabPage() {
 
           <div className="mt-4 flex flex-wrap items-center gap-3">
             {mode === 'repaired' ? (
-              <p className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-900 ring-1 ring-inset ring-emerald-700/30">
+              <p
+                ref={repairedLineRef}
+                tabIndex={-1}
+                className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-900 ring-1 ring-inset ring-emerald-700/30"
+              >
                 <CircleCheckBig className="size-5 shrink-0" aria-hidden="true" />
                 已应用焦点修复（按钮当前挂 <span className="font-mono">.{FIXED_CLASS}</span>）
               </p>

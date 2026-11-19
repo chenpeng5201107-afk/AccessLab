@@ -1,0 +1,315 @@
+{
+  "ua": "Edg/157.0.4341.60",
+  "target": "http://127.0.0.1:61750/index.html",
+  "liveChurn": [
+    {
+      "route": "#/contrast",
+      "action": "生成修复建议",
+      "regions": 1,
+      "changedCount": 0,
+      "changed": [],
+      "all": [
+        "当前对比度 4.48:1 未达 AA"
+      ]
+    },
+    {
+      "route": "#/contrast",
+      "action": "应用该修复",
+      "regions": 2,
+      "changedCount": 2,
+      "changed": [
+        {
+          "at": 0,
+          "was": "当前对比度 4.48:1 未达 AA",
+          "now": "当前对比度 4.54:1 达到 AA",
+          "role": "status",
+          "live": "polite"
+        },
+        {
+          "at": 1,
+          "was": "(新增)",
+          "now": "已应用修复：文字颜色改为 #767676，对比度提升至 4.54:1。背景颜色未改变。",
+          "role": "status",
+          "live": "polite"
+        }
+      ],
+      "all": [
+        "当前对比度 4.54:1 达到 AA",
+        "已应用修复：文字颜色改为 #767676，对比度提升至 4.54:1。背景颜色未改变。"
+      ]
+    },
+    {
+      "route": "#/form-label",
+      "action": "修复标签关联",
+      "regions": 1,
+      "changedCount": 1,
+      "changed": [
+        {
+          "at": 0,
+          "was": "(新增)",
+          "now": "已把「姓名」换成与输入框正确关联的 label，检测将在新的 DOM 上重新运行。",
+          "role": "status",
+          "live": "polite"
+        }
+      ],
+      "all": [
+        "已把「姓名」换成与输入框正确关联的 label，检测将在新的 DOM 上重新运行。"
+      ]
+    },
+    {
+      "route": "#/keyboard",
+      "action": "修复焦点指示",
+      "regions": 1,
+      "changedCount": 1,
+      "changed": [
+        {
+          "at": 0,
+          "was": "(新增)",
+          "now": "已把示例按钮换成带 outline 的 :focus-visible 规则。现在请再按 Tab 走一遍同样三个按钮，自己确认焦点是否看得见。",
+          "role": "status",
+          "live": "polite"
+        }
+      ],
+      "all": [
+        "已把示例按钮换成带 outline 的 :focus-visible 规则。现在请再按 Tab 走一遍同样三个按钮，自己确认焦点是否看得见。"
+      ]
+    }
+  ],
+  "flow": {
+    "afterCta": {
+      "hash": "#/contrast",
+      "h1": "色彩对比度实验"
+    },
+    "contrast": {
+      "before": null,
+      "hash": "#/contrast"
+    },
+    "afterFormStep": {
+      "hash": "#/form-label",
+      "h1": "表单标签实验"
+    },
+    "form": {
+      "issueLine": null,
+      "hash": "#/form-label"
+    },
+    "afterKbStep": {
+      "hash": "#/keyboard",
+      "h1": "键盘焦点实验"
+    },
+    "keyboard": {
+      "round1": {
+        "hits": 3,
+        "presses": 4,
+        "seen": [
+          "查看详情",
+          "保存选择",
+          "返回上一步"
+        ],
+        "counters": {
+          "before": "3",
+          "after": null
+        }
+      },
+      "round2": {
+        "hits": 3,
+        "presses": 16,
+        "seen": [
+          "查看详情",
+          "保存选择",
+          "返回上一步"
+        ],
+        "counters": {
+          "before": "3",
+          "after": "3"
+        }
+      },
+      "confirmed": true
+    },
+    "reportH1": {
+      "hash": "#/report",
+      "h1": "统一成果报告"
+    },
+    "elapsedMs": 6287
+  },
+  "report": {
+    "stats": {
+      "已记录": "3 / 3",
+      "已修复": "3 / 3",
+      "复核": "3 / 3",
+      "待观察": "1 项",
+      "额外验证": "3 项"
+    },
+    "groups": [
+      {
+        "heading": "实验内仍待你本人完成的观察（1 项）",
+        "count": 1
+      },
+      {
+        "heading": "实验内已由你确认完成的观察（1 项）",
+        "count": 1
+      },
+      {
+        "heading": "建议额外进行的辅助技术与真实场景验证（3 项）",
+        "count": 3
+      }
+    ],
+    "groupTexts": [
+      {
+        "heading": "实验内仍待你本人完成的观察（1 项）",
+        "items": [
+          "色彩对比度实验：在你自己的屏幕上确认这段示例文字是否真的读得舒服（数值达标不等于人人可读）。实验页没有记录这一步的按钮，所以程序无法替你勾掉它。"
+        ]
+      },
+      {
+        "heading": "实验内已由你确认完成的观察（1 项）",
+        "items": [
+          "键盘焦点实验：修复前后的两轮 Tab 体验都已完成，并由你本人点击「我已完成观察」确认——这只说明你在本机浏览器里看得见焦点轮廓。"
+        ]
+      },
+      {
+        "heading": "建议额外进行的辅助技术与真实场景验证（3 项）",
+        "items": [
+          "色彩对比度实验：换到你的真实设备、不同屏幕亮度与环境光下再看一次；本项目不测量你的屏幕、环境亮度与色觉差异。",
+          "表单标签实验：用真实屏幕阅读器（如 NVDA / VoiceOver）走到「姓名」输入框，听它报出的名称是否与页面上看到的标签一致——本项目未做任何真机辅助技术测试。",
+          "键盘焦点实验：在其它浏览器与真实屏幕阅读器组合下复走一遍焦点播报；你在本机确认过看得见，不能代替这些环境下的结果。"
+        ]
+      }
+    ],
+    "stillSaysKeyboardPending": false,
+    "keyboardConfirmedLine": true,
+    "claimLine": "人工确认：1 个实验由你本人点过确认。",
+    "lead": "这次会话登记了 3 / 3 个实验的成果，其中 3 个真正改动了页面，1 个已由你本人确认。",
+    "nonCert": true,
+    "countsMatch": true
+  },
+  "export": {
+    "copyByMouse": {
+      "hook": {
+        "len": 6197,
+        "sameAsTextarea": true
+      },
+      "status": {
+        "all": [
+          "已复制完整 Markdown 报告，内容与上方展示逐字一致，可直接粘贴到笔记或 .md 文件。"
+        ],
+        "copy": "已复制完整 Markdown 报告，内容与上方展示逐字一致，可直接粘贴到笔记或 .md 文件。"
+      }
+    },
+    "clipboardReadAfterMouseCopy": {
+      "chars": 6425,
+      "sameAsReport": false
+    },
+    "copyByKeyboard": {
+      "focusBeforeEnter": {
+        "same": true,
+        "tag": "BUTTON",
+        "label": "复制 Markdown 报告"
+      },
+      "hook": {
+        "len": 6197,
+        "sameAsTextarea": true
+      },
+      "status": {
+        "all": [
+          "已复制完整 Markdown 报告，内容与上方展示逐字一致，可直接粘贴到笔记或 .md 文件。"
+        ],
+        "copy": "已复制完整 Markdown 报告，内容与上方展示逐字一致，可直接粘贴到笔记或 .md 文件。"
+      }
+    },
+    "mdLen": 6197,
+    "mdHasThreeState": {
+      "pending": true,
+      "done": true,
+      "extra": true,
+      "noFalsePending": true
+    },
+    "download": {
+      "file": "AccessLab-成果报告-20261119094129.md",
+      "bytes": 13577,
+      "textareaBytes": 13577,
+      "identical": true
+    }
+  },
+  "session": {
+    "afterRouteSwitch": "3 / 3",
+    "afterReenterKeyboard": {
+      "hash": "#/keyboard",
+      "hasCounters": [
+        "修复前：键盘导航到达示例按钮的次数",
+        "修复后：键盘导航到达示例按钮的次数"
+      ]
+    },
+    "ledgerAfterReenter": "3 / 3",
+    "keyboardAfterReenter": "3 次",
+    "afterReload": {
+      "stat": "0 / 3",
+      "copyDisabled": [
+        true,
+        true,
+        true
+      ]
+    }
+  },
+  "console": {},
+  "network": {},
+  "kbActivate": [
+    {
+      "keyName": "Enter",
+      "landed": {
+        "label": "查看详情",
+        "outline": "none 3px rgb(30, 41, 59)",
+        "offset": "2px"
+      },
+      "presses": 2,
+      "counts": {
+        "beforeTab": "0",
+        "afterTab": "1",
+        "afterActivate": "1"
+      },
+      "live": [
+        {
+          "role": "status",
+          "live": "polite",
+          "text": "已展开详情：《WCAG 实战》 · 主馆 3 楼 无障碍书架。"
+        }
+      ],
+      "focusAfter": {
+        "tag": "button",
+        "label": "查看详情",
+        "isBody": false
+      }
+    },
+    {
+      "keyName": "Space",
+      "landed": {
+        "label": "查看详情",
+        "outline": "none 3px rgb(30, 41, 59)",
+        "offset": "2px"
+      },
+      "presses": 2,
+      "counts": {
+        "beforeTab": "0",
+        "afterTab": "1",
+        "afterActivate": "1"
+      },
+      "live": [
+        {
+          "role": "status",
+          "live": "polite",
+          "text": "已展开详情：《WCAG 实战》 · 主馆 3 楼 无障碍书架。"
+        }
+      ],
+      "focusAfter": {
+        "tag": "button",
+        "label": "查看详情",
+        "isBody": false
+      }
+    }
+  ],
+  "compatNav": [
+    "#/contrast",
+    "#/report",
+    "back→#/contrast:色彩对比度实验",
+    "fwd→#/report:统一成果报告"
+  ]
+}

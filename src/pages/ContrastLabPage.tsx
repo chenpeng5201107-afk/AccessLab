@@ -108,6 +108,14 @@ export function ContrastLabPage() {
    * 它和第 1 节的配色读数区各自播报各自的内容，不会把对方的句子挤掉。
    */
   const [notice, setNotice] = useState<{ area: 'repair' | 'css'; text: string } | null>(null)
+  /**
+   * 建议 / 已应用 / 撤销提示都是顶掉原按钮才出现的：按钮一消失，浏览器就把焦点退回 body，
+   * 键盘用户既看不见焦点也读不到结果。所以每次换内容都主动把焦点交给新出现的这一块。
+   */
+  const suggestionRef = useRef<HTMLDivElement>(null)
+  const appliedRef = useRef<HTMLDivElement>(null)
+  const noticeRef = useRef<HTMLParagraphElement>(null)
+  const pendingFocusTargetRef = useRef<'suggestion' | 'applied' | 'notice' | null>(null)
 
   const ratio = contrastRatioFromHex(textColor, backgroundColor)
   const passes = ratio !== null && meetsAaNormalText(ratio)
@@ -150,6 +158,7 @@ export function ContrastLabPage() {
 
   const handleGenerate = () => {
     if (hasInvalidInput) return
+    pendingFocusTargetRef.current = 'suggestion'
     dispatchRepair({ type: 'generate', textColor, backgroundColor })
     setNotice(null)
   }
@@ -160,6 +169,7 @@ export function ContrastLabPage() {
 
   const handleApply = () => {
     if (!canApply || !suggestion?.suggestedTextColor) return
+    pendingFocusTargetRef.current = 'applied'
     setTextColor(suggestion.suggestedTextColor)
     dispatchRepair({ type: 'apply' })
     setNotice({
@@ -172,6 +182,7 @@ export function ContrastLabPage() {
 
   const handleUndo = () => {
     if (repair.phase !== 'applied' || !repair.snapshot) return
+    pendingFocusTargetRef.current = 'notice'
     setTextColor(repair.snapshot.beforeTextColor)
     dispatchRepair({ type: 'undo' })
     setNotice({
@@ -179,6 +190,15 @@ export function ContrastLabPage() {
       text: `已撤销本次修复，文字颜色恢复为 ${repair.snapshot.beforeTextColor}。`,
     })
   }
+
+  useEffect(() => {
+    const target = pendingFocusTargetRef.current
+    pendingFocusTargetRef.current = null
+    if (!target) return
+    if (target === 'suggestion') suggestionRef.current?.focus()
+    else if (target === 'applied') appliedRef.current?.focus()
+    else noticeRef.current?.focus()
+  }, [repair.phase, notice])
 
   // 对比区与 CSS 区的数据：已应用取快照，未应用取建议；背景两侧始终相同
   const snapshot = repair.snapshot
@@ -522,7 +542,7 @@ export function ContrastLabPage() {
         ) : null}
 
         {repair.phase === 'suggested' && suggestion?.suggestedTextColor && !hasInvalidInput ? (
-          <div className="mt-4 rounded-xl border border-indigo-200 bg-indigo-50/60 p-4">
+          <div ref={suggestionRef} tabIndex={-1} className="mt-4 rounded-xl border border-indigo-200 bg-indigo-50/60 p-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-sm font-semibold text-slate-900">
                 建议文字颜色
@@ -554,7 +574,7 @@ export function ContrastLabPage() {
         ) : null}
 
         {repair.phase === 'applied' && snapshot && !hasInvalidInput ? (
-          <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50/60 p-4">
+          <div ref={appliedRef} tabIndex={-1} className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50/60 p-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-sm font-semibold text-slate-900">
                 修复已应用
@@ -582,6 +602,8 @@ export function ContrastLabPage() {
 
         {notice && notice.area === 'repair' ? (
           <p
+            ref={noticeRef}
+            tabIndex={-1}
             role="status"
             aria-live="polite"
             aria-atomic="true"

@@ -31,11 +31,39 @@ export const SESSION_SCOPE_STATEMENT =
 export const SNAPSHOT_STATEMENT =
   '台账记录的是「你在本次会话里对该实验做到了哪一步」。实验页在路由切换后会回到自己的初始状态，因此「已应用修复」表示会话内确实改过并留下了前后证据，不代表你此刻打开的页面仍处于修复状态。'
 
-export const MANUAL_VERIFICATION_ITEMS = [
-  '色彩对比度实验：在你自己的屏幕上确认这段示例文字是否真的读得舒服（数值达标不等于人人可读）。',
-  '表单标签实验：用真实屏幕阅读器（如 NVDA / VoiceOver）走到「姓名」输入框，听它报出的名称是否与页面上看到的标签一致。',
-  '键盘焦点实验：只用 Tab 走一遍示例按钮，亲自确认焦点轮廓看得见——这一步程序无法代替。',
-]
+/**
+ * 人工验证的三种状态必须分开数，不能揉成一张「待办」清单：
+ * - in-lab 待完成：本实验里由你亲自做的那一步，产品还没有记录到；
+ * - in-lab 已完成：你已经做完并点过确认，这条就从待办移到已完成，不再重复提醒；
+ * - 建议额外验证：需要真实辅助技术或真实设备场景，产品没有覆盖，点过任何确认都不算做过。
+ * done 为 null 表示该实验没有供你确认的入口，因此它的观察项会一直留在待完成一栏；
+ * pending 为 null 表示这项验证本来就不在实验内（如需要真实读屏软件的表单实验）。
+ */
+const IN_LAB_MANUAL: Record<ExperimentKey, { pending: string | null; done: string | null }> = {
+  contrast: {
+    pending:
+      '色彩对比度实验：在你自己的屏幕上确认这段示例文字是否真的读得舒服（数值达标不等于人人可读）。实验页没有记录这一步的按钮，所以程序无法替你勾掉它。',
+    done: null,
+  },
+  'form-label': {
+    // 表单实验要确认的是读屏实际朗读结果，不属于实验内能完成的观察，一律列进下方额外验证。
+    pending: null,
+    done: null,
+  },
+  keyboard: {
+    pending: '键盘焦点实验：你还没有点「我已完成观察」，也没有走完修复前后的两轮键盘体验。',
+    done: '键盘焦点实验：修复前后的两轮 Tab 体验都已完成，并由你本人点击「我已完成观察」确认——这只说明你在本机浏览器里看得见焦点轮廓。',
+  },
+}
+
+/** 与确认状态无关：产品没有覆盖、仍建议在真实辅助技术或真实使用场景里补做的验证 */
+const EXTRA_VERIFICATION_ITEMS: Record<ExperimentKey, string> = {
+  contrast: '色彩对比度实验：换到你的真实设备、不同屏幕亮度与环境光下再看一次；本项目不测量你的屏幕、环境亮度与色觉差异。',
+  'form-label':
+    '表单标签实验：用真实屏幕阅读器（如 NVDA / VoiceOver）走到「姓名」输入框，听它报出的名称是否与页面上看到的标签一致——本项目未做任何真机辅助技术测试。',
+  keyboard:
+    '键盘焦点实验：在其它浏览器与真实屏幕阅读器组合下复走一遍焦点播报；你在本机确认过看得见，不能代替这些环境下的结果。',
+}
 
 export const UNCHECKED_SCOPE = [
   '整站符合性：三个实验各自只覆盖示例组件上的少数成功标准，不构成整站结论。',
@@ -91,6 +119,8 @@ export interface ExperimentReportView {
   scope: string
   limits: string[]
   manualCheck: string
+  /** 本实验内已由你本人确认过的人工观察；没有则为 null */
+  manualDone: string | null
   labHash: string
   labName: string
   progress: ExperimentProgress
@@ -100,7 +130,12 @@ export interface ReportModel {
   generatedAt: string
   summary: LedgerSummary
   conclusions: string[]
+  /** 实验内还等着你做的人工观察 */
   pendingManual: string[]
+  /** 实验内你已经做完并确认过的人工观察 */
+  confirmedManual: string[]
+  /** 与确认状态无关、建议在真实辅助技术 / 真实设备场景补做的验证 */
+  extraVerification: string[]
   experiments: ExperimentReportView[]
   statements: {
     nonCertification: string
@@ -152,6 +187,7 @@ function notRecordedView(
     scope,
     limits: ['本次会话没有运行该实验，因此没有任何结论可以引用。'],
     manualCheck: '需要先完成实验，再按上面的项目人工验证。',
+    manualDone: null,
     labHash,
     labName,
     progress: { inspected: false, repairApplied: false, reVerified: false, manualConfirmed: false },
@@ -396,7 +432,10 @@ function keyboardView(ledger: LedgerState, record: KeyboardRecord | null): Exper
       language: 'css',
       code: `/* 修复前（缺陷态） */\n${record.beforeCss}\n\n/* 修复后 */\n${record.afterCss}`,
     },
-    manualCheck: '只用 Tab 依次走到三个示例按钮，确认每一处都能看出焦点在哪；这一步无法由程序代替。',
+    manualCheck: record.manualConfirmed
+      ? '本实验内的 Tab 观察你已经确认过；仍建议在其它浏览器与真实屏幕阅读器组合下复走一遍——那不是本机确认能代替的。'
+      : '只用 Tab 依次走到三个示例按钮，确认每一处都能看出焦点在哪；这一步无法由程序代替。',
+    manualDone: record.manualConfirmed ? IN_LAB_MANUAL.keyboard.done : null,
     progress: progressOf('keyboard', ledger),
   }
 }
@@ -406,21 +445,27 @@ function buildConclusions(summary: LedgerSummary): string[] {
     `本次会话在 ${summary.experimentCount} 个实验里登记了 ${summary.recordedCount} 个实验的结果；未登记的实验在下方标为「未记录」。`,
     `已实际执行修复：${summary.repairAppliedCount} 个实验（色彩应用修复 / 表单换上有 for 的 label / 焦点规则换成带 outline 的 :focus-visible）。`,
     `已进行修复后复核（含人工键盘体验）：${summary.reVerifiedCount} 个实验。`,
-    `人工确认：${summary.manualConfirmedCount} 个实验（目前只有键盘焦点实验要求本人确认）。`,
+    `人工确认：${summary.manualConfirmedCount} 个实验由你本人点过确认。三个实验里只有键盘焦点实验提供这个入口，且点过确认只代表你在那台设备上看过，不等于做过屏幕阅读器或整站验证。`,
     '这里不给总分、也不给百分比，更不给「整体合规」这种结论——三个实验各自只覆盖少数成功标准，剩余判断仍需要人来做。',
   ]
 }
 
 export function buildReportModel(ledger: LedgerState, generatedAt: Date): ReportModel {
   const summary = summarizeLedger(ledger)
-  const pendingManual = EXPERIMENT_KEYS.reduce<string[]>((items, key) => {
-    const progress = progressOf(key, ledger)
-    if (!progress.inspected) return items
-    if (key === 'keyboard' && !progress.manualConfirmed) {
-      return [...items, '键盘焦点实验：你还没有点「我已完成观察」，也没有走完修复前后的两轮键盘体验。']
+  const inspectedKeys = EXPERIMENT_KEYS.filter((key) => progressOf(key, ledger).inspected)
+
+  // 三条清单各自只装自己那一类：确认过的项从「待完成」移到「已完成」，额外验证永远另列。
+  const pendingManual: string[] = []
+  const confirmedManual: string[] = []
+  for (const key of inspectedKeys) {
+    const item = IN_LAB_MANUAL[key]
+    if (key === 'keyboard' && progressOf(key, ledger).manualConfirmed) {
+      if (item.done !== null) confirmedManual.push(item.done)
+    } else if (item.pending !== null) {
+      pendingManual.push(item.pending)
     }
-    return [...items, MANUAL_VERIFICATION_ITEMS[EXPERIMENT_KEYS.indexOf(key)]]
-  }, [])
+  }
+  const extraVerification = inspectedKeys.map((key) => EXTRA_VERIFICATION_ITEMS[key])
 
   const experiments: ExperimentReportView[] = [
     contrastView(ledger, ledger.contrast),
@@ -433,6 +478,8 @@ export function buildReportModel(ledger: LedgerState, generatedAt: Date): Report
     summary,
     conclusions: buildConclusions(summary),
     pendingManual,
+    confirmedManual,
+    extraVerification,
     experiments,
     statements: {
       nonCertification: NON_CERTIFICATION_STATEMENT,
@@ -447,6 +494,47 @@ export function buildReportModel(ledger: LedgerState, generatedAt: Date): Report
 
 function pad(value: number): string {
   return String(value).padStart(2, '0')
+}
+
+export interface ManualVerificationGroup {
+  heading: string
+  note: string
+  items: string[]
+}
+
+/** 页面与 Markdown 共用同一份分组与计数：标题里的数字就是下面列出的条目数 */
+export function manualVerificationGroups(model: ReportModel): ManualVerificationGroup[] {
+  return [
+    {
+      heading: `实验内仍待你本人完成的观察（${model.pendingManual.length} 项）`,
+      note: '这些属于实验范围内、要你自己看一眼的判断。产品没有记录入口的（如色彩主观可读性），会一直留在这一栏。',
+      items: model.pendingManual,
+    },
+    {
+      heading: `实验内已由你确认完成的观察（${model.confirmedManual.length} 项）`,
+      note: '下面这些不再出现在待完成清单里；确认只对你本机那一次体验负责，不延伸到屏幕阅读器或整站。',
+      items: model.confirmedManual,
+    },
+    {
+      heading: `建议额外进行的辅助技术与真实场景验证（${model.extraVerification.length} 项）`,
+      note: '这些都不是点一下按钮就能算完成的：本项目没有真机辅助技术测试环境，也没有做过整站符合性判断。',
+      items: model.extraVerification,
+    },
+  ]
+}
+
+export function manualVerificationMarkdownLines(model: ReportModel): string[] {
+  if (!model.hasRecords) {
+    return ['- 本次会话没有已记录的实验，暂无可引用的人工验证项。', '']
+  }
+  return manualVerificationGroups(model).flatMap((group) => [
+    `#### ${group.heading}`,
+    '',
+    ...(group.items.length > 0 ? group.items.map((line) => `- ${line}`) : ['- 当前没有条目。']),
+    '',
+    `> ${group.note}`,
+    '',
+  ])
 }
 
 export function formatDateTime(date: Date): string {
@@ -476,10 +564,9 @@ export function renderReportMarkdown(model: ReportModel): string {
     '',
     `> 「已进行修复后复核」这一列怎么数：${model.statements.reVerifiedHelp}`,
     '',
-    '### 需要人工验证的项目',
+    '### 人工验证的三种状态',
     '',
-    ...(model.pendingManual.length > 0 ? model.pendingManual.map((line) => `- ${line}`) : ['- 本次会话没有已记录的实验，暂无可引用的人工验证项。']),
-    '',
+    ...manualVerificationMarkdownLines(model),
     `> ${model.statements.sessionScope}`,
     '',
     `> ${model.statements.snapshot}`,
@@ -509,6 +596,9 @@ export function renderReportMarkdown(model: ReportModel): string {
     }
 
     parts.push('未覆盖范围：', '', ...experiment.limits.map((line) => `- ${line}`), '')
+    if (experiment.manualDone) {
+      parts.push(`实验内已确认：${experiment.manualDone}`, '')
+    }
     parts.push(`需人工验证：${experiment.manualCheck}`, '', `再验证入口：${experiment.labHash}（${experiment.labName}）`, '')
   }
 

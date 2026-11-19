@@ -1,0 +1,58 @@
+{
+  "ua": "Edg/157.0.4341.60",
+  "target": "http://127.0.0.1:62518/index.html",
+  "readings": {
+    "homeH1": "让网页的障碍， 看得见、改得掉。",
+    "home320cta": {
+      "top": 499,
+      "inFold": true,
+      "innerHeight": 568
+    },
+    "contrastBefore": {
+      "ratio": "4.48:1",
+      "verdict": "未达 AA"
+    },
+    "contrastSuggest": [
+      "当配色未达普通文本 AA 时，可生成一个把文字色朝纯黑或纯白微调、尽量减小改动、 并用真实 WCAG 计算复核达标后的建议色。只调整文字颜色，背景保持你选的颜色。这是确定性算法，不是全局最优、也不保证人眼感知差异最小。",
+      "建议文字颜色建议 · 尚未应用",
+      "把文字色从 #777777 调整为 #767676，对比度由 4.48:1 提升到 4.54:1。本次仅调整文字颜色，未改变背景。",
+      "两侧使用同一背景与同一句示例文字，只有文字颜色随方案变化。 右侧为「建议修复后」，尚未应用到上方配色，仅作预览。",
+      "建议修复后"
+    ],
+    "contrastAfter": {
+      "ratio": "4.54:1",
+      "verdict": "达到 AA"
+    },
+    "formBefore": {
+      "hasMissingLabel": true,
+      "passEmail": true
+    },
+    "formAfter": {
+      "inputLabels": 1,
+      "zeroIssue": true
+    },
+    "keyboardBrokenFocus": {
+      "label": "查看详情",
+      "outline": "none 3px",
+      "focusVisible": true
+    },
+    "keyboardFixedFocus": {
+      "label": "查看详情",
+      "outline": "solid 3px rgb(67, 56, 202) offset 3px",
+      "focusVisible": true
+    },
+    "reportStats": {
+      "已记录 / 总实验数": "3 / 3",
+      "已实际执行修复的实验数": "3 / 3",
+      "已进行修复后复核（含人工键盘体验）的实验数": "3 / 3",
+      "实验内仍待你本人完成的观察": "1 项",
+      "建议额外进行的辅助技术验证": "3 项"
+    },
+    "reportGroups": [
+      "实验内仍待你本人完成的观察（1 项）",
+      "实验内已由你确认完成的观察（1 项）",
+      "建议额外进行的辅助技术与真实场景验证（3 项）"
+    ],
+    "reportScrollY": 1058
+  }
+}

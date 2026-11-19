@@ -1,0 +1,1267 @@
+{
+  "ua": "Edg/157.0.4341.60",
+  "target": "http://127.0.0.1:64219/index.html",
+  "layout": [
+    {
+      "route": "#/",
+      "width": 320,
+      "height": 568,
+      "mobile": true,
+      "overflowPx": 0,
+      "offenders": [],
+      "headerH": 165,
+      "navRows": 2,
+      "navMinH": 44,
+      "allNavH": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "h1BelowHeader": true,
+      "smallTargets": [],
+      "presBreak": 0,
+      "presScroll": 0,
+      "presTotal": 0,
+      "ctaTop": 499,
+      "ctaInFold": true,
+      "vh": 568
+    },
+    {
+      "route": "#/",
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "overflowPx": 0,
+      "offenders": [],
+      "headerH": 165,
+      "navRows": 2,
+      "navMinH": 44,
+      "allNavH": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "h1BelowHeader": true,
+      "smallTargets": [],
+      "presBreak": 0,
+      "presScroll": 0,
+      "presTotal": 0,
+      "ctaTop": 470,
+      "ctaInFold": true,
+      "vh": 844
+    },
+    {
+      "route": "#/",
+      "width": 768,
+      "height": 1024,
+      "mobile": false,
+      "overflowPx": -15,
+      "offenders": [],
+      "headerH": 65,
+      "navRows": 1,
+      "navMinH": 44,
+      "allNavH": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "h1BelowHeader": true,
+      "smallTargets": [],
+      "presBreak": 0,
+      "presScroll": 0,
+      "presTotal": 0,
+      "ctaTop": 356,
+      "ctaInFold": true,
+      "vh": 1024
+    },
+    {
+      "route": "#/",
+      "width": 1440,
+      "height": 900,
+      "mobile": false,
+      "overflowPx": -15,
+      "offenders": [],
+      "headerH": 65,
+      "navRows": 1,
+      "navMinH": 44,
+      "allNavH": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "h1BelowHeader": true,
+      "smallTargets": [],
+      "presBreak": 0,
+      "presScroll": 0,
+      "presTotal": 0,
+      "ctaTop": 408,
+      "ctaInFold": true,
+      "vh": 900
+    },
+    {
+      "route": "#/contrast",
+      "width": 320,
+      "height": 568,
+      "mobile": true,
+      "overflowPx": 0,
+      "offenders": [],
+      "headerH": 165,
+      "navRows": 2,
+      "navMinH": 44,
+      "allNavH": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "h1BelowHeader": true,
+      "smallTargets": [],
+      "presBreak": 0,
+      "presScroll": 0,
+      "presTotal": 0,
+      "ctaTop": null,
+      "ctaInFold": null,
+      "vh": 568
+    },
+    {
+      "route": "#/contrast",
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "overflowPx": 0,
+      "offenders": [],
+      "headerH": 165,
+      "navRows": 2,
+      "navMinH": 44,
+      "allNavH": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "h1BelowHeader": true,
+      "smallTargets": [],
+      "presBreak": 0,
+      "presScroll": 0,
+      "presTotal": 0,
+      "ctaTop": null,
+      "ctaInFold": null,
+      "vh": 844
+    },
+    {
+      "route": "#/contrast",
+      "width": 768,
+      "height": 1024,
+      "mobile": false,
+      "overflowPx": -15,
+      "offenders": [],
+      "headerH": 65,
+      "navRows": 1,
+      "navMinH": 44,
+      "allNavH": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "h1BelowHeader": true,
+      "smallTargets": [],
+      "presBreak": 0,
+      "presScroll": 0,
+      "presTotal": 0,
+      "ctaTop": null,
+      "ctaInFold": null,
+      "vh": 1024
+    },
+    {
+      "route": "#/contrast",
+      "width": 1440,
+      "height": 900,
+      "mobile": false,
+      "overflowPx": -15,
+      "offenders": [],
+      "headerH": 65,
+      "navRows": 1,
+      "navMinH": 44,
+      "allNavH": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "h1BelowHeader": true,
+      "smallTargets": [],
+      "presBreak": 0,
+      "presScroll": 0,
+      "presTotal": 0,
+      "ctaTop": null,
+      "ctaInFold": null,
+      "vh": 900
+    },
+    {
+      "route": "#/form-label",
+      "width": 320,
+      "height": 568,
+      "mobile": true,
+      "overflowPx": 0,
+      "offenders": [],
+      "headerH": 165,
+      "navRows": 2,
+      "navMinH": 44,
+      "allNavH": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "h1BelowHeader": true,
+      "smallTargets": [],
+      "presBreak": 0,
+      "presScroll": 2,
+      "presTotal": 2,
+      "ctaTop": null,
+      "ctaInFold": null,
+      "vh": 568
+    },
+    {
+      "route": "#/form-label",
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "overflowPx": 0,
+      "offenders": [],
+      "headerH": 165,
+      "navRows": 2,
+      "navMinH": 44,
+      "allNavH": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "h1BelowHeader": true,
+      "smallTargets": [],
+      "presBreak": 0,
+      "presScroll": 2,
+      "presTotal": 2,
+      "ctaTop": null,
+      "ctaInFold": null,
+      "vh": 844
+    },
+    {
+      "route": "#/form-label",
+      "width": 768,
+      "height": 1024,
+      "mobile": false,
+      "overflowPx": -15,
+      "offenders": [],
+      "headerH": 65,
+      "navRows": 1,
+      "navMinH": 44,
+      "allNavH": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "h1BelowHeader": true,
+      "smallTargets": [],
+      "presBreak": 0,
+      "presScroll": 2,
+      "presTotal": 2,
+      "ctaTop": null,
+      "ctaInFold": null,
+      "vh": 1024
+    },
+    {
+      "route": "#/form-label",
+      "width": 1440,
+      "height": 900,
+      "mobile": false,
+      "overflowPx": -15,
+      "offenders": [],
+      "headerH": 65,
+      "navRows": 1,
+      "navMinH": 44,
+      "allNavH": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "h1BelowHeader": true,
+      "smallTargets": [],
+      "presBreak": 0,
+      "presScroll": 2,
+      "presTotal": 2,
+      "ctaTop": null,
+      "ctaInFold": null,
+      "vh": 900
+    },
+    {
+      "route": "#/keyboard",
+      "width": 320,
+      "height": 568,
+      "mobile": true,
+      "overflowPx": 0,
+      "offenders": [],
+      "headerH": 165,
+      "navRows": 2,
+      "navMinH": 44,
+      "allNavH": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "h1BelowHeader": true,
+      "smallTargets": [],
+      "presBreak": 0,
+      "presScroll": 4,
+      "presTotal": 4,
+      "ctaTop": null,
+      "ctaInFold": null,
+      "vh": 568
+    },
+    {
+      "route": "#/keyboard",
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "overflowPx": 0,
+      "offenders": [],
+      "headerH": 165,
+      "navRows": 2,
+      "navMinH": 44,
+      "allNavH": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "h1BelowHeader": true,
+      "smallTargets": [],
+      "presBreak": 0,
+      "presScroll": 1,
+      "presTotal": 4,
+      "ctaTop": null,
+      "ctaInFold": null,
+      "vh": 844
+    },
+    {
+      "route": "#/keyboard",
+      "width": 768,
+      "height": 1024,
+      "mobile": false,
+      "overflowPx": -15,
+      "offenders": [],
+      "headerH": 65,
+      "navRows": 1,
+      "navMinH": 44,
+      "allNavH": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "h1BelowHeader": true,
+      "smallTargets": [],
+      "presBreak": 0,
+      "presScroll": 0,
+      "presTotal": 4,
+      "ctaTop": null,
+      "ctaInFold": null,
+      "vh": 1024
+    },
+    {
+      "route": "#/keyboard",
+      "width": 1440,
+      "height": 900,
+      "mobile": false,
+      "overflowPx": -15,
+      "offenders": [],
+      "headerH": 65,
+      "navRows": 1,
+      "navMinH": 44,
+      "allNavH": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "h1BelowHeader": true,
+      "smallTargets": [],
+      "presBreak": 0,
+      "presScroll": 0,
+      "presTotal": 4,
+      "ctaTop": null,
+      "ctaInFold": null,
+      "vh": 900
+    },
+    {
+      "route": "#/report",
+      "width": 320,
+      "height": 568,
+      "mobile": true,
+      "overflowPx": 0,
+      "offenders": [],
+      "headerH": 165,
+      "navRows": 2,
+      "navMinH": 44,
+      "allNavH": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "h1BelowHeader": true,
+      "smallTargets": [],
+      "presBreak": 0,
+      "presScroll": 0,
+      "presTotal": 0,
+      "ctaTop": null,
+      "ctaInFold": null,
+      "vh": 568
+    },
+    {
+      "route": "#/report",
+      "width": 390,
+      "height": 844,
+      "mobile": true,
+      "overflowPx": 0,
+      "offenders": [],
+      "headerH": 165,
+      "navRows": 2,
+      "navMinH": 44,
+      "allNavH": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "h1BelowHeader": true,
+      "smallTargets": [],
+      "presBreak": 0,
+      "presScroll": 0,
+      "presTotal": 0,
+      "ctaTop": null,
+      "ctaInFold": null,
+      "vh": 844
+    },
+    {
+      "route": "#/report",
+      "width": 768,
+      "height": 1024,
+      "mobile": false,
+      "overflowPx": -15,
+      "offenders": [],
+      "headerH": 65,
+      "navRows": 1,
+      "navMinH": 44,
+      "allNavH": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "h1BelowHeader": true,
+      "smallTargets": [],
+      "presBreak": 0,
+      "presScroll": 0,
+      "presTotal": 0,
+      "ctaTop": null,
+      "ctaInFold": null,
+      "vh": 1024
+    },
+    {
+      "route": "#/report",
+      "width": 1440,
+      "height": 900,
+      "mobile": false,
+      "overflowPx": -15,
+      "offenders": [],
+      "headerH": 65,
+      "navRows": 1,
+      "navMinH": 44,
+      "allNavH": [
+        44,
+        44,
+        44,
+        44,
+        44
+      ],
+      "h1BelowHeader": true,
+      "smallTargets": [],
+      "presBreak": 0,
+      "presScroll": 0,
+      "presTotal": 0,
+      "ctaTop": null,
+      "ctaInFold": null,
+      "vh": 900
+    }
+  ],
+  "keyboard": [
+    {
+      "page": "#/",
+      "firstTab": {
+        "tag": "a",
+        "label": "跳转到主要内容",
+        "outline": "solid 3px 2px",
+        "cls": "sr-only rounded-lg bg-indigo-700 px-4 py"
+      },
+      "afterSkipEnter": {
+        "id": "main",
+        "tag": "main",
+        "hash": "#/",
+        "h1": "让网页的障碍，看得见、改得掉。"
+      }
+    },
+    {
+      "page": "#/",
+      "stops": [
+        {
+          "tag": "a",
+          "label": "跳转到主要内容",
+          "outline": "solid 3px 2px",
+          "cls": "sr-only rounded-lg bg-indigo-700 px-4 py"
+        },
+        {
+          "tag": "a",
+          "label": "AccessLab 无障碍实验室",
+          "outline": "solid 3px 2px",
+          "cls": "flex min-h-11 items-center gap-2.5 round"
+        },
+        {
+          "tag": "a",
+          "label": "首页",
+          "outline": "solid 3px 2px",
+          "cls": "flex min-h-11 items-center rounded-lg px"
+        },
+        {
+          "tag": "a",
+          "label": "色彩对比度实验",
+          "outline": "solid 3px 2px",
+          "cls": "flex min-h-11 items-center rounded-lg px"
+        },
+        {
+          "tag": "a",
+          "label": "表单标签实验",
+          "outline": "solid 3px 2px",
+          "cls": "flex min-h-11 items-center rounded-lg px"
+        },
+        {
+          "tag": "a",
+          "label": "键盘焦点实验",
+          "outline": "solid 3px 2px",
+          "cls": "flex min-h-11 items-center rounded-lg px"
+        },
+        {
+          "tag": "a",
+          "label": "成果报告",
+          "outline": "solid 3px 2px",
+          "cls": "flex min-h-11 items-center rounded-lg px"
+        },
+        {
+          "tag": "a",
+          "label": "开始第一个实验",
+          "outline": "solid 3px 2px",
+          "cls": "inline-flex min-h-12 items-center justif"
+        },
+        {
+          "tag": "a",
+          "label": "查看另外两个实验",
+          "outline": "solid 3px 2px",
+          "cls": "inline-flex min-h-11 items-center text-s"
+        },
+        {
+          "tag": "a",
+          "label": "自己动手改一对颜色",
+          "outline": "solid 3px 2px",
+          "cls": "mt-4 inline-flex min-h-11 items-center g"
+        },
+        {
+          "tag": "a",
+          "label": "进入实验 · 色彩对比度实验",
+          "outline": "solid 3px 2px",
+          "cls": "mt-5 inline-flex min-h-11 w-fit items-ce"
+        },
+        {
+          "tag": "a",
+          "label": "进入实验 · 表单标签无障碍实验",
+          "outline": "solid 3px 2px",
+          "cls": "mt-5 inline-flex min-h-11 w-fit items-ce"
+        },
+        {
+          "tag": "a",
+          "label": "进入实验 · 键盘焦点实验",
+          "outline": "solid 3px 2px",
+          "cls": "mt-5 inline-flex min-h-11 w-fit items-ce"
+        },
+        {
+          "tag": "a",
+          "label": "统一成果报告",
+          "outline": "solid 3px 2px",
+          "cls": "mx-1 inline-flex min-h-11 items-center g"
+        }
+      ],
+      "distinct": 14,
+      "noRing": 0,
+      "shiftTabBack": {
+        "tag": "a",
+        "label": "进入实验 · 键盘焦点实验",
+        "outline": "solid 3px 2px",
+        "cls": "mt-5 inline-flex min-h-11 w-fit items-ce"
+      }
+    },
+    {
+      "page": "#/contrast",
+      "stops": [
+        {
+          "tag": "a",
+          "label": "返回首页",
+          "outline": "solid 3px 2px",
+          "cls": "inline-flex min-h-11 items-center text-s"
+        },
+        {
+          "tag": "input",
+          "label": "#777777",
+          "outline": "solid 3px 2px",
+          "cls": "size-11 shrink-0 cursor-pointer rounded-"
+        },
+        {
+          "tag": "input",
+          "label": "#777777",
+          "outline": "solid 3px 2px",
+          "cls": "min-h-11 w-full rounded-lg border border"
+        },
+        {
+          "tag": "input",
+          "label": "#ffffff",
+          "outline": "solid 3px 2px",
+          "cls": "size-11 shrink-0 cursor-pointer rounded-"
+        },
+        {
+          "tag": "input",
+          "label": "#ffffff",
+          "outline": "solid 3px 2px",
+          "cls": "min-h-11 w-full rounded-lg border border"
+        },
+        {
+          "tag": "button",
+          "label": "重置为默认颜色",
+          "outline": "solid 3px 2px",
+          "cls": "mt-4 inline-flex min-h-11 w-full items-c"
+        },
+        {
+          "tag": "summary",
+          "label": "展开查看：本次没有检查的内容",
+          "outline": "solid 3px 2px",
+          "cls": "cursor-pointer rounded-lg px-2 py-3 text"
+        },
+        {
+          "tag": "button",
+          "label": "生成修复建议",
+          "outline": "solid 3px 2px",
+          "cls": "mt-4 inline-flex min-h-11 items-center j"
+        },
+        {
+          "tag": "a",
+          "label": "进入表单标签实验",
+          "outline": "solid 3px 2px",
+          "cls": "mt-4 inline-flex min-h-11 items-center j"
+        },
+        {
+          "tag": "body",
+          "label": "跳转到主要内容 AccessLab 无障碍实验室 首页 色彩",
+          "outline": "none 3px 0px",
+          "cls": ""
+        },
+        {
+          "tag": "a",
+          "label": "跳转到主要内容",
+          "outline": "solid 3px 2px",
+          "cls": "sr-only rounded-lg bg-indigo-700 px-4 py"
+        },
+        {
+          "tag": "a",
+          "label": "AccessLab 无障碍实验室",
+          "outline": "solid 3px 2px",
+          "cls": "flex min-h-11 items-center gap-2.5 round"
+        },
+        {
+          "tag": "a",
+          "label": "首页",
+          "outline": "solid 3px 2px",
+          "cls": "flex min-h-11 items-center rounded-lg px"
+        },
+        {
+          "tag": "a",
+          "label": "色彩对比度实验",
+          "outline": "solid 3px 2px",
+          "cls": "flex min-h-11 items-center rounded-lg px"
+        }
+      ],
+      "distinct": 12,
+      "noRing": 1,
+      "shiftTabBack": {
+        "tag": "a",
+        "label": "首页",
+        "outline": "solid 3px 2px",
+        "cls": "flex min-h-11 items-center rounded-lg px"
+      }
+    },
+    {
+      "page": "#/form-label",
+      "stops": [
+        {
+          "tag": "a",
+          "label": "返回首页",
+          "outline": "solid 3px 2px",
+          "cls": "inline-flex min-h-11 items-center text-s"
+        },
+        {
+          "tag": "input",
+          "label": "student-name",
+          "outline": "solid 3px 2px",
+          "cls": "mt-1.5 min-h-11 w-full rounded-lg border"
+        },
+        {
+          "tag": "input",
+          "label": "student-email",
+          "outline": "solid 3px 2px",
+          "cls": "mt-1.5 min-h-11 w-full rounded-lg border"
+        },
+        {
+          "tag": "button",
+          "label": "提交登记（演示）",
+          "outline": "solid 3px 2px",
+          "cls": "inline-flex min-h-11 w-full items-center"
+        },
+        {
+          "tag": "button",
+          "label": "重新检测",
+          "outline": "solid 3px 2px",
+          "cls": "inline-flex min-h-11 items-center justif"
+        },
+        {
+          "tag": "summary",
+          "label": "展开查看：本次没有检查的内容",
+          "outline": "solid 3px 2px",
+          "cls": "cursor-pointer rounded-lg px-2 py-3 text"
+        },
+        {
+          "tag": "button",
+          "label": "修复标签关联",
+          "outline": "solid 3px 2px",
+          "cls": "inline-flex min-h-11 items-center justif"
+        },
+        {
+          "tag": "button",
+          "label": "重置实验",
+          "outline": "solid 3px 2px",
+          "cls": "inline-flex min-h-11 items-center justif"
+        },
+        {
+          "tag": "pre",
+          "label": "<form> <!-- 「姓名」这几个字确实在页面上，但它只",
+          "outline": "solid 3px 2px",
+          "cls": "mt-3 min-w-0 overflow-x-auto rounded-xl "
+        },
+        {
+          "tag": "pre",
+          "label": "<form> <!-- 可见文字与输入框通过 for / i",
+          "outline": "solid 3px 2px",
+          "cls": "mt-3 min-w-0 overflow-x-auto rounded-xl "
+        },
+        {
+          "tag": "button",
+          "label": "复制修复后的 HTML",
+          "outline": "solid 3px 2px",
+          "cls": "mt-4 inline-flex min-h-11 items-center j"
+        },
+        {
+          "tag": "a",
+          "label": "进入键盘焦点实验",
+          "outline": "solid 3px 2px",
+          "cls": "mt-4 inline-flex min-h-11 items-center j"
+        },
+        {
+          "tag": "body",
+          "label": "跳转到主要内容 AccessLab 无障碍实验室 首页 色彩",
+          "outline": "none 3px 0px",
+          "cls": ""
+        },
+        {
+          "tag": "a",
+          "label": "跳转到主要内容",
+          "outline": "solid 3px 2px",
+          "cls": "sr-only rounded-lg bg-indigo-700 px-4 py"
+        }
+      ],
+      "distinct": 14,
+      "noRing": 1,
+      "shiftTabBack": {
+        "tag": "body",
+        "label": "跳转到主要内容 AccessLab 无障碍实验室 首页 色彩",
+        "outline": "none 3px 0px",
+        "cls": ""
+      }
+    },
+    {
+      "page": "#/keyboard",
+      "stops": [
+        {
+          "tag": "a",
+          "label": "返回首页",
+          "outline": "solid 3px 2px",
+          "cls": "inline-flex min-h-11 items-center text-s"
+        },
+        {
+          "tag": "button",
+          "label": "查看详情",
+          "outline": "none 3px 2px",
+          "cls": "kf-demo-btn kf-demo-btn--broken"
+        },
+        {
+          "tag": "button",
+          "label": "保存选择",
+          "outline": "none 3px 2px",
+          "cls": "kf-demo-btn kf-demo-btn--broken"
+        },
+        {
+          "tag": "button",
+          "label": "返回上一步",
+          "outline": "none 3px 2px",
+          "cls": "kf-demo-btn kf-demo-btn--broken"
+        },
+        {
+          "tag": "button",
+          "label": "重新读取真实 DOM",
+          "outline": "solid 3px 2px",
+          "cls": "inline-flex min-h-11 items-center justif"
+        },
+        {
+          "tag": "button",
+          "label": "修复焦点指示",
+          "outline": "solid 3px 2px",
+          "cls": "inline-flex min-h-11 items-center justif"
+        },
+        {
+          "tag": "button",
+          "label": "重置实验",
+          "outline": "solid 3px 2px",
+          "cls": "inline-flex min-h-11 items-center justif"
+        },
+        {
+          "tag": "button",
+          "label": "复制修复后的 CSS",
+          "outline": "solid 3px 2px",
+          "cls": "mt-4 inline-flex min-h-11 items-center j"
+        },
+        {
+          "tag": "summary",
+          "label": "展开查看：本页实验区实际注入的完整样式表",
+          "outline": "solid 3px 2px",
+          "cls": "cursor-pointer rounded-lg px-2 py-3 text"
+        },
+        {
+          "tag": "a",
+          "label": "查看统一成果报告",
+          "outline": "solid 3px 2px",
+          "cls": "mt-4 inline-flex min-h-11 items-center j"
+        },
+        {
+          "tag": "body",
+          "label": "跳转到主要内容 AccessLab 无障碍实验室 首页 色彩",
+          "outline": "none 3px 0px",
+          "cls": ""
+        },
+        {
+          "tag": "a",
+          "label": "跳转到主要内容",
+          "outline": "solid 3px 2px",
+          "cls": "sr-only rounded-lg bg-indigo-700 px-4 py"
+        },
+        {
+          "tag": "a",
+          "label": "AccessLab 无障碍实验室",
+          "outline": "solid 3px 2px",
+          "cls": "flex min-h-11 items-center gap-2.5 round"
+        },
+        {
+          "tag": "a",
+          "label": "首页",
+          "outline": "solid 3px 2px",
+          "cls": "flex min-h-11 items-center rounded-lg px"
+        }
+      ],
+      "distinct": 14,
+      "noRing": 4,
+      "shiftTabBack": {
+        "tag": "a",
+        "label": "AccessLab 无障碍实验室",
+        "outline": "solid 3px 2px",
+        "cls": "flex min-h-11 items-center gap-2.5 round"
+      }
+    },
+    {
+      "page": "#/report",
+      "stops": [
+        {
+          "tag": "a",
+          "label": "返回首页",
+          "outline": "solid 3px 2px",
+          "cls": "inline-flex min-h-11 items-center text-s"
+        },
+        {
+          "tag": "a",
+          "label": "色彩对比度实验",
+          "outline": "solid 3px 2px",
+          "cls": "inline-flex min-h-11 items-center gap-1."
+        },
+        {
+          "tag": "a",
+          "label": "表单标签实验",
+          "outline": "solid 3px 2px",
+          "cls": "inline-flex min-h-11 items-center gap-1."
+        },
+        {
+          "tag": "a",
+          "label": "键盘焦点实验",
+          "outline": "solid 3px 2px",
+          "cls": "inline-flex min-h-11 items-center gap-1."
+        },
+        {
+          "tag": "summary",
+          "label": "展开查看：这一项没有检查的内容（1 条）",
+          "outline": "solid 3px 2px",
+          "cls": "cursor-pointer rounded-lg px-2 py-2.5 te"
+        },
+        {
+          "tag": "a",
+          "label": "回到色彩对比度实验",
+          "outline": "solid 3px 2px",
+          "cls": "mt-4 inline-flex min-h-11 items-center g"
+        },
+        {
+          "tag": "summary",
+          "label": "展开查看：这一项没有检查的内容（1 条）",
+          "outline": "solid 3px 2px",
+          "cls": "cursor-pointer rounded-lg px-2 py-2.5 te"
+        },
+        {
+          "tag": "a",
+          "label": "回到表单标签实验",
+          "outline": "solid 3px 2px",
+          "cls": "mt-4 inline-flex min-h-11 items-center g"
+        },
+        {
+          "tag": "summary",
+          "label": "展开查看：这一项没有检查的内容（1 条）",
+          "outline": "solid 3px 2px",
+          "cls": "cursor-pointer rounded-lg px-2 py-2.5 te"
+        },
+        {
+          "tag": "a",
+          "label": "回到键盘焦点实验",
+          "outline": "solid 3px 2px",
+          "cls": "mt-4 inline-flex min-h-11 items-center g"
+        },
+        {
+          "tag": "summary",
+          "label": "展开查看报告全文（Markdown 原文，可手动全选复制）",
+          "outline": "solid 3px 2px",
+          "cls": "cursor-pointer text-sm font-semibold tex"
+        },
+        {
+          "tag": "summary",
+          "label": "展开查看：整份报告没有检查的范围",
+          "outline": "solid 3px 2px",
+          "cls": "cursor-pointer text-sm font-semibold tex"
+        },
+        {
+          "tag": "body",
+          "label": "跳转到主要内容 AccessLab 无障碍实验室 首页 色彩",
+          "outline": "none 3px 0px",
+          "cls": ""
+        },
+        {
+          "tag": "a",
+          "label": "跳转到主要内容",
+          "outline": "solid 3px 2px",
+          "cls": "sr-only rounded-lg bg-indigo-700 px-4 py"
+        }
+      ],
+      "distinct": 12,
+      "noRing": 1,
+      "shiftTabBack": {
+        "tag": "body",
+        "label": "跳转到主要内容 AccessLab 无障碍实验室 首页 色彩",
+        "outline": "none 3px 0px",
+        "cls": ""
+      }
+    },
+    {
+      "page": "#/keyboard demoDefectScope",
+      "demoLanding": [
+        {
+          "tag": "button",
+          "label": "查看详情",
+          "outline": "none 3px 2px",
+          "cls": "kf-demo-btn kf-demo-btn--broken"
+        },
+        {
+          "tag": "button",
+          "label": "保存选择",
+          "outline": "none 3px 2px",
+          "cls": "kf-demo-btn kf-demo-btn--broken"
+        },
+        {
+          "tag": "button",
+          "label": "返回上一步",
+          "outline": "none 3px 2px",
+          "cls": "kf-demo-btn kf-demo-btn--broken"
+        }
+      ],
+      "shellRingSample": [
+        {
+          "tag": "a",
+          "label": "返回首页",
+          "outline": "solid 3px 2px",
+          "cls": "inline-flex min-h-11 items-center text-s"
+        },
+        {
+          "tag": "button",
+          "label": "重新读取真实 DOM",
+          "outline": "solid 3px 2px",
+          "cls": "inline-flex min-h-11 items-center justif"
+        },
+        {
+          "tag": "button",
+          "label": "修复焦点指示",
+          "outline": "solid 3px 2px",
+          "cls": "inline-flex min-h-11 items-center justif"
+        },
+        {
+          "tag": "button",
+          "label": "重置实验",
+          "outline": "solid 3px 2px",
+          "cls": "inline-flex min-h-11 items-center justif"
+        },
+        {
+          "tag": "button",
+          "label": "复制修复后的 CSS",
+          "outline": "solid 3px 2px",
+          "cls": "mt-4 inline-flex min-h-11 items-center j"
+        },
+        {
+          "tag": "summary",
+          "label": "展开查看：本页实验区实际注入的完整样式表",
+          "outline": "solid 3px 2px",
+          "cls": "cursor-pointer rounded-lg px-2 py-3 text"
+        }
+      ]
+    }
+  ],
+  "semantics": [
+    {
+      "route": "#/",
+      "h1Count": 1,
+      "headings": [
+        "H1 让网页的障碍， 看得见、改得掉。",
+        "H2 同一句话，只是换个颜色",
+        "H2 三个实验方向",
+        "H3 01色彩对比度实验",
+        "H3 02表单标签无障碍实验",
+        "H3 03键盘焦点实验"
+      ],
+      "skippedLevel": [],
+      "landmarks": "header=1 nav=1 main=1 footer=1",
+      "navName": "主导航",
+      "ariaCurrent": [
+        "page:首页"
+      ],
+      "inputs": [],
+      "unnamed": 0,
+      "statuses": 0,
+      "liveTotal": 0
+    },
+    {
+      "route": "#/contrast",
+      "h1Count": 1,
+      "headings": [
+        "H1 色彩对比度实验",
+        "H2 1. 调整颜色",
+        "H2 2. 实时预览",
+        "H3 图书馆模拟逾期提醒",
+        "H2 3. 检测结果",
+        "H3 本实验检查什么、不检查什么",
+        "H2 4. 智能修复建议",
+        "H2 下一步：让输入框拥有正确的标签"
+      ],
+      "skippedLevel": [],
+      "landmarks": "header=2 nav=1 main=1 footer=1",
+      "navName": "主导航",
+      "ariaCurrent": [
+        "page:色彩对比度实验"
+      ],
+      "inputs": [
+        {
+          "id": "_r_0_-picker",
+          "labels": 0,
+          "ph": 0
+        },
+        {
+          "id": "_r_0_-hex",
+          "labels": 1,
+          "ph": 0
+        },
+        {
+          "id": "_r_1_-picker",
+          "labels": 0,
+          "ph": 0
+        },
+        {
+          "id": "_r_1_-hex",
+          "labels": 1,
+          "ph": 0
+        }
+      ],
+      "unnamed": 0,
+      "statuses": 1,
+      "liveTotal": 1
+    },
+    {
+      "route": "#/form-label",
+      "h1Count": 1,
+      "headings": [
+        "H1 表单标签实验",
+        "H2 1. 看得见输入框，就真的知道该填什么吗？",
+        "H2 2. 真实表单体验",
+        "H2 3. 检测结果",
+        "H3 本实验检查什么、不检查什么",
+        "H2 4. 修复与重新验证",
+        "H2 5. 修复前后 HTML 对比",
+        "H3 修复前（缺陷示例）",
+        "H3 修复后（正确关联）",
+        "H2 下一步：体验键盘焦点"
+      ],
+      "skippedLevel": [],
+      "landmarks": "header=2 nav=1 main=1 footer=1",
+      "navName": "主导航",
+      "ariaCurrent": [
+        "page:表单标签实验"
+      ],
+      "inputs": [
+        {
+          "id": "student-name",
+          "labels": 0,
+          "ph": 1
+        },
+        {
+          "id": "student-email",
+          "labels": 1,
+          "ph": 1
+        }
+      ],
+      "unnamed": 0,
+      "statuses": 0,
+      "liveTotal": 0
+    },
+    {
+      "route": "#/keyboard",
+      "h1Count": 1,
+      "headings": [
+        "H1 键盘焦点实验",
+        "H2 1. 焦点可见为什么是一条硬要求",
+        "H2 2. 请先别用鼠标",
+        "H3 当前候选记录",
+        "H3 已保存列表（0 / 3）",
+        "H2 3. 焦点规则现状与修复",
+        "H3 当前挂在按钮上的焦点规则",
+        "H2 4. 修复前后对比",
+        "H3 修复前：焦点位置难以识别",
+        "H3 修复后：焦点位置清晰可见",
+        "H3 轮廓颜色在各处背景上的实测反差",
+        "H2 5. 人工验证与代码复制",
+        "H2 6. 修复前后 CSS 对比",
+        "H3 修复前（缺陷示例）",
+        "H3 修复后（清晰焦点轮廓）",
+        "H2 本实验检查什么、不检查什么",
+        "H2 下一步：查看统一成果报告"
+      ],
+      "skippedLevel": [],
+      "landmarks": "header=2 nav=1 main=1 footer=1",
+      "navName": "主导航",
+      "ariaCurrent": [
+        "page:键盘焦点实验"
+      ],
+      "inputs": [],
+      "unnamed": 0,
+      "statuses": 0,
+      "liveTotal": 0
+    },
+    {
+      "route": "#/report",
+      "h1Count": 1,
+      "headings": [
+        "H1 统一成果报告",
+        "H2 1. 本次会话总览",
+        "H3 人工验证的三种状态",
+        "H2 各实验的成果记录",
+        "H3 1. 色彩对比度实验",
+        "H4 证据与说明",
+        "H3 2. 表单标签实验",
+        "H4 证据与说明",
+        "H3 3. 键盘焦点实验",
+        "H4 证据与说明",
+        "H2 2. 导出与清空",
+        "H3 清空本次实验记录",
+        "H2 3. 学习提示与重新验证"
+      ],
+      "skippedLevel": [],
+      "landmarks": "header=2 nav=1 main=1 footer=1",
+      "navName": "主导航",
+      "ariaCurrent": [
+        "page:成果报告"
+      ],
+      "inputs": [],
+      "unnamed": 0,
+      "statuses": 1,
+      "liveTotal": 1
+    }
+  ],
+  "flow": {},
+  "liveRegions": {
+    "contrastSuggest": {
+      "count": 1,
+      "changed": []
+    }
+  },
+  "compat": {},
+  "perf": {},
+  "notes": []
+}

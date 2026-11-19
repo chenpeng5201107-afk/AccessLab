@@ -16,6 +16,7 @@ import { ROUTE_HASH } from '../hooks/useHashRoute'
 import {
   NON_CERTIFICATION_STATEMENT,
   buildReportModel,
+  manualVerificationGroups,
   renderReportMarkdown,
   type ExperimentReportView,
   type ReportRow,
@@ -155,6 +156,11 @@ function ExperimentSection({ experiment, order }: { experiment: ExperimentReport
             ))}
           </ul>
         </details>
+        {experiment.manualDone ? (
+          <p className="mt-3 rounded-xl bg-emerald-50 px-3 py-2 font-semibold text-emerald-900 ring-1 ring-inset ring-emerald-700/30">
+            实验内已确认：{experiment.manualDone}
+          </p>
+        ) : null}
         <p className="mt-3 rounded-xl bg-amber-50 px-3 py-2 font-semibold text-amber-900 ring-1 ring-inset ring-amber-700/30">
           仍需你人工验证：{experiment.manualCheck}
         </p>
@@ -305,8 +311,12 @@ export function ReportPage() {
             </dd>
           </div>
           <div className="rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-3">
-            <dt className="text-sm text-slate-600">仍需人工验证的条目</dt>
+            <dt className="text-sm text-slate-600">实验内仍待你本人完成的观察</dt>
             <dd className="mt-1 text-3xl font-bold text-slate-900 tabular-nums">{model.pendingManual.length} 项</dd>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-3">
+            <dt className="text-sm text-slate-600">建议额外进行的辅助技术验证</dt>
+            <dd className="mt-1 text-3xl font-bold text-slate-900 tabular-nums">{model.extraVerification.length} 项</dd>
           </div>
         </dl>
 
@@ -320,11 +330,23 @@ export function ReportPage() {
           ))}
         </ul>
 
-        <h3 className="mt-4 text-sm font-semibold text-slate-900">需要人工验证的项目</h3>
-        {model.pendingManual.length > 0 ? (
-          <ul className="mt-1.5 list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-slate-700">
-            {model.pendingManual.map((item) => (
-              <li key={item}>{item}</li>
+        <h3 className="mt-4 text-sm font-semibold text-slate-900">人工验证的三种状态</h3>
+        {model.hasRecords ? (
+          <ul className="mt-1.5 space-y-3">
+            {manualVerificationGroups(model).map((group) => (
+              <li key={group.heading}>
+                <h4 className="text-sm font-semibold text-slate-900">{group.heading}</h4>
+                {group.items.length > 0 ? (
+                  <ul className="mt-1 list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-slate-700">
+                    {group.items.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-1 text-sm text-slate-600">当前没有条目。</p>
+                )}
+                <p className="mt-1 text-xs leading-relaxed text-slate-600">{group.note}</p>
+              </li>
             ))}
           </ul>
         ) : (

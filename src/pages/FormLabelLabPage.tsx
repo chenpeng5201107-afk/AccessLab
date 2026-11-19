@@ -113,6 +113,9 @@ export function FormLabelLabPage() {
   const [report, setReport] = useState<FormLabelAuditReport | null>(null)
   /** 反馈跟着触发动作走：修复 / 重置 / 重新检测在第 4 节，复制结果在第 5 节代码块旁边 */
   const [notice, setNotice] = useState<{ area: 'fix' | 'code'; text: string } | null>(null)
+  /** 「修复标签关联」点完就换成一行已修复说明：按钮没了，焦点得有人接住 */
+  const fixedLineRef = useRef<HTMLParagraphElement>(null)
+  const pendingFixedFocusRef = useRef(false)
   /** 缺陷态那次检测的摘要：修复后 DOM 已经变了，报告里的「修复前」只能靠它 */
   const beforeSnapshotRef = useRef<IssueSnapshot | null>(null)
   const ledgerSyncedRef = useRef(false)
@@ -149,12 +152,19 @@ export function FormLabelLabPage() {
 
   const handleRepair = () => {
     if (labelFixed) return
+    pendingFixedFocusRef.current = true
     setLabelFixed(true)
     setNotice({
       area: 'fix',
       text: '已把「姓名」换成与输入框正确关联的 label，检测将在新的 DOM 上重新运行。',
     })
   }
+
+  useEffect(() => {
+    if (!pendingFixedFocusRef.current) return
+    pendingFixedFocusRef.current = false
+    fixedLineRef.current?.focus()
+  }, [labelFixed])
 
   const handleReset = () => {
     setLabelFixed(false)
@@ -427,7 +437,11 @@ export function FormLabelLabPage() {
 
         <div className="mt-4 flex flex-wrap items-center gap-3">
           {labelFixed ? (
-            <p className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-900 ring-1 ring-inset ring-emerald-700/30">
+            <p
+              ref={fixedLineRef}
+              tabIndex={-1}
+              className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-900 ring-1 ring-inset ring-emerald-700/30"
+            >
               <CircleCheckBig className="size-5 shrink-0" aria-hidden="true" />
               标签关联已修复（当前 DOM 使用 label + htmlFor）
             </p>

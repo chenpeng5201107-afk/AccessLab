@@ -1,0 +1,76 @@
+{
+  "live": "https://accessibility-lab-3g6uvbn5duq.qoder.zone",
+  "at": "2026-11-19T03:30:47.746Z",
+  "results": [
+    {
+      "route": "#/",
+      "hash": "#/",
+      "h1": "让网页的障碍，看得见、改得掉。",
+      "hasText": true,
+      "headerTags": 1,
+      "navTags": 1,
+      "mainTags": 1,
+      "footerTags": 1,
+      "skipText": "跳转到主要内容",
+      "jsErrors": [],
+      "bodyLen": 1069,
+      "ok": true
+    },
+    {
+      "route": "#/contrast",
+      "hash": "#/contrast",
+      "h1": "色彩对比度实验",
+      "hasText": true,
+      "headerTags": 2,
+      "navTags": 1,
+      "mainTags": 1,
+      "footerTags": 1,
+      "skipText": "跳转到主要内容",
+      "jsErrors": [],
+      "bodyLen": 1121,
+      "ok": true
+    },
+    {
+      "route": "#/form-label",
+      "hash": "#/form-label",
+      "h1": "表单标签实验",
+      "hasText": true,
+      "headerTags": 2,
+      "navTags": 1,
+      "mainTags": 1,
+      "footerTags": 1,
+      "skipText": "跳转到主要内容",
+      "jsErrors": [],
+      "bodyLen": 2734,
+      "ok": true
+    },
+    {
+      "route": "#/keyboard",
+      "hash": "#/keyboard",
+      "h1": "键盘焦点实验",
+      "hasText": true,
+      "headerTags": 2,
+      "navTags": 1,
+      "mainTags": 1,
+      "footerTags": 1,
+      "skipText": "跳转到主要内容",
+      "jsErrors": [],
+      "bodyLen": 3541,
+      "ok": true
+    },
+    {
+      "route": "#/report",
+      "hash": "#/report",
+      "h1": "统一成果报告",
+      "hasText": true,
+      "headerTags": 2,
+      "navTags": 1,
+      "mainTags": 1,
+      "footerTags": 1,
+      "skipText": "跳转到主要内容",
+      "jsErrors": [],
+      "bodyLen": 2932,
+      "ok": true
+    }
+  ]
+}

@@ -1,0 +1,309 @@
+{
+  "ua": "Edg/157.0.4341.60",
+  "keyActivation": {
+    "contrast": [
+      {
+        "label": "生成修复建议",
+        "presses": 8,
+        "before": {
+          "tag": "button",
+          "id": null,
+          "isBody": false,
+          "label": "生成修复建议",
+          "section": "4. 智能修复建议",
+          "outline": "solid 3px"
+        },
+        "after": {
+          "tag": "div",
+          "id": null,
+          "isBody": false,
+          "label": "建议文字颜色建议 · 尚未应用 4.54:1 达到 ",
+          "section": "4. 智能修复建议",
+          "outline": "solid 3px"
+        },
+        "nextTab": {
+          "tag": "button",
+          "id": null,
+          "isBody": false,
+          "label": "应用该修复",
+          "section": "4. 智能修复建议",
+          "outline": "solid 3px"
+        },
+        "live": [
+          "当前对比度 4.48:1 未达 AA"
+        ]
+      },
+      {
+        "label": "应用该修复",
+        "presses": 18,
+        "before": {
+          "tag": "button",
+          "id": null,
+          "isBody": false,
+          "label": "应用该修复",
+          "section": "4. 智能修复建议",
+          "outline": "solid 3px"
+        },
+        "after": {
+          "tag": "div",
+          "id": null,
+          "isBody": false,
+          "label": "修复已应用已应用 4.54:1 达到 AA 文字色已",
+          "section": "4. 智能修复建议",
+          "outline": "solid 3px"
+        },
+        "nextTab": {
+          "tag": "button",
+          "id": null,
+          "isBody": false,
+          "label": "撤销本次修复",
+          "section": "4. 智能修复建议",
+          "outline": "solid 3px"
+        },
+        "live": [
+          "当前对比度 4.54:1 达到 AA",
+          "已应用修复：文字颜色改为 #767676，对比度提升至 4.54:1。背景颜色未改变。"
+        ]
+      },
+      {
+        "label": "撤销本次修复",
+        "presses": 18,
+        "before": {
+          "tag": "button",
+          "id": null,
+          "isBody": false,
+          "label": "撤销本次修复",
+          "section": "4. 智能修复建议",
+          "outline": "solid 3px"
+        },
+        "after": {
+          "tag": "p",
+          "id": null,
+          "isBody": false,
+          "label": "已撤销本次修复，文字颜色恢复为 #777777。",
+          "section": "4. 智能修复建议",
+          "outline": "solid 3px"
+        },
+        "nextTab": {
+          "tag": "a",
+          "id": null,
+          "isBody": false,
+          "label": "进入表单标签实验",
+          "section": "下一步：让输入框拥有正确的标签",
+          "outline": "solid 3px"
+        },
+        "live": [
+          "当前对比度 4.48:1 未达 AA",
+          "已撤销本次修复，文字颜色恢复为 #777777。"
+        ]
+      }
+    ],
+    "formLabelsBefore": [
+      {
+        "id": "student-name",
+        "labels": 0
+      },
+      {
+        "id": "student-email",
+        "labels": 1
+      }
+    ],
+    "form": [
+      {
+        "label": "修复标签关联",
+        "presses": 7,
+        "before": {
+          "tag": "button",
+          "id": null,
+          "isBody": false,
+          "label": "修复标签关联",
+          "section": "4. 修复与重新验证",
+          "outline": "solid 3px"
+        },
+        "after": {
+          "tag": "p",
+          "id": null,
+          "isBody": false,
+          "label": "标签关联已修复（当前 DOM 使用 label + ",
+          "section": "4. 修复与重新验证",
+          "outline": "solid 3px"
+        },
+        "nextTab": {
+          "tag": "button",
+          "id": null,
+          "isBody": false,
+          "label": "重置实验",
+          "section": "4. 修复与重新验证",
+          "outline": "solid 3px"
+        },
+        "live": [
+          "已把「姓名」换成与输入框正确关联的 label，检测将在新的 DOM 上重新运行。"
+        ]
+      },
+      {
+        "label": "重置实验",
+        "presses": 19,
+        "before": {
+          "tag": "button",
+          "id": null,
+          "isBody": false,
+          "label": "重置实验",
+          "section": "4. 修复与重新验证",
+          "outline": "solid 3px"
+        },
+        "after": {
+          "tag": "button",
+          "id": null,
+          "isBody": false,
+          "label": "重置实验",
+          "section": "4. 修复与重新验证",
+          "outline": "solid 3px"
+        },
+        "nextTab": {
+          "tag": "pre",
+          "id": null,
+          "isBody": false,
+          "label": "<form> <!-- 「姓名」这几个字确实在页面上",
+          "section": "5. 修复前后 HTML 对比",
+          "outline": "solid 3px"
+        },
+        "live": [
+          "实验已重置：上方又回到「看得见文字、却没有关联标签」的初始状态。"
+        ]
+      }
+    ],
+    "formLabelsAfter": [
+      {
+        "id": "student-name",
+        "labels": 1,
+        "text": "姓名"
+      },
+      {
+        "id": "student-email",
+        "labels": 1,
+        "text": "电子邮箱"
+      }
+    ],
+    "formLabelsReset": [
+      {
+        "id": "student-name",
+        "labels": 0
+      },
+      {
+        "id": "student-email",
+        "labels": 1
+      }
+    ],
+    "keyboard": [
+      {
+        "label": "修复焦点指示",
+        "presses": 6,
+        "before": {
+          "tag": "button",
+          "id": null,
+          "isBody": false,
+          "label": "修复焦点指示",
+          "section": "3. 焦点规则现状与修复",
+          "outline": "solid 3px"
+        },
+        "after": {
+          "tag": "p",
+          "id": null,
+          "isBody": false,
+          "label": "已应用焦点修复（按钮当前挂 .kf-demo-btn",
+          "section": "3. 焦点规则现状与修复",
+          "outline": "solid 3px"
+        },
+        "nextTab": {
+          "tag": "button",
+          "id": null,
+          "isBody": false,
+          "label": "重置实验",
+          "section": "3. 焦点规则现状与修复",
+          "outline": "solid 3px"
+        },
+        "live": [
+          "已把示例按钮换成带 outline 的 :focus-visible 规则。现在请再按 Tab 走一遍同样三个按钮，自己确认焦点是否看得见。"
+        ]
+      }
+    ],
+    "fixedClass": [
+      "kf-demo-btn--fixed",
+      "kf-demo-btn--fixed",
+      "kf-demo-btn--fixed",
+      "",
+      "",
+      "",
+      "kf-demo-btn--preview-fixed",
+      "kf-demo-btn--preview-fixed",
+      "kf-demo-btn--preview-fixed",
+      "kf-demo-btn--preview-fixed",
+      "kf-demo-btn--preview-fixed",
+      "kf-demo-btn--preview-fixed"
+    ]
+  },
+  "invalid": [
+    {
+      "step": "输入非法值",
+      "typed": {
+        "inputId": "_r_0_-hex",
+        "value": "#12zz"
+      },
+      "input": {
+        "value": "#12zz",
+        "invalid": "true",
+        "describedby": [
+          "支持 #RGB 与 #RRGGBB",
+          "请输入有效的十六进制颜色，例如 #1a4d8f"
+        ]
+      },
+      "live": [
+        "当前对比度 4.48:1 未达 AA 当前颜色输入无效，检测结果仍基于上一次有效配色。"
+      ],
+      "repair": "4. 智能修复建议 当配色未达普通文本 AA 时，可生成一个把文字色朝纯黑或纯白微调、尽量减小改动、 并用真实 WCAG 计算复核达标后的建议色。只调整文字颜色，背景保持你选的颜色。这是确定性算法，不是全局最优、也不保证人眼感知差异最小。 存在无效颜色，修复功能已暂停。请先修正上方的颜色输入，再使用修复。",
+      "generate": {
+        "present": false
+      }
+    }
+  ],
+  "stale": [
+    {
+      "step": "恢复 #777777",
+      "live": [
+        "当前对比度 4.48:1 未达 AA"
+      ],
+      "repair": "4. 智能修复建议 当配色未达普通文本 AA 时，可生成一个把文字色朝纯黑或纯白微调、尽量减小改动、 并用真实 WCAG 计算复核达标后的建议色。只调整文字颜色，背景保持你选的颜色。这是确定性算法，不是全局最优、也不保证人眼感知差异最小。 生成修复建议"
+    },
+    {
+      "step": "键盘生成建议",
+      "genPresses": 5,
+      "focus": {
+        "tag": "div",
+        "id": null,
+        "isBody": false,
+        "label": "建议文字颜色建议 · 尚未应用 4.54:1 达到 ",
+        "section": "4. 智能修复建议",
+        "outline": "solid 3px"
+      },
+      "live": [
+        "当前对比度 4.48:1 未达 AA"
+      ],
+      "repair": "4. 智能修复建议 当配色未达普通文本 AA 时，可生成一个把文字色朝纯黑或纯白微调、尽量减小改动、 并用真实 WCAG 计算复核达标后的建议色。只调整文字颜色，背景保持你选的颜色。这是确定性算法，不是全局最优、也不保证人眼感知差异最小。 建议文字颜色建议 · 尚未应用 4.54:1 达到 AA 把文字色从 #777777 调整为 #767676，对比度由 4.48:1 提升到 4.54:1。本次仅调整文字颜色，未改变背景。 应用该修复",
+      "cssSection": {
+        "present": true,
+        "text": "6. 对比 CSS 代码 下列代码由当前配色与算法结果实时生成，颜色值与上方一致；更改配色会同步更新或清除。 /* 修复前 */ .accessible-text { color: #777777; background-color: #f"
+      }
+    },
+    {
+      "step": "改色为 #7b7b7b（仍未达 AA）",
+      "live": [
+        "当前对比度 2.29:1 未达 AA 当前颜色输入无效，检测结果仍基于上一次有效配色。"
+      ],
+      "repair": "4. 智能修复建议 当配色未达普通文本 AA 时，可生成一个把文字色朝纯黑或纯白微调、尽量减小改动、 并用真实 WCAG 计算复核达标后的建议色。只调整文字颜色，背景保持你选的颜色。这是确定性算法，不是全局最优、也不保证人眼感知差异最小。 存在无效颜色，修复功能已暂停。请先修正上方的颜色输入，再使用修复。",
+      "copyButton": {
+        "present": false
+      }
+    }
+  ],
+  "console": []
+}
