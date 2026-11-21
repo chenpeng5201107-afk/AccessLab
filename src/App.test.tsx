@@ -108,11 +108,11 @@ describe('App · hashchange 驱动的前进后退（要求 #13）', () => {
 
     goto('#/form-label')
     expect(container.textContent).not.toContain('1. 调整颜色')
-    expect(container.textContent).toContain('2. 真实表单体验')
+    expect(container.textContent).toContain('试用登记表')
 
     goto('#/keyboard')
-    expect(container.textContent).not.toContain('2. 真实表单体验')
-    expect(container.textContent).toContain('2. 请先别用鼠标')
+    expect(container.textContent).not.toContain('试用登记表')
+    expect(container.textContent).toContain('试用馆藏工具')
   })
 
   it('typo hash 不会把键盘实验踢回首页', () => {
@@ -138,7 +138,7 @@ describe('App · 跳转到主要内容（要求 #13）', () => {
   })
 
   it('skip link 仍指向 #main，且每个实验页都带着完整外壳', () => {
-    for (const hash of ['#/', '#/contrast', '#/form-label', '#/keyboard', '#/report']) {
+    for (const hash of ['#/', '#/diagnosis', '#/contrast', '#/form-label', '#/keyboard', '#/report']) {
       goto(hash)
       expect(document.querySelector('a[href="#main"]')).toBeTruthy()
       expect(document.querySelector('header nav')).toBeTruthy()
@@ -149,9 +149,9 @@ describe('App · 跳转到主要内容（要求 #13）', () => {
 })
 
 describe('App · 导航与样式边界（要求 #11 #14）', () => {
-  it('主导航列出五个入口，键盘焦点实验与成果报告都在里面', () => {
+  it('主导航列出六个入口，键盘焦点实验与成果报告都在里面', () => {
     const labels = [...document.querySelectorAll('header nav a')].map((a) => textOf(a))
-    expect(labels).toEqual(['首页', '色彩对比度实验', '表单标签实验', '键盘焦点实验', '成果报告'])
+    expect(labels).toEqual(['首页', '案例学习', '色彩对比度实验', '表单标签实验', '键盘焦点实验', '成果报告'])
 
     goto('#/keyboard')
     const active = document.querySelector('header nav a[aria-current="page"]')

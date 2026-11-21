@@ -171,8 +171,8 @@ function auditControl(control: LabeledControl, order: number): FieldAuditRow {
     issues.push({
       code: 'no-associated-label',
       message: caption
-        ? `字段上方视觉上写着「${caption}」，但它只是一个普通文本节点，没有与该输入框建立关联。屏幕阅读器聚焦到该控件时只能读出「${name || '（无名称）'}」。`
-        : '该控件没有任何程序化关联的 label，读屏软件只报得出控件类型，说不出这里要填什么。',
+        ? `字段上方视觉上写着「${caption}」，但它只是一个普通文本节点，没有与该输入框建立关联。本次检测得到的名称是「${name || '（无名称）'}」。`
+        : '该控件没有程序化关联的 label，请为输入框关联一行可见的说明文字。',
       standardHint: 'WCAG 2.2 1.3.1 Info and Relationships、3.3.2 Labels or Instructions',
     })
   } else if (!hasVisibleAssociatedLabel) {

@@ -158,18 +158,18 @@ describe('Day 6 · 任务 A1 首页首屏：10 秒讲清价值', () => {
     const anchors = [...document.querySelectorAll('main a')]
     const primary = anchors.filter((a) => (a.className ?? '').includes('text-base font-bold'))
     expect(primary).toHaveLength(1)
-    expect(squeeze(primary[0].textContent ?? '')).toContain('开始第一个实验')
-    expect(primary[0].getAttribute('href')).toBe('#/contrast')
+    expect(squeeze(primary[0].textContent ?? '')).toContain('开始校园初诊')
+    expect(primary[0].getAttribute('href')).toBe('#/diagnosis')
 
-    const secondary = linkByText('查看另外两个实验')
+    const secondary = linkByText('浏览专项实验')
     expect(secondary.className).toContain('text-sm')
     expect(secondary.className).not.toContain('bg-indigo-700')
   })
 
-  it('首屏用「给谁用 / 解决什么 / 怎么体验」三行回答，且没有夸大结论', () => {
-    const terms = [...document.querySelectorAll('main dl dt')].map((dt) => squeeze(dt.textContent ?? ''))
-    expect(terms.slice(0, 3)).toEqual(['给谁用', '解决什么', '怎么体验'])
-    expect(mainText()).toContain('三个动手实验')
+  it('一段引言交代两个学习场景，首屏写明下一步', () => {
+    const lead = document.querySelector('.study-hero h1 + p')
+    expect(lead?.textContent).toContain('摄影社报名页')
+    expect(lead?.textContent).toContain('图书馆预约页')
     expect(mainText()).not.toMatch(/100%|完全合规|全部通过|所有问题/)
   })
 
@@ -190,9 +190,9 @@ describe('Day 6 · 任务 A1 首页首屏：10 秒讲清价值', () => {
     expect(cards).toHaveLength(3)
     for (const card of cards) {
       expect(card.querySelectorAll('h3')).toHaveLength(1)
-      expect(card.className).toContain('p-5')
-      expect(card.querySelector('span[aria-hidden="true"].size-11')).toBeTruthy()
-      expect(card.querySelector('a[href^="#/"].min-h-11')).toBeTruthy()
+      expect(card.className).toContain('experiment-card')
+      expect(card.querySelector('span[aria-hidden="true"].experiment-icon')).toBeTruthy()
+      expect(card.querySelector('a[href^="#/"].experiment-link')).toBeTruthy()
       // 摘要一句话说完，评委扫得动；同时不超过科学表述的长度上限
       expect(card.querySelector('p')!.textContent!.length).toBeLessThanOrEqual(40)
     }
@@ -242,20 +242,16 @@ describe('Day 6 · 任务 B 三分钟动线', () => {
     }
   })
 
-  it('三个实验首屏都改成「遇到什么 → 做什么 → 看到什么」，但依据与限制说明还在', () => {
-    goto('#/contrast')
-    expect(mainText()).toContain('你会遇到什么')
-    expect(mainText()).toContain('你要做什么')
-    expect(mainText()).toContain('修好能看到什么')
-    expect(mainText()).toContain('WCAG')
-
-    goto('#/form-label')
-    expect(mainText()).toContain('你会遇到什么')
-    expect(mainText()).toContain('屏幕阅读器')
-
-    goto('#/keyboard')
-    expect(mainText()).toContain('你要做什么')
-    expect(mainText()).toContain('2.4.7')
+  it('每个实验用一句话说明动作，技术依据按需展开', () => {
+    for (const [route, action, basis] of [
+      ['#/contrast', '调整文字与背景色', 'WCAG'],
+      ['#/form-label', '点一下', '屏幕阅读器'],
+      ['#/keyboard', '按 Tab', '2.4.7'],
+    ]) {
+      goto(route)
+      expect(document.querySelector('.lab-lead')?.textContent).toContain(action)
+      expect([...document.querySelectorAll('details')].some(el => !el.open && el.textContent?.includes(basis))).toBe(true)
+    }
   })
 
   it('色彩 → 表单 → 键盘 → 报告：一路点下去，前面登记的成果不会被清掉', () => {
@@ -273,7 +269,8 @@ describe('Day 6 · 任务 B 三分钟动线', () => {
     goto('#/report')
     expect(heading()).toBe('统一成果报告')
     expect(mainText()).toContain('3 / 3')
-    expect(mainText()).toContain('这次会话登记了 3 / 3 个实验的成果，其中 3 个真正改动了页面，1 个已由你本人确认。')
+    expect(readout('已应用修复')).toBe('3')
+    expect(readout('已人工确认')).toBe('1')
     expect(readout('修复后对比度')).toBe('4.54:1')
     expect(readout('修复后（最近一次真实 DOM 检测）问题')).toBe('没有发现问题')
     expect(readout('修复后键盘导航到达次数')).toBe('3 次')
@@ -344,11 +341,9 @@ describe('Day 6 · 任务 D 报告口径一致', () => {
   it('页面不再出现「已重新验证」，统计标签 / 阶段名 / 提示都用「修复后复核」', () => {
     runAllThreeLabs()
 
-    expect(mainText()).toContain('已进行修复后复核（含人工键盘体验）的实验数')
-    expect(readout('已进行修复后复核（含人工键盘体验）的实验数')).toBe('3 / 3')
+    expect(mainText()).toContain('修复后复核')
+    expect(readout('修复后复核')).toBe('3')
     expect(mainText()).toContain('已进行修复后复核（含人工键盘体验）：3 个实验。')
-    expect(mainText()).toContain('检测 / 修复 / 修复后复核 / 人工确认')
-    expect(mainText()).toContain('把「已检测」「已给出建议」「已应用修复」「已进行修复后复核」「已人工确认」当成五件不同的事')
     expect(mainText()).toContain(REVERIFIED_HELP)
     expect(mainText()).not.toContain('已重新验证')
     expect(mainText()).not.toContain('复算或重检 DOM')
@@ -435,6 +430,7 @@ describe('Day 6 · 任务 D 报告口径一致', () => {
   })
 
   it('未检查范围把 SC 1.4.3 / 1.4.6 / 1.4.11 分开写，各自阈值与适用范围说清', () => {
+    goto('#/contrast')
     goto('#/report')
 
     expect(UNCHECKED_SCOPE.some((line) => line.includes('SC 1.4.3') && line.includes('4.5:1') && line.includes('普通文本'))).toBe(true)
@@ -452,16 +448,14 @@ describe('Day 6 · 任务 D 报告口径一致', () => {
   it('空报告先说这一页是什么、数据从哪来，再给三个实验入口', () => {
     goto('#/report')
 
-    expect(mainText()).toContain('这次会话还没有登记任何实验成果')
-    expect(mainText()).toContain('本次会话还没有任何实验记录')
-    expect(mainText()).toContain('想让这一页有内容？从任意一个实验开始：')
+    expect(mainText()).toContain('还没有实验记录')
+    expect(mainText()).toContain('开始校园初诊')
     for (const hash of ['#/contrast', '#/form-label', '#/keyboard']) {
       expect(document.querySelector(`main a[href="${hash}"]`)).toBeTruthy()
     }
-    expect(mainText()).toContain('刷新页面或关闭标签页就会清空')
+    expect(mainText()).toContain('刷新或关闭页面会清空记录')
     expect(mainText()).toContain('本报告仅针对 AccessLab 内置示例，不是网站 WCAG 合规认证。')
-    expect(buttonByLabel('复制 Markdown 报告').disabled).toBe(true)
-    expect(buttonByLabel('下载 .md 文件').disabled).toBe(true)
+    expect(document.querySelector('#report-export-heading')).toBeNull()
   })
 
   it('状态用文字说清，不只靠颜色；「已应用修复」不会被写成全部通过', () => {
@@ -472,9 +466,9 @@ describe('Day 6 · 任务 D 报告口径一致', () => {
     const statuses = [...document.querySelectorAll('main span')]
       .map((el) => squeeze(el.textContent ?? ''))
       .filter((text) => text.startsWith('状态：'))
-    expect(statuses).toHaveLength(3)
+    expect(statuses).toHaveLength(1)
     expect(statuses[0]).toBe('状态：修复已应用到实验页面，并按新配色重新算过')
-    expect(mainText()).toContain('状态：未记录（本次会话还没有在该实验里运行过检测）')
+    expect(mainText()).toContain('尚未记录的实验：表单标签实验、键盘焦点实验')
     expect(mainText()).not.toMatch(/已通过 WCAG|符合全部|整体合规。|100%/)
     expect(mainText()).toContain('更不给「整体合规」这种结论')
   })

@@ -96,7 +96,7 @@ describe('FormLabelLabPage · 初始缺陷状态（要求 #1 #2）', () => {
   })
 
   it('检测结果读到的就是这个真实 DOM：2 个控件、2 项问题，且区分两种「没名字」', () => {
-    const results = textOf(sectionByHeading('3. 检测结果'))
+    const results = textOf(sectionByHeading('检测结果'))
     expect(results).toContain('本次检查 2 个文本录入控件，发现 2 项标签关联问题')
     expect(results).toContain('缺少关联的可见标签')
     expect(results).toContain('有可访问名称')
@@ -139,7 +139,7 @@ describe('FormLabelLabPage · 一键修复与重新验证（要求 #3 #4 #5 #6 #
   it('修复后重新运行的检测里，对应问题已经消失，只剩邮箱一条通过', () => {
     click(buttonByLabel('修复标签关联')!)
 
-    const results = textOf(sectionByHeading('3. 检测结果'))
+    const results = textOf(sectionByHeading('检测结果'))
     expect(results).toContain('发现 0 项标签关联问题')
     expect(results).not.toContain('缺少关联的可见标签')
     expect(results).toContain('这个控件的标签关联检查没有发现问题')
@@ -161,7 +161,7 @@ describe('FormLabelLabPage · 一键修复与重新验证（要求 #3 #4 #5 #6 #
 
   it('修复后该字段不再只有 placeholder 提供名称，来源改为关联 label', () => {
     click(buttonByLabel('修复标签关联')!)
-    const results = textOf(sectionByHeading('3. 检测结果'))
+    const results = textOf(sectionByHeading('检测结果'))
     expect(results).toContain('associated-label')
     expect(results).not.toContain('placeholder-as-only-name')
   })
@@ -170,13 +170,13 @@ describe('FormLabelLabPage · 一键修复与重新验证（要求 #3 #4 #5 #6 #
 describe('FormLabelLabPage · 重置与重新检测（要求 #7）', () => {
   it('点「重置实验」后回到 span 状态，检测结果也重新报出问题', () => {
     click(buttonByLabel('修复标签关联')!)
-    expect(sectionByHeading('3. 检测结果')!.textContent).toContain('发现 0 项')
+    expect(sectionByHeading('检测结果')!.textContent).toContain('发现 0 项')
 
     click(buttonByLabel('重置实验')!)
 
     expect(captionElement().tagName).toBe('SPAN')
     expect(labelsOf(nameInput()).length).toBe(0)
-    expect(textOf(sectionByHeading('3. 检测结果'))).toContain('发现 2 项标签关联问题')
+    expect(textOf(sectionByHeading('检测结果'))).toContain('发现 2 项标签关联问题')
     expect(notice()).toContain('实验已重置')
     expect(buttonByLabel('修复标签关联')).toBeTruthy()
   })
@@ -195,6 +195,7 @@ describe('FormLabelLabPage · 重置与重新检测（要求 #7）', () => {
     click(buttonByLabel('提交登记')!)
 
     expect(notice()).toContain('演示表单没有提交')
+    expect(container.querySelector('form')?.closest('section')?.querySelector('[role="status"]')).toBeTruthy()
     expect(window.location.href).toBe(originalLocation)
     expect(container.querySelectorAll('form[method]').length).toBe(0)
   })

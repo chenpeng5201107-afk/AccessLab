@@ -25,7 +25,7 @@ import { BROKEN_FOCUS_CSS, FIXED_FOCUS_CSS, BASE_CLASS } from './lib/keyboardFoc
  * - 报告里「人工验证」的三种状态不能互相冒充（A2）：确认过的键盘观察不再挂在待完成清单，
  *   但屏幕阅读器 / 真实设备这类额外验证不会因为一次点击就变成「已做过」；
  * - 页面上的统计数字必须等于它下面真正列出的条目数，且与导出的 Markdown 同源；
- * - 首页主操作提前到核心价值说明之后仍然只有一条、五个导航入口一个不少（A1 / A3）。
+ * - 首页主操作提前到核心价值说明之后仍然只有一条、六个导航入口一个不少（A1 / A3）。
  *
  * 渲染的是完整 App（外壳 + hash 路由 + 会话台账），三实验靠真实点击跑完，
  * 所以这里的读数与报告页显示的是同一条数据链，不是手抄的期望值。
@@ -212,6 +212,7 @@ describe('Day 7 A2 · 报告人工验证的三种状态', () => {
     const model = buildReportModel(fullLedger(false), new Date(2026, 10, 18, 10, 30, 0))
 
     expect(model.pendingManual.join('\n')).toContain('你还没有点「我已完成观察」')
+    expect(model.pendingManual.join('\n')).not.toContain('也没有走完修复前后的两轮键盘体验')
     expect(model.confirmedManual).toEqual([])
   })
 
@@ -319,48 +320,62 @@ describe('Day 7 A2 · 统计数字、页面与 Markdown 同源', () => {
 })
 
 describe('Day 7 A1 · 首页主操作', () => {
-  it('主按钮紧跟在核心价值说明之后，且全页只有一个是「开始第一个实验」', () => {
+  it('主按钮紧跟在核心价值说明之后，且全页只有一个是「开始校园初诊」', () => {
     const main = document.querySelector('main')
     expect(main).toBeTruthy()
 
-    const cta = [...main!.querySelectorAll('a')].find((a) => squeeze(a.textContent ?? '') === '开始第一个实验')
-    expect(cta, '首页应有唯一的主操作「开始第一个实验」').toBeTruthy()
-    expect(cta!.getAttribute('href')).toBe('#/contrast')
-    expect([...main!.querySelectorAll('a')].filter((a) => squeeze(a.textContent ?? '') === '开始第一个实验')).toHaveLength(1)
+    const cta = [...main!.querySelectorAll('a')].find((a) => squeeze(a.textContent ?? '') === '开始校园初诊')
+    expect(cta, '首页应有唯一的主操作「开始校园初诊」').toBeTruthy()
+    expect(cta!.getAttribute('href')).toBe('#/diagnosis')
+    expect([...main!.querySelectorAll('a')].filter((a) => squeeze(a.textContent ?? '') === '开始校园初诊')).toHaveLength(1)
 
-    const lead = [...main!.querySelectorAll('p')].find((p) => (p.textContent ?? '').includes('改一处，当场看到差别'))
-    const points = main!.querySelector('dl')
+    const lead = main!.querySelector('h1 + p')
+    const experiments = main!.querySelector('#experiments')
     expect(lead, '首页应有核心价值说明').toBeTruthy()
-    // 阅读顺序：h1 → 价值说明 → 主按钮 → 给谁用 / 解决什么 / 怎么体验
+    // 阅读顺序：标题、任务、开始入口、专项实验。
     expect(lead!.compareDocumentPosition(cta!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
-    expect(cta!.compareDocumentPosition(points!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(cta!.compareDocumentPosition(experiments!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   })
 
   it('压缩首屏的同时没有丢品牌主张与实验入口', () => {
     const text = mainText()
 
     expect(text).toContain('让网页的障碍，看得见、改得掉。')
-    for (const label of ['色彩对比度实验', '表单标签无障碍实验', '键盘焦点实验']) {
+    for (const label of ['色彩对比度实验', '表单标签实验', '键盘焦点实验']) {
       expect(text).toContain(label)
     }
-    expect(text).toContain('给谁用')
-    expect(text).toContain('怎么体验')
-    expect(text).toContain('Hack4Good 技术向善赛道')
+    expect(text).toContain('摄影社报名页')
+    expect(text).toContain('图书馆预约页')
+    expect(text).toContain('Hack4Good · 技术向善')
+    expect(document.querySelector('footer')?.textContent).toContain('Hack4Good · 技术向善')
   })
 })
 
 describe('Day 7 A3 · 顶部导航', () => {
-  it('五个导航入口齐全，且全部带着 44px 目标高度类名', () => {
+  it('展开后按 Escape 会收起导航并把焦点还给按钮', () => {
+    const toggle = document.querySelector<HTMLButtonElement>('button[aria-controls="site-nav"]')!
+    expect(toggle.getAttribute('aria-expanded')).toBe('false')
+    click(toggle)
+    expect(toggle.getAttribute('aria-expanded')).toBe('true')
+    const link = document.querySelector<HTMLAnchorElement>('#site-nav a')!
+    act(() => link.focus())
+    act(() => { link.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })) })
+    expect(toggle.getAttribute('aria-expanded')).toBe('false')
+    expect(document.activeElement).toBe(toggle)
+  })
+
+  it('六个导航入口齐全，且全部带着 44px 目标高度类名', () => {
     const links = [...document.querySelectorAll('header nav a')]
 
     expect(links.map((a) => squeeze(a.textContent ?? ''))).toEqual([
       '首页',
+      '案例学习',
       '色彩对比度实验',
       '表单标签实验',
       '键盘焦点实验',
       '成果报告',
     ])
-    expect(links.map((a) => a.getAttribute('href'))).toEqual(['#/', '#/contrast', '#/form-label', '#/keyboard', '#/report'])
+    expect(links.map((a) => a.getAttribute('href'))).toEqual(['#/', '#/diagnosis', '#/contrast', '#/form-label', '#/keyboard', '#/report'])
     for (const link of links) {
       expect(link.className).toContain('min-h-11')
       expect(link.className).not.toContain('min-h-9')
@@ -461,7 +476,7 @@ describe('Day 7 · 旧功能与台账无回归', () => {
     expect(text).toContain('4.48')
     expect(text).toContain('4.54')
     expect(text).toContain('没有发现问题')
-    expect(text).toContain('这次会话登记了 3 / 3 个实验的成果')
+    expect(document.querySelector('.report-stats dd')?.textContent).toBe('3 / 3')
   })
 
   it('清空报告后三种人工验证状态一起归零', () => {
@@ -472,8 +487,8 @@ describe('Day 7 · 旧功能与台账无回归', () => {
     click(buttonByLabel('确认清空记录'))
 
     const text = mainText()
-    expect(text).toContain('这次会话还没有登记任何实验成果')
+    expect(text).toContain('还没有实验记录')
     expect(renderedManualGroups()).toEqual([])
-    expect(text).toContain('本次会话还没有可引用的实验记录，因此没有列出验证项。')
+    expect(document.querySelector('.report-stats')).toBeNull()
   })
 })

@@ -195,16 +195,14 @@ function statusLine(): string {
 }
 
 describe('ReportPage · 空状态与部分完成（要求 #13）', () => {
-  it('没有任何记录时：三个实验都写未记录，导出与清空都不可用', () => {
+  it('没有记录时只显示学习入口，不显示统计、导出与清空', () => {
     render(emptyLedger)
 
     expect(text()).toContain('统一成果报告')
-    expect(text()).toContain('0 / 3')
-    expect(text()).toContain('未记录')
-    expect(byLabel('复制 Markdown 报告').disabled).toBe(true)
-    expect(byLabel('下载 .md 文件').disabled).toBe(true)
-    expect(byLabel('清空本次实验记录').disabled).toBe(true)
-    expect(text()).toContain('本次会话还没有任何实验记录')
+    expect(text()).toContain('还没有实验记录')
+    expect(container.querySelector('#report-export-heading')).toBeNull()
+    expect(container.querySelector('.report-stats')).toBeNull()
+    expect(container.querySelector('a[href="#/diagnosis"]')).toBeTruthy()
     expect(text()).toContain(NON_CERTIFICATION_STATEMENT)
   })
 
@@ -214,7 +212,7 @@ describe('ReportPage · 空状态与部分完成（要求 #13）', () => {
     expect(text()).toContain('已检测，尚未修复')
     expect(text()).toContain('2 项：缺少程序化关联的可见标签、只有 placeholder 在承担标签职责')
     expect(text()).toContain('尚未记录的实验：色彩对比度实验、键盘焦点实验')
-    expect(text()).toContain('已记录 / 总实验数')
+    expect(text()).toContain('已检测')
     expect(text()).toContain('1 / 3')
   })
 })
@@ -388,7 +386,7 @@ describe('ReportPage · 清空需要明确确认（要求 #10）', () => {
     click(byLabel('确认清空记录'))
 
     expect(statusLine()).toContain('已清空本次会话登记的实验记录')
-    expect(text()).toContain('0 / 3')
+    expect(text()).toContain('还没有实验记录')
     expect(byLabel('复制 Markdown 报告').disabled).toBe(true)
     // 清空后触发按钮变成禁用态，禁用按钮接不住焦点；焦点必须留在可见的状态提示上，不能掉回 body
     expect(byLabel('清空本次实验记录').disabled).toBe(true)

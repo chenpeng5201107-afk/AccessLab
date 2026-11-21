@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 
-export type Route = 'home' | 'contrast-lab' | 'form-label-lab' | 'keyboard-lab' | 'report'
+export type Route = 'home' | 'diagnosis' | 'transfer' | 'contrast-lab' | 'form-label-lab' | 'keyboard-lab' | 'report'
 
 export const ROUTE_HASH: Record<Route, string> = {
   home: '#/',
+  diagnosis: '#/diagnosis',
+  transfer: '#/transfer',
   'contrast-lab': '#/contrast',
   'form-label-lab': '#/form-label',
   'keyboard-lab': '#/keyboard',
@@ -14,6 +16,8 @@ const HASH_TO_ROUTE: Record<string, Route> = {
   '': 'home',
   '#': 'home',
   '#/': 'home',
+  '#/diagnosis': 'diagnosis',
+  '#/transfer': 'transfer',
   '#/contrast': 'contrast-lab',
   '#/form-label': 'form-label-lab',
   '#/keyboard': 'keyboard-lab',

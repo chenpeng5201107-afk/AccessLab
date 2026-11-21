@@ -47,19 +47,34 @@ afterEach(() => {
 })
 
 describe('HomePage · 三张实验卡片（要求 #11）', () => {
+  it('键盘可调的灰度样本跨过 AA 阈值时同步更换比值与判定', () => {
+    const slider = container.querySelector<HTMLInputElement>('#scope-shade')!
+    expect(slider.type).toBe('range')
+    expect(slider.getAttribute('aria-valuetext')).toContain('4.54:1，达到普通文本 AA')
+    act(() => {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!.call(slider, '119')
+      slider.dispatchEvent(new Event('input', { bubbles: true }))
+    })
+    expect(slider.getAttribute('aria-valuetext')).toContain('4.48:1，未达普通文本 AA')
+    expect(container.querySelector('.measure-top strong')?.textContent).toBe('未达 AA')
+    expect(container.querySelector('.scope-controls code')?.textContent).toBe('#777777')
+  })
+
   it('三张卡片标题齐全，键盘焦点实验排在第三位', () => {
     const titles = cardTitles()
     expect(titles).toHaveLength(3)
     expect(titles[0]).toContain('色彩对比度实验')
-    expect(titles[1]).toContain('表单标签无障碍实验')
+    expect(titles[1]).toContain('表单标签实验')
     expect(titles[2]).toContain('键盘焦点实验')
   })
 
-  it('三张卡都标着「可体验」，没有任何一张还挂着「即将开放」', () => {
-    const badges = [...container.querySelectorAll('article')].map((a) => textOf(a))
-    expect(badges.every((card) => card.includes('可体验'))).toBe(true)
-    expect(badges.some((card) => card.includes('即将开放'))).toBe(false)
-    expect(textOf(container)).not.toContain('本模块将在后续开发日志中上线')
+  it('每张卡使用一个包含实验名称的链接，省去重复状态徽章', () => {
+    for (const card of container.querySelectorAll('article')) {
+      const links = card.querySelectorAll('a')
+      expect(links).toHaveLength(1)
+      expect(textOf(links[0])).toContain(textOf(card.querySelector('h3')))
+      expect(textOf(card)).not.toContain('可体验')
+    }
   })
 
   it('第三张卡的入口就是 #/keyboard', () => {
@@ -90,7 +105,7 @@ describe('HomePage · 三张实验卡片（要求 #11）', () => {
     const text = textOf(container)
     expect(text).not.toContain('前两个已经可以玩')
     expect(text).not.toContain('最后一个还在开发')
-    expect(text).toContain('三个都已经可以体验')
+    expect(container.querySelectorAll('#experiments article a')).toHaveLength(3)
   })
 
   it('第三张卡的宣传语落在键盘焦点上，不空喊', () => {

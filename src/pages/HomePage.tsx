@@ -1,5 +1,7 @@
 import { ArrowRight, CircleAlert, CircleCheckBig, Contrast, Keyboard, TextCursorInput } from 'lucide-react'
 
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
+import { Activity, SlidersHorizontal } from 'lucide-react'
 import { ExperimentCard } from '../components/ExperimentCard'
 import { ROUTE_HASH } from '../hooks/useHashRoute'
 import {
@@ -12,27 +14,21 @@ import { suggestTextColor } from '../lib/colorRepair'
 
 const EXPERIMENTS = [
   {
-    index: 1,
     title: '色彩对比度实验',
-    summary: '换一对颜色，当场看到反差够不够，以及该把它改成什么样。',
+    summary: '调整图书馆提醒的配色，让小字也能看清。',
     icon: Contrast,
-    status: 'available' as const,
     href: ROUTE_HASH['contrast-lab'],
   },
   {
-    index: 2,
-    title: '表单标签无障碍实验',
-    summary: '输入框旁边那行字，读屏软件可能根本读不到。补上真正的关联试试。',
+    title: '表单标签实验',
+    summary: '点一下“姓名”，看光标能否进入输入框。',
     icon: TextCursorInput,
-    status: 'available' as const,
     href: ROUTE_HASH['form-label-lab'],
   },
   {
-    index: 3,
     title: '键盘焦点实验',
-    summary: '别用鼠标，只按 Tab 走一遍：焦点走到哪了，你还看得出来吗？',
+    summary: '用 Tab 走过三个按钮，找回消失的焦点。',
     icon: Keyboard,
-    status: 'available' as const,
     href: ROUTE_HASH['keyboard-lab'],
   },
 ]
@@ -113,131 +109,207 @@ function Swatch({ tag, fg, bg, caption, sample }: SwatchProps) {
   )
 }
 
-const AUDIENCE_POINTS = [
-  { term: '给谁用', desc: '学生开发者、前端初学者' },
-  { term: '解决什么', desc: '发现并修好最常见的无障碍问题' },
-  { term: '怎么体验', desc: '三个动手实验，成果还能导出成报告' },
-]
+/** 首页使用与实验页相同的计算，试色不计入学生的独立作答。 */
+function ContrastConsole() {
+  const [shade, setShade] = useState(118)
+  const hex = '#' + shade.toString(16).padStart(2, '0').repeat(3).toUpperCase()
+  const ratio = contrastRatioFromHex(hex, '#FFFFFF')!
+  const passes = meetsAaNormalText(ratio)
+  return (
+    <div className="scope-console app-frame" aria-label="实时文字对比度实验">
+      <div className="scope-bar">
+        <span>
+          <Activity size={16} aria-hidden="true" /> 对比度实验台
+        </span>
+        <span className="scope-standard">WCAG 2.2 · 1.4.3</span>
+      </div>
+      <div className="scope-body">
+        <div className="specimen" style={{ '--sample-ink': hex } as CSSProperties}>
+          <div className="specimen-text">
+            <span aria-hidden="true">Aa</span>
+            <p>图书归还提醒</p>
+          </div>
+          <span className="specimen-cross" aria-hidden="true">
+            ＋
+          </span>
+          <div className="specimen-scale" aria-hidden="true" />
+        </div>
+        <div className="scope-controls">
+          <div className="measure-top">
+            <span>文字对比度</span>
+            <strong data-pass={passes}>{passes ? '达到 AA' : '未达 AA'}</strong>
+          </div>
+          <div className="scope-reading">
+            <div className="ratio-readout" aria-hidden="true">
+              {ratio.toFixed(2)}
+              <small>:1</small>
+            </div>
+            <span className="aa-limit">AA ≥ 4.5:1</span>
+          </div>
+          <label htmlFor="scope-shade">
+            <span>
+              <SlidersHorizontal size={14} aria-hidden="true" />
+              文字灰度
+            </span>
+            <code>{hex}</code>
+          </label>
+          <input
+            id="scope-shade"
+            type="range"
+            min="0"
+            max="255"
+            value={shade}
+            aria-valuetext={
+              hex + '，对比度 ' + formatContrastRatio(ratio) + (passes ? '，达到普通文本 AA' : '，未达普通文本 AA')
+            }
+            onChange={(event) => setShade(Number(event.target.value))}
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export function HomePage() {
+  const hero = useRef<HTMLElement>(null)
+  const experiments = useRef<HTMLElement>(null)
+  useEffect(() => {
+    if (!hero.current || !experiments.current || typeof window.matchMedia !== 'function') return
+    const section = experiments.current
+    const ground = hero.current.querySelector<HTMLElement>('[data-fx]')!
+    const base = new URL(import.meta.env.BASE_URL + 'assets/', document.baseURI)
+    let active = true
+    let releaseEffect: (() => void) | undefined
+    let releaseMoment: (() => void) | undefined
+    const kit = (file: string) => import(/* @vite-ignore */ new URL(file, base).href)
+    // The CSS ground and intact heading also render when enhancement modules are unavailable.
+    void kit('effects/fx.js')
+      .then(async (fx) => {
+        if (!active) return
+        const api = await fx.mount(ground, 'silk-folds', {
+          palette: fx.readPalette(ground),
+          params: { speed: 0.12, tone: 1, folds: 0.85, sheen: 0.9 },
+          seed: 22,
+        })
+        if (!api) return
+        if (!active) {
+          api.destroy()
+          return
+        }
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        if (reduced) api.pause()
+        const freeze = window.setTimeout(() => api.pause(), 3600)
+        releaseEffect = () => {
+          window.clearTimeout(freeze)
+          api.destroy()
+        }
+      })
+      .catch(() => {})
+    void kit('moments/moments.js')
+      .then(async (moments) => {
+        if (!active) return
+        const api = await moments.mount(section)
+        if (!active) {
+          api?.destroy?.()
+          return
+        }
+        releaseMoment = () => api?.destroy?.()
+      })
+      .catch(() => {})
+    void kit('motion/motion.js')
+      .then((motion) => {
+        if (active) motion.refresh()
+      })
+      .catch(() => {})
+    return () => {
+      active = false
+      releaseEffect?.()
+      releaseMoment?.()
+    }
+  }, [])
   return (
     <>
-      <section className="border-b border-slate-200 bg-white">
-        <div className="mx-auto grid max-w-5xl gap-10 px-4 py-8 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-start lg:gap-12 lg:py-16">
-          <div>
-            <p className="inline-flex items-center rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-900 ring-1 ring-indigo-700/20 ring-inset">
-              AccessLab · 无障碍实验室
-            </p>
-
-            <h1 className="mt-4 text-3xl font-bold leading-tight tracking-tight text-balance text-slate-900 sm:text-4xl lg:text-[2.75rem]">
+      <section ref={hero} className="study-hero hero hero--centred" data-enter="" aria-labelledby="hero-h">
+        <div className="optical-ground hero__bg" aria-hidden="true" data-fx="silk-folds" />
+        <div className="wrap hero-layout">
+          <div className="hero-text">
+            <div className="course-line">Hack4Good · 技术向善</div>
+            <h1 id="hero-h">
               让网页的障碍，
-              <br className="hidden sm:block" />
-              看得见、改得掉。
+              <br />
+              <em>看得见、改得掉。</em>
             </h1>
-
-            <p className="mt-4 max-w-xl text-lg leading-relaxed text-pretty text-slate-700">
-              页面自己用着没问题，别人可能看不清按钮、找不到输入框、用键盘走两步就丢了位置。
-              AccessLab 把这些缺陷做成能动手改的真实实验：改一处，当场看到差别。
-            </p>
-
-            <div className="mt-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-5">
-              <a
-                href={ROUTE_HASH['contrast-lab']}
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-indigo-700 px-7 py-3.5 text-base font-bold text-white no-underline shadow-sm transition-colors hover:bg-indigo-800"
-              >
-                开始第一个实验
-                <ArrowRight className="size-5" aria-hidden="true" />
+            <p>低视力用户能看清集合地点吗？只用键盘能报名吗？在摄影社报名页动手修，再到图书馆预约页试一遍。</p>
+            <div className="hero-actions">
+              <a href={ROUTE_HASH.diagnosis} className="btn lead-action text-base font-bold">
+                开始校园初诊 <ArrowRight size={18} aria-hidden="true" />
               </a>
-              <a
-                href="#experiments"
-                className="inline-flex min-h-11 items-center text-sm font-semibold text-indigo-800 underline decoration-indigo-300 decoration-2 underline-offset-4 hover:decoration-indigo-800"
-              >
-                查看另外两个实验
+              <a href="#experiments" className="btn browse-action text-sm">
+                浏览专项实验
               </a>
             </div>
-
-            <dl className="mt-6 grid gap-x-6 gap-y-3 border-t border-slate-200 pt-5 sm:grid-cols-3">
-              {AUDIENCE_POINTS.map((point) => (
-                <div key={point.term} className="min-w-0">
-                  <dt className="text-xs font-semibold tracking-wide text-slate-600 uppercase">
-                    {point.term}
-                  </dt>
-                  <dd className="mt-1 text-sm leading-snug font-semibold text-slate-900">{point.desc}</dd>
-                </div>
-              ))}
-            </dl>
-
-            <p className="mt-5 text-xs text-slate-600">
-              2026 Qoder 高校创造力大赛 · Hack4Good 技术向善赛道
-            </p>
           </div>
-
-          <div className="min-w-0 rounded-2xl border border-slate-200 bg-slate-50 p-5 shadow-sm">
-            <h2 className="text-base font-semibold tracking-tight text-slate-900">
-              同一句话，只是换个颜色
-            </h2>
-            <p className="mt-1 text-sm leading-relaxed text-slate-700">
-              下面两组数值由和实验页相同的算法实时算出，不是配图。
-            </p>
-
-            <div className="mt-4 space-y-4">
-              {FIX_CASES.map((item) => (
-                <div key={item.label} className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
-                  <p className="text-xs font-semibold tracking-wide text-slate-600 uppercase">
-                    {item.label}
-                  </p>
-                  <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                    <Swatch tag="修复前" sample={item.sample} {...item.before} />
-                    <Swatch tag="修复后" sample={item.sample} {...item.after} />
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <p className="mt-3 text-xs leading-relaxed text-slate-600">
-              判定依据：WCAG 2.2 成功标准 1.4.3 给普通文本定的 AA 档，比值需 ≥ {AA_NORMAL_TEXT_RATIO}:1。
-            </p>
-
-            <a
-              href={ROUTE_HASH['contrast-lab']}
-              className="mt-4 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-indigo-800 underline decoration-indigo-300 decoration-2 underline-offset-4 hover:decoration-indigo-800"
-            >
-              自己动手改一对颜色
-              <ArrowRight className="size-4" aria-hidden="true" />
-            </a>
+          <div className="hero__window" data-visual="" data-enter-media="">
+            <ContrastConsole />
           </div>
         </div>
       </section>
+      <section
+        ref={experiments}
+        className="lab-selection section"
+        id="experiments"
+        data-moment="letters-assemble"
+        data-moment-opts='{"spread":0.45}'
+        aria-labelledby="experiments-heading"
+      >
+        <div className="wrap">
+          <h2 id="experiments-heading" className="mo-la__type">
+            三个实验方向
+          </h2>
+          <ul className="lab-trio">
+            {EXPERIMENTS.map((experiment) => (
+              <li key={experiment.href}>
+                <ExperimentCard {...experiment} />
+              </li>
+            ))}
+          </ul>
+          <details className="study-details mt-8">
+            <summary>课堂示例 · 配色只差一点，判定会变吗？</summary>
+            <div className="min-w-0 rounded-2xl border border-slate-200 bg-slate-50 p-5 shadow-sm">
+              <div className="space-y-4">
+                {FIX_CASES.map((item) => (
+                  <div key={item.label} className="min-w-0 rounded-xl border border-slate-200 bg-white p-3">
+                    <p className="text-xs font-semibold tracking-wide text-slate-600 uppercase">{item.label}</p>
+                    <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                      <Swatch tag="修复前" sample={item.sample} {...item.before} />
+                      <Swatch tag="修复后" sample={item.sample} {...item.after} />
+                    </div>
+                  </div>
+                ))}
+              </div>
 
-      <section id="experiments" className="mx-auto max-w-5xl scroll-mt-20 px-4 py-12 sm:px-6 sm:py-14">
-        <div className="max-w-2xl">
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900">三个实验方向</h2>
-          <p className="mt-2 text-base leading-relaxed text-slate-700">
-            三个都已经可以体验，建议按顺序做完：换一对颜色、补一个标签关联、再用 Tab 走一遍焦点。
-            每个实验只覆盖对应的成功标准，结论不代表整站符合 WCAG 2.2。
+              <p className="mt-3 text-xs leading-relaxed text-slate-600">
+                判定依据：WCAG 2.2 成功标准 1.4.3 给普通文本定的 AA 档，比值需 ≥ {AA_NORMAL_TEXT_RATIO}:1。
+              </p>
+
+              <a
+                href={ROUTE_HASH['contrast-lab']}
+                className="mt-4 inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-indigo-800 underline decoration-indigo-300 decoration-2 underline-offset-4 hover:decoration-indigo-800"
+              >
+                自己动手改一对颜色
+                <ArrowRight className="size-4" aria-hidden="true" />
+              </a>
+            </div>
+          </details>
+          {/* 轻量入口：报告不是第四个实验，而是把上面三个实验本次会话的真实结果汇总起来 */}
+          <p className="mt-8 max-w-2xl text-sm leading-relaxed text-slate-700">
+            已经做过练习？
+            <a href={ROUTE_HASH.report} className="btn report-action">
+              统一成果报告
+              <ArrowRight className="size-4" aria-hidden="true" />
+            </a>
           </p>
         </div>
-
-        <ul className="mt-8 grid list-none gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {EXPERIMENTS.map((experiment) => (
-            <li key={experiment.index} className="h-full">
-              <ExperimentCard {...experiment} />
-            </li>
-          ))}
-        </ul>
-
-        {/* 轻量入口：报告不是第四个实验，而是把上面三个实验本次会话的真实结果汇总起来 */}
-        <p className="mt-8 max-w-2xl text-sm leading-relaxed text-slate-700">
-          每个实验做完都会把真实结果登记进本次会话的台账。做完后可以去
-          <a
-            href={ROUTE_HASH.report}
-            className="mx-1 inline-flex min-h-11 items-center gap-1 font-semibold text-indigo-800 underline decoration-indigo-300 decoration-2 underline-offset-4 hover:decoration-indigo-800"
-          >
-            统一成果报告
-            <ArrowRight className="size-4" aria-hidden="true" />
-          </a>
-          汇总这一轮的检测、修复与待验证项目，并复制或导出成 Markdown。
-        </p>
       </section>
     </>
   )

@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+@source not "../.taste-skill/**";
+@source not "../public/assets/**";
 
 /* 自动内容扫描会把文档与测试里的单词当成 class 候选（例如测试里的变量名 container
    会凭空生成 .container 工具类），导致产物 CSS 随无关文字变化、发布哈希漂移。 */

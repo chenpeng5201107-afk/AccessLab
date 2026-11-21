@@ -4,7 +4,6 @@ import {
   CircleAlert,
   CircleCheckBig,
   Copy,
-  Info,
   RotateCcw,
   Undo2,
   WandSparkles,
@@ -95,7 +94,7 @@ function CompareColumn({
   )
 }
 
-export function ContrastLabPage() {
+export function ContrastLabPage({ returnToCase = false }: { returnToCase?: boolean } = {}) {
   const { ledger, dispatch } = useExperimentLedger()
   const [textColor, setTextColor] = useState(DEFAULT_TEXT_COLOR)
   const [backgroundColor, setBackgroundColor] = useState(DEFAULT_BACKGROUND_COLOR)
@@ -120,8 +119,7 @@ export function ContrastLabPage() {
   const ratio = contrastRatioFromHex(textColor, backgroundColor)
   const passes = ratio !== null && meetsAaNormalText(ratio)
   const hasInvalidInput = !textValid || !backgroundValid
-  const isDefault =
-    textColor === DEFAULT_TEXT_COLOR && backgroundColor === DEFAULT_BACKGROUND_COLOR
+  const isDefault = textColor === DEFAULT_TEXT_COLOR && backgroundColor === DEFAULT_BACKGROUND_COLOR
 
   // 手动改色 / 重置都会让旧修复结论过期：清建议、清快照，并清掉上一次的操作反馈
   const handleTextColorChange = (hex: string) => {
@@ -164,8 +162,7 @@ export function ContrastLabPage() {
   }
 
   const suggestion = repair.suggestion
-  const canApply =
-    repair.phase === 'suggested' && !hasInvalidInput && !!suggestion?.suggestedTextColor
+  const canApply = repair.phase === 'suggested' && !hasInvalidInput && !!suggestion?.suggestedTextColor
 
   const handleApply = () => {
     if (!canApply || !suggestion?.suggestedTextColor) return
@@ -203,13 +200,9 @@ export function ContrastLabPage() {
   // 对比区与 CSS 区的数据：已应用取快照，未应用取建议；背景两侧始终相同
   const snapshot = repair.snapshot
   const afterColor =
-    repair.phase === 'applied'
-      ? snapshot?.afterTextColor ?? null
-      : suggestion?.suggestedTextColor ?? null
+    repair.phase === 'applied' ? (snapshot?.afterTextColor ?? null) : (suggestion?.suggestedTextColor ?? null)
   const beforeColor =
-    repair.phase === 'applied'
-      ? snapshot?.beforeTextColor ?? null
-      : suggestion?.originalTextColor ?? null
+    repair.phase === 'applied' ? (snapshot?.beforeTextColor ?? null) : (suggestion?.originalTextColor ?? null)
   const applied = repair.phase === 'applied'
   // 非法输入期间一律不出前后对比 / CSS / 复制：既靠上面的状态失效兜底，也在渲染处再挡一层，
   // 保证「修复已暂停」时绝不残留可操作的过期产物
@@ -285,9 +278,8 @@ export function ContrastLabPage() {
     textColor,
   ])
 
-
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-12">
+    <div className="lab-page mx-auto max-w-5xl px-4 py-5 sm:px-6 sm:py-8">
       <a
         href={ROUTE_HASH.home}
         className="inline-flex min-h-11 items-center text-sm font-semibold text-indigo-800 underline decoration-indigo-400 decoration-2 underline-offset-4 hover:decoration-indigo-800"
@@ -296,28 +288,8 @@ export function ContrastLabPage() {
       </a>
 
       <header className="mt-4 max-w-2xl">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-          色彩对比度实验
-        </h1>
-        <ol className="mt-4 space-y-2 text-base leading-relaxed text-slate-700">
-          <li>
-            <strong className="font-semibold text-slate-900">你会遇到什么：</strong>
-            默认配色 <span className="font-mono text-sm">#777777</span> /{' '}
-            <span className="font-mono text-sm">#FFFFFF</span>{' '}
-            看着挺清爽，反差其实不够——典型的「看起来还行、实际不合格」。
-          </li>
-          <li>
-            <strong className="font-semibold text-slate-900">你要做什么：</strong>
-            改下面两个颜色，盯着实时比值跨过 4.5:1；改不出来就让算法给建议，再一键应用。
-          </li>
-          <li>
-            <strong className="font-semibold text-slate-900">修好能看到什么：</strong>
-            同一句示例文字的修复前后对比，加一段可以直接复制走的 CSS。
-          </li>
-        </ol>
-        <p className="mt-3 text-sm leading-relaxed text-slate-600">
-          对比度数值由 WCAG 2.2 的相对亮度算法现场计算，本页每一处结论都是实时算出来的。
-        </p>
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">色彩对比度实验</h1>
+        <p className="lab-lead">调整文字与背景色，看对比度能否达到普通文本的 4.5:1。</p>
       </header>
 
       <div className="mt-8 grid items-start gap-6 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]">
@@ -369,16 +341,12 @@ export function ContrastLabPage() {
               passes ? 'bg-emerald-50 ring-emerald-700/30' : 'bg-red-50 ring-red-700/30'
             }`}
           >
-            <span className="text-xs font-semibold tracking-wide text-slate-700 uppercase">
-              当前对比度
-            </span>
+            <span className="text-xs font-semibold tracking-wide text-slate-700 uppercase">当前对比度</span>
             <span className="flex items-baseline gap-2">
               <span className="font-mono text-xl font-bold text-slate-900 tabular-nums">
                 {ratio === null ? '—' : formatContrastRatio(ratio)}
               </span>
-              <span
-                className={`text-sm font-semibold ${passes ? 'text-emerald-900' : 'text-red-900'}`}
-              >
+              <span className={`text-sm font-semibold ${passes ? 'text-emerald-900' : 'text-red-900'}`}>
                 {ratio === null ? '颜色无效' : passes ? '达到 AA' : '未达 AA'}
               </span>
             </span>
@@ -396,24 +364,14 @@ export function ContrastLabPage() {
             <h2 id="preview-heading" className="text-lg font-semibold tracking-tight text-slate-900">
               2. 实时预览
             </h2>
-            <p className="mt-1 text-sm text-slate-600">
-              预览区域内的配色完全由你控制，用来模拟一张常见的内容卡片。
-              卡片里的通知是一段<strong>虚构的演示文案</strong>，不会真的产生提醒或费用。
-            </p>
 
             <div
               className="mt-4 rounded-xl border border-slate-300 p-6"
               style={{ backgroundColor, color: textColor }}
             >
-              <p className="text-xs font-semibold tracking-wide uppercase">
-                虚构示例 · 校园场景
-              </p>
-              <h3 className="mt-2 text-xl font-bold">图书馆模拟逾期提醒</h3>
-              <p className="mt-2 text-sm leading-relaxed">
-                这是一段编出来给你试色的样例文字：假想的 3.50 元模拟逾期费用，
-                以及一个假想的缴纳截止日期。
-              </p>
-              <p className="mt-3 text-xs">示例编号 FICTION-DEMO-0000（虚构，无对应真实记录）</p>
+              <p className="text-xs font-semibold tracking-wide uppercase">图书馆 · 虚构示例</p>
+              <h3 className="mt-2 text-xl font-bold">图书归还提醒</h3>
+              <p className="mt-2 text-sm leading-relaxed">请在周五前归还借阅的图书，或到服务台续借。</p>
             </div>
           </section>
 
@@ -424,10 +382,6 @@ export function ContrastLabPage() {
             <h2 id="result-heading" className="text-lg font-semibold tracking-tight text-slate-900">
               3. 检测结果
             </h2>
-            <p className="mt-1 text-sm leading-relaxed text-slate-600">
-              对比度衡量的是文字与背景的<strong>反差程度</strong>，范围从 1:1（完全分不开）到
-              21:1（纯黑配纯白）。反差太小，低视力用户和老年用户在强光下、在旧屏幕上就会看不清。
-            </p>
 
             {hasInvalidInput ? (
               <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-900 ring-1 ring-inset ring-red-700/30">
@@ -442,9 +396,7 @@ export function ContrastLabPage() {
             ) : (
               <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3">
                 <div>
-                  <p className="text-xs font-semibold tracking-wide text-slate-600 uppercase">
-                    对比度
-                  </p>
+                  <p className="text-xs font-semibold tracking-wide text-slate-600 uppercase">对比度</p>
                   <p className="mt-1 font-mono text-4xl font-bold text-slate-900 tabular-nums">
                     {formatContrastRatio(ratio)}
                   </p>
@@ -466,40 +418,30 @@ export function ContrastLabPage() {
                     {passes
                       ? `达到普通文本 AA（≥ ${AA_NORMAL_TEXT_RATIO}:1）`
                       : `未达普通文本 AA（需 ≥ ${AA_NORMAL_TEXT_RATIO}:1）`}
-                    </span>
+                  </span>
                 </div>
               </div>
             )}
 
-            <div className="mt-5 border-t border-slate-200 pt-4">
-              <h3 className="flex items-center gap-2 text-sm font-semibold text-slate-900">
-                <Info className="size-4 shrink-0 text-indigo-800" aria-hidden="true" />
-                本实验检查什么、不检查什么
-              </h3>
+            <details className="lab-fold inline-fold">
+              <summary>检测依据与范围</summary>
               <p className="mt-2 text-sm leading-relaxed text-slate-700">
-                只检查一件事：这一对颜色的反差，够不够 WCAG 2.2 成功标准 1.4.3
-                给<strong>普通文本</strong>定的 {AA_NORMAL_TEXT_RATIO}:1（AA 级）。
+                只检查一件事：这一对颜色的反差，够不够 WCAG 2.2 成功标准 1.4.3 给<strong>普通文本</strong>定的{' '}
+                {AA_NORMAL_TEXT_RATIO}:1（AA 级）。
                 <span className="mt-1.5 block font-semibold text-slate-900">
                   这一项通过，只代表这一对颜色合格，不代表这个组件或整个网站已经符合 WCAG 2.2。
                 </span>
               </p>
 
-              <details className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-2">
-                <summary className="cursor-pointer rounded-lg px-2 py-3 text-sm font-semibold text-indigo-800">
-                  展开查看：本次没有检查的内容
-                </summary>
-                <ul className="mt-1.5 space-y-1.5 px-2 pb-1 text-sm leading-relaxed text-slate-700">
-                  <li>
-                    1.4.3 对<strong>大文本</strong>要求的 3:1（AA 级）——本实验只判普通文本。
-                  </li>
-                  <li>
-                    成功标准 1.4.6（Contrast (Enhanced)，AAA 级）：普通文本 7:1、大文本 4.5:1。
-                  </li>
-                  <li>成功标准 1.4.11（Non-text Contrast，AA 级）：图形与界面组件 3:1。</li>
-                  <li>语义结构、键盘可达性、屏幕阅读器朗读顺序等其他成功标准。</li>
-                </ul>
-              </details>
-            </div>
+              <ul className="mt-1.5 space-y-1.5 px-2 pb-1 text-sm leading-relaxed text-slate-700">
+                <li>
+                  1.4.3 对<strong>大文本</strong>要求的 3:1（AA 级）——本实验只判普通文本。
+                </li>
+                <li>成功标准 1.4.6（Contrast (Enhanced)，AAA 级）：普通文本 7:1、大文本 4.5:1。</li>
+                <li>成功标准 1.4.11（Non-text Contrast，AA 级）：图形与界面组件 3:1。</li>
+                <li>语义结构、键盘可达性、屏幕阅读器朗读顺序等其他成功标准。</li>
+              </ul>
+            </details>
           </section>
         </div>
       </div>
@@ -511,11 +453,7 @@ export function ContrastLabPage() {
         <h2 id="repair-heading" className="text-lg font-semibold tracking-tight text-slate-900">
           4. 智能修复建议
         </h2>
-        <p className="mt-1 text-sm leading-relaxed text-slate-600">
-          当配色未达普通文本 AA 时，可生成一个把文字色朝纯黑或纯白微调、尽量减小改动、
-          并用真实 WCAG 计算复核达标后的建议色。<strong>只调整文字颜色，背景保持你选的颜色。</strong>
-          这是确定性算法，不是全局最优、也不保证人眼感知差异最小。
-        </p>
+        <p className="mt-1 text-sm leading-relaxed text-slate-600">保留背景，计算达到普通文本 AA 的建议文字色。</p>
 
         {hasInvalidInput ? (
           <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900 ring-1 ring-inset ring-amber-700/30">
@@ -542,7 +480,11 @@ export function ContrastLabPage() {
         ) : null}
 
         {repair.phase === 'suggested' && suggestion?.suggestedTextColor && !hasInvalidInput ? (
-          <div ref={suggestionRef} tabIndex={-1} className="mt-4 rounded-xl border border-indigo-200 bg-indigo-50/60 p-4">
+          <div
+            ref={suggestionRef}
+            tabIndex={-1}
+            className="mt-4 rounded-xl border border-indigo-200 bg-indigo-50/60 p-4"
+          >
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-sm font-semibold text-slate-900">
                 建议文字颜色
@@ -550,14 +492,11 @@ export function ContrastLabPage() {
                   建议 · 尚未应用
                 </span>
               </p>
-              <AaBadge
-                textColor={suggestion.suggestedTextColor}
-                backgroundColor={backgroundColor}
-              />
+              <AaBadge textColor={suggestion.suggestedTextColor} backgroundColor={backgroundColor} />
             </div>
             <p className="mt-2 text-sm leading-relaxed text-slate-700">
-              把文字色从 <span className="font-mono uppercase">{suggestion.originalTextColor}</span>{' '}
-              调整为 <span className="font-mono uppercase">{suggestion.suggestedTextColor}</span>
+              把文字色从 <span className="font-mono uppercase">{suggestion.originalTextColor}</span> 调整为{' '}
+              <span className="font-mono uppercase">{suggestion.suggestedTextColor}</span>
               ，对比度由 {formatContrastRatio(suggestion.beforeRatio ?? 0)} 提升到{' '}
               {formatContrastRatio(suggestion.afterRatio ?? 0)}。本次仅调整文字颜色，未改变背景。
             </p>
@@ -574,7 +513,11 @@ export function ContrastLabPage() {
         ) : null}
 
         {repair.phase === 'applied' && snapshot && !hasInvalidInput ? (
-          <div ref={appliedRef} tabIndex={-1} className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50/60 p-4">
+          <div
+            ref={appliedRef}
+            tabIndex={-1}
+            className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50/60 p-4"
+          >
             <div className="flex flex-wrap items-center justify-between gap-3">
               <p className="text-sm font-semibold text-slate-900">
                 修复已应用
@@ -586,8 +529,8 @@ export function ContrastLabPage() {
             </div>
             <p className="mt-2 text-sm leading-relaxed text-slate-700">
               文字色已从 <span className="font-mono uppercase">{snapshot.beforeTextColor}</span> 改为{' '}
-              <span className="font-mono uppercase">{snapshot.afterTextColor}</span>，
-              对比度 {formatContrastRatio(snapshot.beforeRatio)} → {formatContrastRatio(snapshot.afterRatio)}。
+              <span className="font-mono uppercase">{snapshot.afterTextColor}</span>， 对比度{' '}
+              {formatContrastRatio(snapshot.beforeRatio)} → {formatContrastRatio(snapshot.afterRatio)}。
             </p>
             <button
               type="button"
@@ -683,9 +626,10 @@ export function ContrastLabPage() {
       ) : null}
 
       <NextStepCard
+        returnToCase={returnToCase}
         headingId="contrast-next-heading"
         title="下一步：让输入框拥有正确的标签"
-        description="颜色只是「看得见」的第一层。另一个常见问题是输入框旁边写着名字、读屏软件却读不出来——下一个实验就修这个，改完还能看到真实 DOM 的复检结果。"
+        description="让“姓名”和它的输入框连起来。"
         href={ROUTE_HASH['form-label-lab']}
         linkLabel="进入表单标签实验"
       />

@@ -80,7 +80,7 @@ function sectionByHeading(heading: string): HTMLElement | null {
 }
 
 function statusChipText(): string {
-  return textOf(sectionByHeading('3. 焦点规则现状与修复'))
+  return textOf(sectionByHeading('焦点规则与修复'))
 }
 
 /** 真实键盘的语义：先有 Tab 的 keydown，焦点才落到按钮上；鼠标点击带来的 focus 不算 */
@@ -149,6 +149,15 @@ afterEach(() => {
 })
 
 describe('KeyboardFocusLabPage · 初始状态（要求 #1 #2 #3 #10）', () => {
+  it('验证步骤只在应用修复后显示已切换状态', () => {
+    const steps = container.querySelector('#kf-verify-heading')!.closest('section')
+    expect(textOf(steps)).not.toContain('已切换到修复态')
+    click(buttonByLabel('修复焦点指示')!)
+    expect(textOf(steps)).toContain('已切换到修复态')
+    const comparison = container.querySelector('#kf-code-heading')!.closest('section')
+    expect(textOf(comparison)).not.toContain('上方实验区当前用的就是这一版')
+  })
+
   it('实验区就是三个真实原生按钮，顺序与文案都对得上', () => {
     const buttons = demoButtons()
     expect(buttons).toHaveLength(3)
@@ -180,7 +189,7 @@ describe('KeyboardFocusLabPage · 初始状态（要求 #1 #2 #3 #10）', () => 
       expect(button.className).not.toContain(BROKEN_CLASS)
       expect(button.className).not.toContain(FIXED_CLASS)
     }
-    expect(textOf(container)).toContain('AccessLab 自身的导航与操作按钮不受影响')
+    expect(textOf(container)).toContain('修复前 · 隐去焦点轮廓')
   })
 
   it('教学状态从「尚未体验」开始，且没有伪造任何自动通过', () => {
@@ -380,7 +389,7 @@ describe('KeyboardFocusLabPage · 人工验证门控（要求 #11 #12 #13）', (
   }
 
   function verifyStepItems(): string[] {
-    const ol = sectionByHeading('5. 人工验证与代码复制')?.querySelector('ol')
+    const ol = sectionByHeading('确认观察')?.querySelector('ol')
     expect(ol, '第 5 节应有五步验证清单').toBeTruthy()
     return [...ol!.querySelectorAll('li')].map((li) => textOf(li))
   }
@@ -449,7 +458,7 @@ describe('KeyboardFocusLabPage · 人工验证门控（要求 #11 #12 #13）', (
     click(confirmButton())
 
     expect(textOf(container)).toContain('不能代表整个网站已经符合全部无障碍规范')
-    expect(textOf(container)).toContain('可见焦点 ≠ 键盘无障碍全部达标')
+    expect(textOf(container)).toContain('不代表整站符合 WCAG 2.2')
     expect(textOf(container)).not.toMatch(/已符合 WCAG|自动检测通过|WCAG 已完全通过/)
   })
 
@@ -471,7 +480,7 @@ describe('KeyboardFocusLabPage · 人工验证门控（要求 #11 #12 #13）', (
   })
 
   it('验证清单把「有客观记录」和「待人工确认」分开标注', () => {
-    expect(textOf(sectionByHeading('5. 人工验证与代码复制'))).toContain('待人工确认')
+    expect(textOf(sectionByHeading('确认观察'))).toContain('待人工确认')
     pressTabThenFocus(demoButtons()[0])
     expect(verifyStepItems()[0]).toContain('有客观记录')
     expect(verifyStepItems()[0]).toContain('修复前键盘到达 1 次')

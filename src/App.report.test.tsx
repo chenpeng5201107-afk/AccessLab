@@ -254,7 +254,7 @@ describe('App · 报告页只汇总，不重新发明检测（要求 #2 #3）', 
     readContrastLab()
     goto('#/report')
 
-    const labels = [...document.querySelectorAll('button')].map((el) => squeeze(el.textContent ?? ''))
+    const labels = [...document.querySelectorAll('main button')].map((el) => squeeze(el.textContent ?? ''))
     expect(labels).toEqual(['复制 Markdown 报告', '下载 .md 文件', '清空本次实验记录'])
 
     for (const hash of ['#/contrast', '#/form-label', '#/keyboard']) {
@@ -262,7 +262,7 @@ describe('App · 报告页只汇总，不重新发明检测（要求 #2 #3）', 
     }
   })
 
-  it('复制出来的 Markdown 与页面展示同源：没有记录时按钮禁用，有记录时可复制', async () => {
+  it('复制出来的 Markdown 与页面展示同源：没有记录时不显示导出，有记录时可复制', async () => {
     const written: string[] = []
     Object.defineProperty(navigator, 'clipboard', {
       configurable: true,
@@ -274,7 +274,7 @@ describe('App · 报告页只汇总，不重新发明检测（要求 #2 #3）', 
     })
 
     goto('#/report')
-    expect(buttonByLabel('复制 Markdown 报告').disabled).toBe(true)
+    expect(document.querySelector('#report-export-heading')).toBeNull()
 
     readContrastLab()
     goto('#/report')

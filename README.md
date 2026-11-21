@@ -1,73 +1,53 @@
 # AccessLab｜无障碍实验室
 
-> 让每个人都能更轻松地使用互联网。
+**2026 Qoder 高校创造力大赛 · Hack4Good · 技术向善**
 
-AccessLab 是面向学生开发者的交互式网页无障碍学习与检测平台。
-它用**真实网页组件 + 实时自动检测 + 可对比结果**替代抽象条文，
-让开发者亲手改一个颜色、看一次结果，就明白无障碍为什么重要。
+**让网页的障碍，看得见、改得掉。**
 
-2026 Qoder 高校创造力大赛 · Hack4Good 技术向善赛道参赛项目。
+AccessLab 用于网页无障碍教育与辅助技术普及。学生开发者和校园网站维护者可以在摄影社报名页上体验三种障碍：低视力用户读不清集合地点、读屏用户难以确认输入框用途、键盘用户找不到当前焦点。开发者能修复样本，再用图书馆预约页检验自己的判断。[本届参赛作品帖草稿](submission/hack4good-entry.md)
 
-## 当前进度
+## 在本机运行
 
-| 模块 | 状态 |
-| --- | --- |
-| 首页 | ✅ 已上线 |
-| 色彩对比度实验（WCAG 2.2 相对亮度 / 普通文本 AA 4.5:1） | ✅ 已上线 |
-| 表单标签无障碍实验 | 🔒 即将开放 |
-| 键盘焦点实验 | 🔒 即将开放 |
-| 实验结果报告 | 🔒 即将开放 |
+本版使用 Node.js 24 验证。项目基于 React、TypeScript 与 Vite，依赖由 package-lock.json 锁定。
 
-详见 [PROJECT_STATUS.md](./PROJECT_STATUS.md) 与 [DEVLOG.md](./DEVLOG.md)。
-
-## 技术栈
-
-React 19 · TypeScript 5.9 · Vite 8 · Tailwind CSS 4 · Vitest 5 · 原生 React Hooks
-
-纯前端实现，无数据库，无付费第三方 API。
-两个页面使用自建 hash 路由（约 30 行），因此静态托管下刷新 `#/contrast` 无需服务端 rewrite。
-
-## 快速开始
-
-```bash
-npm install
-npm run dev      # http://localhost:5173
-npm test         # 运行对比度算法单元测试
-npm run build    # 类型检查 + 生产构建，产物在 dist/
-npm run preview  # 预览生产构建
+```shell
+npm ci
+npm run dev
 ```
 
-## 项目结构
+## 直接部署到 Qoder Sites
 
+1. 在 Qoder CN 打开本项目根目录（包含 `package.json`）。
+2. 安装命令为 `npm ci`，构建命令为 `npm run build`。本轮已在根目录生成 `dist/`，可直接作为静态发布目录。如从 Git 检出，请重新构建。
+3. 在 Qoder Sites 选择当前项目，发布目录选 `dist`，入口为 `index.html`，访问范围设为公开。无需配置环境变量、数据库、API Key 或路由重写。
+4. 发布后用未登录的浏览器打开公网地址，确认首页显示「开始校园初诊」，并由 `#/diagnosis` 走到学习报告。旧线上截图和部署记录见历史材料，本版发布状态以实际公网复验为准。
+
+本地查看相同产物：
+
+```shell
+npm run build
+npm run preview
 ```
-src/
-├─ lib/contrast.ts        # WCAG 2.2 相对亮度与对比度算法
-├─ lib/contrast.test.ts   # 算法单元测试
-├─ hooks/useHashRoute.ts  # 极简 hash 路由
-├─ pages/                 # HomePage / ContrastLabPage
-├─ components/            # AppHeader / ExperimentCard / ColorControl
-├─ App.tsx                # 布局、skip link、路由与焦点管理
-└─ index.css              # Tailwind 入口、焦点样式、reduced-motion
-```
 
-## 关于对比度检测的边界
+## 使用流程
 
-- 检测值由 WCAG 2.2 相对亮度算法实时计算，不存在写死的结论。
-- **仅**判定成功标准 1.4.3「普通文本 AA ≥ 4.5:1」。
-- 不判定大文本（3:1）、非文本对比（1.4.11）、语义结构与键盘可达性。
-- 因此：本项通过 ≠ 该组件或整个网站符合 WCAG 2.2。
+- **校园初诊**：试读地点、点击输入框标题、用 Tab 找操作按钮，提交三项判断。取证工具提供组件片段及实测对比度。
+- **跟练修复**：按错因进入色彩、表单标签或键盘焦点实验，完成该实验的修复。返回案例应用修复，在同一个样本上复验。
+- **图书馆迁移测验**：检查另一张页面，分辨正确实现和缺陷。第一次交卷后锁定首答。错题提供新的订正问题。
+- **学习报告**：查看三个能力的初诊、案例修复、迁移首答与订正，复制或下载 Markdown。可直接从导航进入原有三个实验。
+- 进度只在当前页面会话的内存中，切换路由会保留，刷新后会清空。示例姓名或代号不进入记录。报告页提供确认后清空和 Markdown 备份。
 
-## 项目自身遵循的无障碍实践
+## 验证与开发来源
 
-语义化 landmark、跳转到主内容的 skip link、完整可见的 `:focus-visible` 描边、
-连续的标题层级、全部控件带 `<label>`/`aria-label`、结果区 `role="status"` + `aria-live="polite"`、
-非法输入通过 `aria-invalid` + `aria-describedby` 反馈、
-`prefers-reduced-motion` 降级、界面配色自身满足 AA 对比度。
+`npm test` 运行算法、组件和路由集成测试。`npm run build` 执行类型检查与静态生产构建。
+两个案例均为教学示例，给出的是对应题目与检查项的结果。
 
-## 治理文档
+原有三个实验及上一版 Qoder Sites 部署过程记录在 DEVLOG.md。校园案例、错题订正、学习报告和本轮界面打磨由 Codex 在现有项目上实现。
 
-- [PRD.md](./PRD.md) — 需求与功能边界
-- [DEVLOG.md](./DEVLOG.md) — 按日期的开发记录与测试证据
-- [PROJECT_STATUS.md](./PROJECT_STATUS.md) — 当前状态、遗留问题与下一阶段
+首页的灰度滑块可用方向键调节，复用实验页的对比度计算。网页使用 design-taste-frontend 的丝绸光影和标题动效，字体随站点部署，字体许可位于 public/type/。
 
-每次开发前先阅读这三份文件，开发后同步更新 `DEVLOG.md` 与 `PROJECT_STATUS.md`。
+本地生产版预览：[首页](submission/preview/01-home.png) · [校园初诊](submission/preview/02-diagnosis.png) · [学习报告](submission/preview/03-learning-report.png) · [手机案例页](submission/preview/04-mobile.png)。
+
+更正赛道前的界面布局、性能测量和待处理项目见[历史前端验收记录](submission/studyhack-preview/design-review.md)。
+
+当前版本功能、用法与部署参数以本 README 为准；较早阶段的记录保留在 PRD.md、PROJECT_STATUS.md、DEVLOG.md 和 submission/ 中。

@@ -51,7 +51,7 @@ const IN_LAB_MANUAL: Record<ExperimentKey, { pending: string | null; done: strin
     done: null,
   },
   keyboard: {
-    pending: '键盘焦点实验：你还没有点「我已完成观察」，也没有走完修复前后的两轮键盘体验。',
+    pending: '键盘焦点实验：你还没有点「我已完成观察」。',
     done: '键盘焦点实验：修复前后的两轮 Tab 体验都已完成，并由你本人点击「我已完成观察」确认——这只说明你在本机浏览器里看得见焦点轮廓。',
   },
 }
@@ -225,7 +225,7 @@ function contrastView(ledger: LedgerState, record: ContrastRecord | null): Exper
       tone: 'neutral',
     },
     {
-      label: '当前对比度（未取整真实值）',
+      label: '当前对比度（显示两位小数）',
       value: ratio(record.currentRatio),
       tone: record.currentMeetsAa === null ? 'neutral' : record.currentMeetsAa ? 'pass' : 'fail',
     },
@@ -462,7 +462,11 @@ export function buildReportModel(ledger: LedgerState, generatedAt: Date): Report
     if (key === 'keyboard' && progressOf(key, ledger).manualConfirmed) {
       if (item.done !== null) confirmedManual.push(item.done)
     } else if (item.pending !== null) {
-      pendingManual.push(item.pending)
+      const keyboard = key === 'keyboard' ? ledger.keyboard : null
+      const next = keyboard && keyboard.beforeSightings > 0 && keyboard.afterSightings > 0 && keyboard.repairApplied
+        ? '修复前后均已有 Tab 到达记录，还差本人确认。'
+        : '请检查是否已完成修复前后两轮键盘体验。'
+      pendingManual.push(key === 'keyboard' ? item.pending + next : item.pending)
     }
   }
   const extraVerification = inspectedKeys.map((key) => EXTRA_VERIFICATION_ITEMS[key])

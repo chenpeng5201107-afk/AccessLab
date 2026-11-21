@@ -1,16 +1,22 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useReducer, useRef } from 'react'
 
 import { AppHeader } from './components/AppHeader'
 import { ExperimentLedgerProvider } from './context/ExperimentLedgerContext'
-import { useHashRoute, type Route } from './hooks/useHashRoute'
+import { ROUTE_HASH, useHashRoute, type Route } from './hooks/useHashRoute'
 import { ContrastLabPage } from './pages/ContrastLabPage'
 import { FormLabelLabPage } from './pages/FormLabelLabPage'
 import { HomePage } from './pages/HomePage'
 import { KeyboardFocusLabPage } from './pages/KeyboardFocusLabPage'
 import { ReportPage } from './pages/ReportPage'
+import { StudyPage } from './pages/StudyPage'
+import { newStudy, studyReducer } from './lib/study'
+import './study.css'
+import './observatory.css'
 
 const PAGE_TITLES: Record<Route, string> = {
   home: 'AccessLab｜无障碍实验室',
+  diagnosis: '校园初诊｜AccessLab',
+  transfer: '图书馆迁移测验｜AccessLab',
   'contrast-lab': '色彩对比度实验｜AccessLab 无障碍实验室',
   'form-label-lab': '表单标签实验｜AccessLab 无障碍实验室',
   'keyboard-lab': '键盘焦点实验｜AccessLab 无障碍实验室',
@@ -19,6 +25,7 @@ const PAGE_TITLES: Record<Route, string> = {
 
 function AppShell() {
   const route = useHashRoute()
+  const [study, dispatchStudy] = useReducer(studyReducer, undefined, newStudy)
   const mainRef = useRef<HTMLElement>(null)
   const lastRouteRef = useRef<Route>(route)
 
@@ -32,7 +39,7 @@ function AppShell() {
   }, [route])
 
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="flex min-h-dvh flex-col" data-page={route}>
       {/* 拦截默认 hash 跳转：本应用用 hash 路由，跳到 #main 会被当成未知路由而把用户踢回首页 */}
       <a
         href="#main"
@@ -45,30 +52,39 @@ function AppShell() {
         跳转到主要内容
       </a>
 
-      <AppHeader currentRoute={route} />
+      <AppHeader key={route} currentRoute={route} />
 
       <main id="main" ref={mainRef} tabIndex={-1} className="grow">
-        {route === 'contrast-lab' ? (
-          <ContrastLabPage />
+        {route.endsWith('-lab') && study.campus.submitted && (
+          <aside className="study-return">
+            <span>修复后回到案例，试试效果。</span>
+            <a href={ROUTE_HASH.diagnosis}>返回校园案例 →</a>
+            {study.library.submitted && <a href={ROUTE_HASH.report}>回到学习报告 →</a>}
+          </aside>
+        )}
+        {route === 'diagnosis' || route === 'transfer' ? (
+          <StudyPage
+            key={route}
+            id={route === 'diagnosis' ? 'campus' : 'library'}
+            study={study}
+            dispatch={dispatchStudy}
+          />
+        ) : route === 'contrast-lab' ? (
+          <ContrastLabPage returnToCase={study.campus.submitted} />
         ) : route === 'form-label-lab' ? (
-          <FormLabelLabPage />
+          <FormLabelLabPage returnToCase={study.campus.submitted} />
         ) : route === 'keyboard-lab' ? (
-          <KeyboardFocusLabPage />
+          <KeyboardFocusLabPage returnToCase={study.campus.submitted} />
         ) : route === 'report' ? (
-          <ReportPage />
+          <ReportPage study={study} onClearStudy={() => dispatchStudy({ type: 'clear' })} />
         ) : (
           <HomePage />
         )}
       </main>
 
-      <footer className="border-t border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-5xl flex-col gap-2 px-4 py-6 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <p>
-            AccessLab 无障碍实验室 · 让每个人都能更轻松地使用互联网。
-          </p>
-          <p>
-            对比度依据 WCAG 2.2 相对亮度算法实时计算 · 每个实验只覆盖对应的成功标准 · 纯前端，无数据库
-          </p>
+      <footer className="closing site-foot border-t border-slate-200 bg-white">
+        <div className="wrap mx-auto flex max-w-5xl flex-col gap-2 px-4 py-6 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <p>AccessLab 无障碍实验室 <span className="footer-track">· Hack4Good · 技术向善</span></p>
         </div>
       </footer>
     </div>
